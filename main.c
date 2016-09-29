@@ -12,11 +12,13 @@
  * a LED.
  */
 static THD_WORKING_AREA(waThread1, 128);
-static THD_FUNCTION(Thread1, arg) {
-
+static THD_FUNCTION(Thread1, arg) 
+{
   (void)arg;
   chRegSetThreadName("blinker");
-  while (true) {
+
+  while (true)
+  {
     palSetLine(LINE_LED1);
     chThdSleepMilliseconds(50);
     palSetLine(LINE_LED2);
@@ -29,7 +31,7 @@ static THD_FUNCTION(Thread1, arg) {
     chThdSleepMilliseconds(50);
     palClearLine(LINE_LED3);
     chThdSleepMilliseconds(200);
-    adcStartConversionI(&ADCD1, &adcgrpcfg, samples, ADC_GRP1_BUF_DEPTH);
+    adcTKStartConv();
   }
 }
 
@@ -54,11 +56,8 @@ int main(void)
    */
   sdStart(&SD3, NULL);
 
-  adcStart(&ADCD1, NULL);
-  adcSTM32EnableTSVREFE();
-  palSetPadMode(GPIOC, 1, PAL_MODE_INPUT_ANALOG);
-
-  adcStartConversionI(&ADCD1, &adcgrpcfg, samples, ADC_GRP1_BUF_DEPTH);
+  adcTKInit();
+  adcTKStartConv();
 
   /*
    * Creates the example thread.

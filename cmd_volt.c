@@ -6,10 +6,11 @@
 
 void cmd_volt(BaseSequentialStream *chp, int argc, char *argv[])
 {
-        (void)(argc);
-        (void)(argv);
+  (void)(argc);
+  (void)(argv);
 
-        chprintf(chp, "PC0 DCV: %d \n\r", adc_avg_ch1);
-        chprintf(chp, "PC1 DCV: %d \n\r", adc_avg_tempsensor);
+  long mv_pa3 = (3300000/4096 * adc_avg_pa3)/1000;
+
+  chprintf(chp, "PA3: %d mV \n\r", mv_pa3);
 }
 

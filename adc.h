@@ -7,7 +7,7 @@
 /* Depth of the conversion buffer, channels are sampled four times each.*/
 #define ADC_GRP1_BUF_DEPTH      4
 
-extern adcsample_t adc_avg_ch1;
+extern adcsample_t adc_avg_pa3;
 extern adcsample_t adc_avg_tempsensor;
 
 extern adcsample_t samples[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH];
@@ -16,5 +16,7 @@ extern const ADCConversionGroup adcgrpcfg;
 
 void adccb(ADCDriver *adcp, adcsample_t *buffer, size_t n);
 
+void adcTKInit(void);
+void adcTKStartConv(void);
 
 #endif // TK_ADC_H
