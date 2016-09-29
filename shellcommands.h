@@ -6,8 +6,8 @@
 
 #define SHELL_WA_SIZE   THD_WORKING_AREA_SIZE(2048)
 
-extern void cmd_temp(BaseSequentialStream *chp, int argc, char *argv[]);
-extern void cmd_volt(BaseSequentialStream *chp, int argc, char *argv[]);
+extern void cmd_status(BaseSequentialStream *chp, int argc, char *argv[]);
+extern void cmd_reboot(BaseSequentialStream *chp, int argc, char *argv[]);
 
 extern const ShellCommand commands[];
 extern const ShellConfig shell_cfg1;

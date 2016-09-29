@@ -41,6 +41,7 @@ void adccb(ADCDriver *adcp, adcsample_t *buffer, size_t n)
     /* Calculates the average values from the ADC samples.*/
     adc_avg_tempsensor = (samples[0] + samples[2] + samples[4] + samples[6]) / 4;
     adc_avg_pa3 = (samples[1] + samples[3] + samples[5] + samples[7]) / 4;
+    adcTKStartConv();
   }
 }
 

@@ -4,8 +4,8 @@
 
 const ShellCommand commands[] =
 {
-  { "temp", cmd_temp },
-  { "volt", cmd_volt },
+  { "status", cmd_status },
+  { "reboot", cmd_reboot },
   {NULL, NULL}
 };
 
