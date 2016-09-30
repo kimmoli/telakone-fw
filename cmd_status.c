@@ -21,6 +21,7 @@ void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
 
     chprintf(chp, "Temp : %4.2f C\n\r", temp );
     chprintf(chp, "PA3  : %4.2f V\n\r", mv_pa3 );
+
     if (loopcount > 0)
       chThdSleepMilliseconds(1000);
   }

@@ -8,6 +8,8 @@ void cmd_reboot(BaseSequentialStream *chp, int argc, char *argv[])
   (void)(argv);
 
   chprintf(chp, "Rebooting...\n\r");
+
+  chThdSleepMilliseconds(200);
   NVIC_SystemReset();
 }
 
