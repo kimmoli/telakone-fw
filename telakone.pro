@@ -8,7 +8,8 @@ SOURCES += \
     cmd_reboot.c \
     cmd_status.c \
     shellcommands.c \
-    board/board.c
+    board/board.c \
+    joystick.c
 
 HEADERS += \
     adc.h \
@@ -18,7 +19,8 @@ HEADERS += \
     mcuconf.h \
     shellcommands.h \
     shellconf.h \
-    board/board.h
+    board/board.h \
+    joystick.h
 
 OTHER_FILES += \
     Makefile \

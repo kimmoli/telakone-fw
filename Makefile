@@ -119,7 +119,7 @@ CSRC = $(STARTUPSRC) \
        $(SHELLSRC) \
        adc.c \
        cmd_status.c cmd_reboot.c \
-       blinker.c \
+       blinker.c joystick.c \
        shellcommands.c \
        main.c
 

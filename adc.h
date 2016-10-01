@@ -7,12 +7,14 @@
 /* Depth of the conversion buffer, channels are sampled four times each.*/
 #define ADC_GRP1_BUF_DEPTH      4
 
-extern adcsample_t adc_avg_pa3;
-extern adcsample_t adc_avg_tempsensor;
-extern adcsample_t adc_avg_potLeftRight;
-extern adcsample_t adc_avg_potBackwardForward;
+extern adcsample_t adcAvgPA3;
+extern adcsample_t adcAvgTempSensor;
+extern adcsample_t adcAvgJoystickLeftRight;
+extern adcsample_t adcAvgJoystickBackwardForward;
 
-extern adcsample_t samples[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH];
+extern long adcCount;
+
+extern adcsample_t adcSamples[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH];
 
 extern const ADCConversionGroup adcgrpcfg;
 

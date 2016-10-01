@@ -7,6 +7,7 @@
 #include "adc.h"
 
 #include "blinker.h"
+#include "joystick.h"
 
 int main(void)
 {
@@ -21,6 +22,7 @@ int main(void)
 
     /* Start threads */
     startBlinkerThread();
+    startJoystickThread();
 
     while (true)
     {

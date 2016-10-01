@@ -17,12 +17,14 @@ const ADCConversionGroup adcgrpcfg =
                     ADC_SQR3_SQ2_N(ADC_CHANNEL_IN3) | ADC_SQR3_SQ1_N(ADC_CHANNEL_SENSOR)
 };
 
-adcsample_t adc_avg_pa3;
-adcsample_t adc_avg_tempsensor;
-adcsample_t adc_avg_potLeftRight;
-adcsample_t adc_avg_potBackwardForward;
+adcsample_t adcAvgTempSensor;
+adcsample_t adcAvgPA3;
+adcsample_t adcAvgJoystickLeftRight;
+adcsample_t adcAvgJoystickBackwardForward;
 
-adcsample_t samples[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH];
+long adcCount;
+
+adcsample_t adcSamples[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH];
 
 /*
  * ADC end conversion callback.
@@ -36,24 +38,26 @@ void adccb(ADCDriver *adcp, adcsample_t *buffer, size_t n)
     /* Note, only in the ADC_COMPLETE state because the ADC driver fires an intermediate callback when the buffer is half full.*/
     if (adcp->state == ADC_COMPLETE)
     {
+        adcCount++;
+
         /* Calculates the average values from the ADC samples.*/
-        adc_avg_tempsensor = 0;
-        adc_avg_pa3 = 0;
-        adc_avg_potLeftRight = 0;
-        adc_avg_potBackwardForward = 0;
+        adcAvgTempSensor = 0;
+        adcAvgPA3 = 0;
+        adcAvgJoystickLeftRight = 0;
+        adcAvgJoystickBackwardForward = 0;
 
         for (i = 0; i < ADC_GRP1_BUF_DEPTH; i++)
         {
-            adc_avg_tempsensor += samples[ i * ADC_GRP1_NUM_CHANNELS ]; /* ADC_SQR3_SQ1_N(ADC_CHANNEL_SENSOR) */
-            adc_avg_pa3 += samples[ i * ADC_GRP1_NUM_CHANNELS +1 ]; /* ADC_SQR3_SQ2_N(ADC_CHANNEL_IN3) */
-            adc_avg_potLeftRight += samples [ i * ADC_GRP1_NUM_CHANNELS +2 ]; /* ADC_SQR3_SQ3_N(ADC_CHANNEL_IN10) */
-            adc_avg_potBackwardForward += samples [ i * ADC_GRP1_NUM_CHANNELS +3 ]; /* ADC_SQR3_SQ4_N(ADC_CHANNEL_IN13) */
+            adcAvgTempSensor += adcSamples[ i * ADC_GRP1_NUM_CHANNELS ]; /* ADC_SQR3_SQ1_N(ADC_CHANNEL_SENSOR) */
+            adcAvgPA3 += adcSamples[ i * ADC_GRP1_NUM_CHANNELS +1 ]; /* ADC_SQR3_SQ2_N(ADC_CHANNEL_IN3) */
+            adcAvgJoystickLeftRight += adcSamples [ i * ADC_GRP1_NUM_CHANNELS +2 ]; /* ADC_SQR3_SQ3_N(ADC_CHANNEL_IN10) */
+            adcAvgJoystickBackwardForward += adcSamples [ i * ADC_GRP1_NUM_CHANNELS +3 ]; /* ADC_SQR3_SQ4_N(ADC_CHANNEL_IN13) */
         }
 
-        adc_avg_tempsensor /= ADC_GRP1_BUF_DEPTH;
-        adc_avg_pa3 /= ADC_GRP1_BUF_DEPTH;
-        adc_avg_potLeftRight /= ADC_GRP1_BUF_DEPTH;
-        adc_avg_potBackwardForward /= ADC_GRP1_BUF_DEPTH;
+        adcAvgTempSensor /= ADC_GRP1_BUF_DEPTH;
+        adcAvgPA3 /= ADC_GRP1_BUF_DEPTH;
+        adcAvgJoystickLeftRight /= ADC_GRP1_BUF_DEPTH;
+        adcAvgJoystickBackwardForward /= ADC_GRP1_BUF_DEPTH;
 
         adcTKStartConv();
     }
@@ -61,6 +65,8 @@ void adccb(ADCDriver *adcp, adcsample_t *buffer, size_t n)
 
 void adcTKInit(void)
 {
+    adcCount = 0;
+
     adcStart(&ADCD1, NULL);
     adcSTM32EnableTSVREFE();
 
@@ -72,6 +78,6 @@ void adcTKInit(void)
 
 void adcTKStartConv(void)
 {
-    adcStartConversionI(&ADCD1, &adcgrpcfg, samples, ADC_GRP1_BUF_DEPTH);
+    adcStartConversionI(&ADCD1, &adcgrpcfg, adcSamples, ADC_GRP1_BUF_DEPTH);
 }
 
