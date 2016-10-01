@@ -7,7 +7,8 @@ SOURCES += \
     blinker.c \
     cmd_reboot.c \
     cmd_status.c \
-    shellcommands.c
+    shellcommands.c \
+    board/board.c
 
 HEADERS += \
     adc.h \
@@ -16,7 +17,8 @@ HEADERS += \
     halconf.h \
     mcuconf.h \
     shellcommands.h \
-    shellconf.h
+    shellconf.h \
+    board/board.h
 
 OTHER_FILES += \
     Makefile
