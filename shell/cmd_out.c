@@ -2,6 +2,7 @@
 #include "hal.h"
 #include "chprintf.h"
 #include "shellcommands.h"
+#include "pwm.h"
 
 void cmd_out(BaseSequentialStream *chp, int argc, char *argv[])
 {
@@ -10,13 +11,20 @@ void cmd_out(BaseSequentialStream *chp, int argc, char *argv[])
 
     if (argc != 2)
     {
-        chprintf(chp, "Outputs\n\r");
+        chprintf(chp, "out channel dutycycle\n\r");
         return;
     }
 
   	channel = strtol(argv[0], NULL, 0);
     newValue = strtol(argv[1], NULL, 0);
 
-    chprintf(chp, "Settings %d to %d\n\r", channel, newValue);
+    if (channel < 0 || channel > 3 || newValue < 0 || newValue > 100)
+    {
+        chprintf(chp, "out channel dutycycle\n\r");
+        return;
+    }
+
+    chprintf(chp, "Setting %d to %d %\n\r", channel, newValue);
+    pwmSetChannel(channel, 100, newValue);
 }
 
