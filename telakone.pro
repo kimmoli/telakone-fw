@@ -21,7 +21,9 @@ HEADERS += \
     board/board.h
 
 OTHER_FILES += \
-    Makefile
+    Makefile \
+    docs/joystick.png \
+    docs/README.md
 
 INCLUDEPATH += \
  ../ChibiOS/os/license \
