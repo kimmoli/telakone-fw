@@ -118,9 +118,9 @@ CSRC = $(STARTUPSRC) \
        $(STREAMSSRC) \
        $(SHELLSRC) \
        adc.c \
-       cmd_status.c cmd_reboot.c \
-       blinker.c joystick.c \
-       shellcommands.c \
+       shell/cmd_status.c shell/cmd_reboot.c \
+       shell/shellcommands.c \
+       threads/blinker.c threads/joystick.c \
        main.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
@@ -151,7 +151,8 @@ TCPPSRC =
 ASMSRC =
 ASMXSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 
-INCDIR = $(CHIBIOS)/os/license \
+INCDIR = ./shell ./threads \
+         $(CHIBIOS)/os/license \
          $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) \
          $(TESTINC) \
