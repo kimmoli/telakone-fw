@@ -5,6 +5,7 @@
 
 #include "adc.h"
 #include "joystick.h"
+#include "eicu.h"
 
 void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
 {
@@ -28,6 +29,7 @@ void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
         chprintf(chp, "Temp:       %.2f C\n\r", temp );
         chprintf(chp, "PA3:        %.2f V\n\r", mv_pa3 );
         chprintf(chp, "Motor:      L%d R%d\n\r", leftMotor, rightMotor );
+        chprintf(chp, "Speed:      L%d R%d\n\r", leftSpeed, rightSpeed );
 
         if (loopcount > 0)
             chThdSleepMilliseconds(delay);

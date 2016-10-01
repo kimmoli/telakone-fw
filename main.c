@@ -6,6 +6,7 @@
 #include "shellcommands.h"
 #include "adc.h"
 #include "pwm.h"
+#include "eicu.h"
 
 #include "blinker.h"
 #include "joystick.h"
@@ -21,6 +22,7 @@ int main(void)
     adcTKInit();
     adcTKStartConv();
     pwmTKInit();
+    eicuTKInit();
 
     /* Start threads */
     startBlinkerThread();

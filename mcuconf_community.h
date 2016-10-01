@@ -23,9 +23,54 @@
 #define STM32_USE_FSMC_SDRAM                FALSE
 #define STM32_SDRAM_USE_FSMC_SDRAM1         FALSE
 #define STM32_SDRAM_USE_FSMC_SDRAM2         FALSE
+#define STM32_NAND_DMA_STREAM               STM32_DMA_STREAM_ID(2, 7)
+#define STM32_NAND_DMA_PRIORITY             0
+#define STM32_NAND_DMA_ERROR_HOOK(nandp)    osalSysHalt("DMA failure")
 
 /*
  * FSMC SRAM driver system settings.
  */
 #define STM32_USE_FSMC_SRAM                 FALSE
+#define STM32_SRAM_USE_FSMC_SRAM1           FALSE
+#define STM32_SRAM_USE_FSMC_SRAM2           FALSE
+#define STM32_SRAM_USE_FSMC_SRAM3           FALSE
+#define STM32_SRAM_USE_FSMC_SRAM4           FALSE
+
+/*
+ * FSMC PC card driver system settings.
+ */
+#define STM32_USE_FSMC_PCCARD               FALSE
+
+/*
+ * FSMC SDRAM driver system settings.
+ */
+#define STM32_USE_FSMC_SDRAM                FALSE
+
+/*
+ * EICU driver system settings.
+ */
+#define STM32_EICU_USE_TIM1                 FALSE
+#define STM32_EICU_USE_TIM2                 FALSE
+#define STM32_EICU_USE_TIM3                 FALSE
+#define STM32_EICU_USE_TIM4                 TRUE
+#define STM32_EICU_USE_TIM5                 FALSE
+#define STM32_EICU_USE_TIM8                 FALSE
+#define STM32_EICU_USE_TIM9                 FALSE
+#define STM32_EICU_USE_TIM10                FALSE
+#define STM32_EICU_USE_TIM11                FALSE
+#define STM32_EICU_USE_TIM12                FALSE
+#define STM32_EICU_USE_TIM13                FALSE
+#define STM32_EICU_USE_TIM14                FALSE
+#define STM32_EICU_TIM1_IRQ_PRIORITY        7
+#define STM32_EICU_TIM2_IRQ_PRIORITY        7
+#define STM32_EICU_TIM3_IRQ_PRIORITY        7
+#define STM32_EICU_TIM4_IRQ_PRIORITY        7
+#define STM32_EICU_TIM5_IRQ_PRIORITY        7
+#define STM32_EICU_TIM8_IRQ_PRIORITY        7
+#define STM32_EICU_TIM9_IRQ_PRIORITY        7
+#define STM32_EICU_TIM10_IRQ_PRIORITY       7
+#define STM32_EICU_TIM11_IRQ_PRIORITY       7
+#define STM32_EICU_TIM12_IRQ_PRIORITY       7
+#define STM32_EICU_TIM13_IRQ_PRIORITY       7
+#define STM32_EICU_TIM14_IRQ_PRIORITY       7
 

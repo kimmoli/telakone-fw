@@ -5,7 +5,7 @@
 
 # Compiler options here.
 ifeq ($(USE_OPT),)
-  USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -D SHELL_CONFIG_FILE -DCHPRINTF_USE_FLOAT=1 -DHAL_USE_COMMUNITY=1
+  USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -D SHELL_CONFIG_FILE -DCHPRINTF_USE_FLOAT=1
 endif
 
 # C specific options here (added to USE_OPT).
@@ -122,7 +122,7 @@ CSRC = $(STARTUPSRC) \
        $(TESTSRC) \
        $(STREAMSSRC) \
        $(SHELLSRC) \
-       adc.c pwm.c \
+       adc.c pwm.c eicu.c \
        shell/cmd_status.c shell/cmd_out.c shell/cmd_reboot.c \
        shell/shellcommands.c \
        threads/blinker.c threads/joystick.c \

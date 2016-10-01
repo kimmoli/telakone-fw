@@ -10,7 +10,9 @@ SOURCES += \
     shell/shellcommands.c \
     board/board.c \
     threads/joystick.c \
-    shell/cmd_out.c
+    shell/cmd_out.c \
+    pwm.c \
+    eicu.c
 
 HEADERS += \
     adc.h \
@@ -21,7 +23,11 @@ HEADERS += \
     shell/shellcommands.h \
     shell/shellconf.h \
     board/board.h \
-    threads/joystick.h
+    threads/joystick.h \
+    pwm.h \
+    halconf_community.h \
+    mcuconf_community.h \
+    eicu.h
 
 OTHER_FILES += \
     Makefile \
@@ -29,6 +35,8 @@ OTHER_FILES += \
     docs/README.md
 
 INCLUDEPATH += \
+ ./threads \
+ ./shell \
  ../ChibiOS/os/license \
  ../ChibiOS/os/common/startup/ARMCMx/compilers/GCC \
  ../ChibiOS/os/common/startup/ARMCMx/devices/STM32F2xx \
@@ -59,5 +67,12 @@ INCLUDEPATH += \
  ../ChibiOS/os/hal/ports/STM32/LLD/USARTv1 \
  ../ChibiOS/os/hal/ports/STM32/LLD/xWDGv1 \
  ../ChibiOS/os/various/shell \
- ../ChibiOS/os/hal/lib/streams
+ ../ChibiOS/os/hal/lib/streams \
+ ../ChibiOS-Contrib/os/hal/include \
+ ../ChibiOS-Contrib/os/hal/ports/STM32/LLD/CRCv1 \
+ ../ChibiOS-Contrib/os/hal/ports/STM32/LLD/DMA2Dv1 \
+ ../ChibiOS-Contrib/os/hal/ports/STM32/LLD/FSMCv1 \
+ ../ChibiOS-Contrib/os/hal/ports/STM32/LLD/LTDCv1 \
+ ../ChibiOS-Contrib/os/hal/ports/STM32/LLD/TIMv1 \
+ ../ChibiOS-Contrib/os/hal/ports/STM32/LLD/USBHv1
 
