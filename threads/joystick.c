@@ -1,7 +1,9 @@
+#include <stdlib.h>
 #include "hal.h"
 #include "joystick.h"
 
 #include "adc.h"
+#include "pwm.h"
 
 static THD_WORKING_AREA(waJoystickThread, 128);
 
@@ -40,6 +42,9 @@ static THD_FUNCTION(joystickThread, arg)
         // Convert to differential motor control values Left and Right, -500..+500
         leftMotor = MAX(MIN(joystickBF + joystickLR, 500), -500);
         rightMotor = MAX(MIN(joystickBF - joystickLR, 500), -500);
+
+        pwmSetChannel(0, 500, abs(leftMotor));
+        pwmSetChannel(1, 500, abs(rightMotor));
 
         chThdSleepMilliseconds(50);
     }

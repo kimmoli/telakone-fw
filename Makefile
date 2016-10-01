@@ -117,8 +117,8 @@ CSRC = $(STARTUPSRC) \
        $(TESTSRC) \
        $(STREAMSSRC) \
        $(SHELLSRC) \
-       adc.c \
-       shell/cmd_status.c shell/cmd_reboot.c \
+       adc.c pwm.c \
+       shell/cmd_status.c shell/cmd_out.c shell/cmd_reboot.c \
        shell/shellcommands.c \
        threads/blinker.c threads/joystick.c \
        main.c

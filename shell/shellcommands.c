@@ -5,6 +5,7 @@
 const ShellCommand commands[] =
 {
     { "status", cmd_status },
+    { "out", cmd_out },
     { "reboot", cmd_reboot },
     {NULL, NULL}
 };

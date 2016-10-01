@@ -4,23 +4,24 @@ TEMPLATE=aux
 SOURCES += \
     main.c \
     adc.c \
-    blinker.c \
-    cmd_reboot.c \
-    cmd_status.c \
-    shellcommands.c \
+    threads/blinker.c \
+    shell/cmd_reboot.c \
+    shell/cmd_status.c \
+    shell/shellcommands.c \
     board/board.c \
-    joystick.c
+    threads/joystick.c \
+    shell/cmd_out.c
 
 HEADERS += \
     adc.h \
-    blinker.h \
+    threads/blinker.h \
     chconf.h \
     halconf.h \
     mcuconf.h \
-    shellcommands.h \
-    shellconf.h \
+    shell/shellcommands.h \
+    shell/shellconf.h \
     board/board.h \
-    joystick.h
+    threads/joystick.h
 
 OTHER_FILES += \
     Makefile \
