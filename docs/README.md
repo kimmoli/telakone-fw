@@ -1,20 +1,36 @@
 # telakone-firmware
 
 
-ChibiOS
+## ChibiOS
 
-blaa
+Needs following repositories:
+* https://github.com/kimmoli/ChibiOS in ../ChibiOS
+* https://github.com/kimmoli/ChibiOS-Contrib in ../ChibiOS-Contrib
 
-## Blinker
+or change location in Makefile
+
+## Shell
+
+### status
+
+Shows temperatures and voltages etc.
+
+### out
+
+Sets digital output channels; on, off or PWM dutycycle
+
+### reboot
+
+Reboots
+
+## Threads
+### Blinker
 
 Blinks the green led
 
-## Command line commands
+### Joystick
 
-* status
-* reboot
-
-## Joystick to motor
+Converts joystick position to motor differential movement
 
 <img alt="Joystick plot" src="joystick.png">
 
