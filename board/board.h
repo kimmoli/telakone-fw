@@ -404,7 +404,7 @@
 
 #define VAL_GPIOA_ODR               (PIN_ODR_HIGH(GPIOA_PA0_MEAS12V) | \
                                      PIN_ODR_HIGH(GPIOA_PA1_NC) | \
-                                     PIN_ODR_HIGH(GPIOA_PA2_CCHIBL) | \
+                                     PIN_ODR_LOW(GPIOA_PA2_CCHIBL) | \
                                      PIN_ODR_HIGH(GPIOA_PA3_CCSPICSL) | \
                                      PIN_ODR_HIGH(GPIOA_PA4_CCIRQ) | \
                                      PIN_ODR_HIGH(GPIOA_PA5_CCSPICLK) | \
@@ -424,14 +424,14 @@
                                      PIN_AFIO_AF(GPIOA_PA2_CCHIBL, 0) | \
                                      PIN_AFIO_AF(GPIOA_PA3_CCSPICSL, 0) | \
                                      PIN_AFIO_AF(GPIOA_PA4_CCIRQ, 0) | \
-                                     PIN_AFIO_AF(GPIOA_PA5_CCSPICLK, 5) | \
-                                     PIN_AFIO_AF(GPIOA_PA6_CCSPIMISO, 5) | \
-                                     PIN_AFIO_AF(GPIOA_PA7_CCSPIMOSI, 5))
+                                     PIN_AFIO_AF(GPIOA_PA5_CCSPICLK, 5) /* SPI1 */ | \
+                                     PIN_AFIO_AF(GPIOA_PA6_CCSPIMISO, 5) /* SPI1 */ | \
+                                     PIN_AFIO_AF(GPIOA_PA7_CCSPIMOSI, 5)) /* SPI1 */
 #define VAL_GPIOA_AFRH              (PIN_AFIO_AF(GPIOA_PA8_NC, 0) | \
-                                     PIN_AFIO_AF(GPIOA_PA9_USART1TX, 7) | \
-                                     PIN_AFIO_AF(GPIOA_PA10_USART1RX, 7) | \
-                                     PIN_AFIO_AF(GPIOA_PA11_USART1CTS, 7) | \
-                                     PIN_AFIO_AF(GPIOA_PA12_USART1RTS, 7) | \
+                                     PIN_AFIO_AF(GPIOA_PA9_USART1TX, 7) /* USART1 */ | \
+                                     PIN_AFIO_AF(GPIOA_PA10_USART1RX, 7) /* USART1 */ | \
+                                     PIN_AFIO_AF(GPIOA_PA11_USART1CTS, 7) /* USART1 */ | \
+                                     PIN_AFIO_AF(GPIOA_PA12_USART1RTS, 7) /* USART1 */ | \
                                      PIN_AFIO_AF(GPIOA_PA13_SWDIO, 0) | \
                                      PIN_AFIO_AF(GPIOA_PA14_SWCLK, 0) | \
                                      PIN_AFIO_AF(GPIOA_PA15_NC, 0))
@@ -515,9 +515,9 @@
                                      PIN_ODR_HIGH(GPIOB_PB6_I2C1SCL) | \
                                      PIN_ODR_HIGH(GPIOB_PB7_I2C1SDA) | \
                                      PIN_ODR_HIGH(GPIOB_PB8_REDLED) | \
-                                     PIN_ODR_HIGH(GPIOB_PB9_GREENLED) | \
+                                     PIN_ODR_LOW(GPIOB_PB9_GREENLED) | \
                                      PIN_ODR_HIGH(GPIOB_PB10_D1BRAKE) | \
-                                     PIN_ODR_HIGH(GPIOB_PB11_D1REVERSE) | \
+                                     PIN_ODR_LOW(GPIOB_PB11_D1REVERSE) | \
                                      PIN_ODR_HIGH(GPIOB_PB12_D1SPICSL) | \
                                      PIN_ODR_HIGH(GPIOB_PB13_D1SPICLK) | \
                                      PIN_ODR_HIGH(GPIOB_PB14_D1SPIMISO) | \
@@ -529,16 +529,16 @@
                                      PIN_AFIO_AF(GPIOB_PB3_NC, 0) | \
                                      PIN_AFIO_AF(GPIOB_PB4_NC, 0) | \
                                      PIN_AFIO_AF(GPIOB_PB5_NC, 0) | \
-                                     PIN_AFIO_AF(GPIOB_PB6_I2C1SCL, 4) | \
-                                     PIN_AFIO_AF(GPIOB_PB7_I2C1SDA, 4))
+                                     PIN_AFIO_AF(GPIOB_PB6_I2C1SCL, 4) /* I2C1 */ | \
+                                     PIN_AFIO_AF(GPIOB_PB7_I2C1SDA, 4)) /* I2C1 */
 #define VAL_GPIOB_AFRH              (PIN_AFIO_AF(GPIOB_PB8_REDLED, 0) | \
                                      PIN_AFIO_AF(GPIOB_PB9_GREENLED, 0) | \
                                      PIN_AFIO_AF(GPIOB_PB10_D1BRAKE, 0) | \
                                      PIN_AFIO_AF(GPIOB_PB11_D1REVERSE, 0) | \
                                      PIN_AFIO_AF(GPIOB_PB12_D1SPICSL, 0) | \
-                                     PIN_AFIO_AF(GPIOB_PB13_D1SPICLK, 5) | \
-                                     PIN_AFIO_AF(GPIOB_PB14_D1SPIMISO, 5) | \
-                                     PIN_AFIO_AF(GPIOB_PB15_D1SPIMOSI, 5))
+                                     PIN_AFIO_AF(GPIOB_PB13_D1SPICLK, 5) /* SPI2 */ | \
+                                     PIN_AFIO_AF(GPIOB_PB14_D1SPIMISO, 5) /* SPI2 */ | \
+                                     PIN_AFIO_AF(GPIOB_PB15_D1SPIMOSI, 5))  /* SPI2 */
 
 
 
@@ -618,7 +618,7 @@
                                      PIN_ODR_HIGH(GPIOC_PC5_NC) |  \
                                      PIN_ODR_HIGH(GPIOC_PC6_NC) |  \
                                      PIN_ODR_HIGH(GPIOC_PC7_D2BRAKE) |  \
-                                     PIN_ODR_HIGH(GPIOC_PC8_D2REVERSE) |  \
+                                     PIN_ODR_LOW(GPIOC_PC8_D2REVERSE) |  \
                                      PIN_ODR_HIGH(GPIOC_PC9_D2SPICSL) |  \
                                      PIN_ODR_HIGH(GPIOC_PC10_D2SPICLK) |  \
                                      PIN_ODR_HIGH(GPIOC_PC11_D2SPIMISO) |  \
@@ -637,9 +637,9 @@
                                      PIN_AFIO_AF(GPIOC_PC7_D2BRAKE, 0))
 #define VAL_GPIOC_AFRH              (PIN_AFIO_AF(GPIOC_PC8_D2REVERSE, 0) |  \
                                      PIN_AFIO_AF(GPIOC_PC9_D2SPICSL, 0) |  \
-                                     PIN_AFIO_AF(GPIOC_PC10_D2SPICLK, 6) |  \
-                                     PIN_AFIO_AF(GPIOC_PC11_D2SPIMISO, 6) |  \
-                                     PIN_AFIO_AF(GPIOC_PC12_D2SPIMOSI, 6) |  \
+                                     PIN_AFIO_AF(GPIOC_PC10_D2SPICLK, 6) /* SPI3 */ |  \
+                                     PIN_AFIO_AF(GPIOC_PC11_D2SPIMISO, 6) /* SPI3 */ |  \
+                                     PIN_AFIO_AF(GPIOC_PC12_D2SPIMOSI, 6) /* SPI3 */ |  \
                                      PIN_AFIO_AF(GPIOC_PC13_NC, 0) |  \
                                      PIN_AFIO_AF(GPIOC_PC14_NC, 0) |  \
                                      PIN_AFIO_AF(GPIOC_PC15_NC, 0))
@@ -718,7 +718,7 @@
                                      PIN_ODR_HIGH(GPIOD_PD1_NC) | \
                                      PIN_ODR_HIGH(GPIOD_PD2_NC) | \
                                      PIN_ODR_HIGH(GPIOD_PD3_NC) | \
-                                     PIN_ODR_HIGH(GPIOD_PD4_ACCLINKTXE) | \
+                                     PIN_ODR_LOW(GPIOD_PD4_ACCLINKTXE) | \
                                      PIN_ODR_HIGH(GPIOD_PD5_ACCLINKTX) | \
                                      PIN_ODR_HIGH(GPIOD_PD6_ACCLINKRX) | \
                                      PIN_ODR_HIGH(GPIOD_PD7_NC) | \
@@ -736,15 +736,15 @@
                                      PIN_AFIO_AF(GPIOD_PD2_NC, 0) | \
                                      PIN_AFIO_AF(GPIOD_PD3_NC, 0) | \
                                      PIN_AFIO_AF(GPIOD_PD4_ACCLINKTXE, 0) | \
-                                     PIN_AFIO_AF(GPIOD_PD5_ACCLINKTX, 7) | \
-                                     PIN_AFIO_AF(GPIOD_PD6_ACCLINKRX, 7) | \
+                                     PIN_AFIO_AF(GPIOD_PD5_ACCLINKTX, 7) /* USART2 */ | \
+                                     PIN_AFIO_AF(GPIOD_PD6_ACCLINKRX, 7) /* USART2 */ | \
                                      PIN_AFIO_AF(GPIOD_PD7_NC, 0))
-#define VAL_GPIOD_AFRH              (PIN_AFIO_AF(GPIOD_PD8_USART3TX, 7) | \
-                                     PIN_AFIO_AF(GPIOD_PD9_USART3RX, 7) | \
+#define VAL_GPIOD_AFRH              (PIN_AFIO_AF(GPIOD_PD8_USART3TX, 7) /* USART3 */ | \
+                                     PIN_AFIO_AF(GPIOD_PD9_USART3RX, 7) /* USART3 */ | \
                                      PIN_AFIO_AF(GPIOD_PD10_NC, 0) | \
                                      PIN_AFIO_AF(GPIOD_PD11_NC, 0) | \
-                                     PIN_AFIO_AF(GPIOD_PD12_SPEED1, 2) | \
-                                     PIN_AFIO_AF(GPIOD_PD13_SPEED2, 2) | \
+                                     PIN_AFIO_AF(GPIOD_PD12_SPEED1, 2) /* TIM4 */ | \
+                                     PIN_AFIO_AF(GPIOD_PD13_SPEED2, 2) /* TIM4 */ | \
                                      PIN_AFIO_AF(GPIOD_PD14_NC, 0) | \
                                      PIN_AFIO_AF(GPIOD_PD15_NC, 0))
 
@@ -821,10 +821,10 @@
 #define VAL_GPIOE_ODR               (PIN_ODR_HIGH(GPIOE_PE0_NC) | \
                                      PIN_ODR_HIGH(GPIOE_PE1_NC) | \
                                      PIN_ODR_HIGH(GPIOE_PE2_NC) | \
-                                     PIN_ODR_HIGH(GPIOE_PE3_MOTORL1) | \
-                                     PIN_ODR_HIGH(GPIOE_PE4_MOTORL2) | \
-                                     PIN_ODR_HIGH(GPIOE_PE5_MOTORH1) | \
-                                     PIN_ODR_HIGH(GPIOE_PE6_MOTORH2) | \
+                                     PIN_ODR_LOW(GPIOE_PE3_MOTORL1) | \
+                                     PIN_ODR_LOW(GPIOE_PE4_MOTORL2) | \
+                                     PIN_ODR_LOW(GPIOE_PE5_MOTORH1) | \
+                                     PIN_ODR_LOW(GPIOE_PE6_MOTORH2) | \
                                      PIN_ODR_HIGH(GPIOE_PE7_NC) | \
                                      PIN_ODR_HIGH(GPIOE_PE8_NC) | \
                                      PIN_ODR_HIGH(GPIOE_PE9_NC) | \
@@ -840,8 +840,8 @@
                                      PIN_AFIO_AF(GPIOE_PE2_NC, 0) | \
                                      PIN_AFIO_AF(GPIOE_PE3_MOTORL1, 0) | \
                                      PIN_AFIO_AF(GPIOE_PE4_MOTORL2, 0) | \
-                                     PIN_AFIO_AF(GPIOE_PE5_MOTORH1, 3) | \
-                                     PIN_AFIO_AF(GPIOE_PE6_MOTORH2, 3) | \
+                                     PIN_AFIO_AF(GPIOE_PE5_MOTORH1, 3) /* TIM9 */ | \
+                                     PIN_AFIO_AF(GPIOE_PE6_MOTORH2, 3) /* TIM9 */ | \
                                      PIN_AFIO_AF(GPIOE_PE7_NC, 0))
 #define VAL_GPIOE_AFRH              (PIN_AFIO_AF(GPIOE_PE8_NC, 0) | \
                                      PIN_AFIO_AF(GPIOE_PE9_NC, 0) | \
@@ -860,10 +860,10 @@
                                      PIN_MODE_ANALOG(GPIOF_PF3_MOTORCURR) | \
                                      PIN_MODE_ANALOG(GPIOF_PF4_POT1) | \
                                      PIN_MODE_ANALOG(GPIOF_PF5_POT2) | \
-                                     PIN_MODE_OUTPUT(GPIOF_PF6_OUT1) | \
-                                     PIN_MODE_OUTPUT(GPIOF_PF7_OUT2) | \
-                                     PIN_MODE_OUTPUT(GPIOF_PF8_OUT3) | \
-                                     PIN_MODE_OUTPUT(GPIOF_PF9_OUT4) | \
+                                     PIN_MODE_ALTERNATE(GPIOF_PF6_OUT1) | \
+                                     PIN_MODE_ALTERNATE(GPIOF_PF7_OUT2) | \
+                                     PIN_MODE_ALTERNATE(GPIOF_PF8_OUT3) | \
+                                     PIN_MODE_ALTERNATE(GPIOF_PF9_OUT4) | \
                                      PIN_MODE_INPUT(GPIOF_PF10_NC) | \
                                      PIN_MODE_INPUT(GPIOF_PF11_NC) | \
                                      PIN_MODE_INPUT(GPIOF_PF12_NC) | \
@@ -908,9 +908,9 @@
 #define VAL_GPIOF_PUPDR             (PIN_PUPDR_PULLUP(GPIOF_PF0_NC) | \
                                      PIN_PUPDR_PULLUP(GPIOF_PF1_BUTTON1) | \
                                      PIN_PUPDR_PULLUP(GPIOF_PF2_BUTTON2) | \
-                                     PIN_PUPDR_PULLUP(GPIOF_PF3_MOTORCURR) | \
-                                     PIN_PUPDR_PULLUP(GPIOF_PF4_POT1) | \
-                                     PIN_PUPDR_PULLUP(GPIOF_PF5_POT2) | \
+                                     PIN_PUPDR_FLOATING(GPIOF_PF3_MOTORCURR) | \
+                                     PIN_PUPDR_FLOATING(GPIOF_PF4_POT1) | \
+                                     PIN_PUPDR_FLOATING(GPIOF_PF5_POT2) | \
                                      PIN_PUPDR_PULLUP(GPIOF_PF6_OUT1) | \
                                      PIN_PUPDR_PULLUP(GPIOF_PF7_OUT2) | \
                                      PIN_PUPDR_PULLUP(GPIOF_PF8_OUT3) | \
@@ -928,10 +928,10 @@
                                      PIN_ODR_HIGH(GPIOF_PF3_MOTORCURR) | \
                                      PIN_ODR_HIGH(GPIOF_PF4_POT1) | \
                                      PIN_ODR_HIGH(GPIOF_PF5_POT2) | \
-                                     PIN_ODR_HIGH(GPIOF_PF6_OUT1) | \
-                                     PIN_ODR_HIGH(GPIOF_PF7_OUT2) | \
-                                     PIN_ODR_HIGH(GPIOF_PF8_OUT3) | \
-                                     PIN_ODR_HIGH(GPIOF_PF9_OUT4) | \
+                                     PIN_ODR_LOW(GPIOF_PF6_OUT1) | \
+                                     PIN_ODR_LOW(GPIOF_PF7_OUT2) | \
+                                     PIN_ODR_LOW(GPIOF_PF8_OUT3) | \
+                                     PIN_ODR_LOW(GPIOF_PF9_OUT4) | \
                                      PIN_ODR_HIGH(GPIOF_PF10_NC) | \
                                      PIN_ODR_HIGH(GPIOF_PF11_NC) | \
                                      PIN_ODR_HIGH(GPIOF_PF12_NC) | \
@@ -945,10 +945,10 @@
                                      PIN_AFIO_AF(GPIOF_PF3_MOTORCURR, 0) | \
                                      PIN_AFIO_AF(GPIOF_PF4_POT1, 0) | \
                                      PIN_AFIO_AF(GPIOF_PF5_POT2, 0) | \
-                                     PIN_AFIO_AF(GPIOF_PF6_OUT1, 0) | \
-                                     PIN_AFIO_AF(GPIOF_PF7_OUT2, 0))
-#define VAL_GPIOF_AFRH              (PIN_AFIO_AF(GPIOF_PF8_OUT3, 0) | \
-                                     PIN_AFIO_AF(GPIOF_PF9_OUT4, 0) | \
+                                     PIN_AFIO_AF(GPIOF_PF6_OUT1, 3) /* TIM10 */ | \
+                                     PIN_AFIO_AF(GPIOF_PF7_OUT2, 3)) /* TIM11 */
+#define VAL_GPIOF_AFRH              (PIN_AFIO_AF(GPIOF_PF8_OUT3, 9) /* TIM13 */ | \
+                                     PIN_AFIO_AF(GPIOF_PF9_OUT4, 9) /* TIM14 */ | \
                                      PIN_AFIO_AF(GPIOF_PF10_NC, 0) | \
                                      PIN_AFIO_AF(GPIOF_PF11_NC, 0) | \
                                      PIN_AFIO_AF(GPIOF_PF12_NC, 0) | \
