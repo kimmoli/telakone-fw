@@ -51,7 +51,7 @@ static THD_FUNCTION(joystickThread, arg)
         else
             palClearLine(LINE_D1REVERSE);
 
-        rightBatteryVoltage = driveAfeHandle(2, (float)abs(rightMotor/100));
+        rightBatteryVoltage = driveAfeHandle(2, (float)abs(rightMotor)/100);
         if (rightMotor < 0)
             palSetLine(LINE_D2REVERSE);
         else
