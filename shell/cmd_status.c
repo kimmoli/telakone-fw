@@ -23,13 +23,15 @@ void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
         // Temp at 25C 0.76V
         // Average slope 2.5mV/C
         float temp = ((( 3.3 / 4096 * (float)adcAvgTempSensor) - 0.76 ) / 0.0025 ) + 25.0;
-        float mv_pa3 = ( 3.3 / 4096 * (float)adcAvgPA3);
+        float supplyVoltage = EXT_VREF / ADC_MEAS12V_SCALE * (float)adcAvgSupplyVoltage;
+        float motorCurrent = EXT_VREF / ADC_MOTORCURR_SCALE * (float)adcAvgMotorCurrent;
 
-        chprintf(chp, "ADC Count:  %d\n\r", adcCount);
-        chprintf(chp, "Temp:       %.2f C\n\r", temp );
-        chprintf(chp, "PA3:        %.2f V\n\r", mv_pa3 );
-        chprintf(chp, "Motor:      L%d R%d\n\r", leftMotor, rightMotor );
-        chprintf(chp, "Speed:      L%d R%d\n\r", leftSpeed, rightSpeed );
+        chprintf(chp, "ADC Count:         %d\n\r", adcCount);
+        chprintf(chp, "Temp:              %.2f C\n\r", temp );
+        chprintf(chp, "Voltage:           %.2f V\n\r", supplyVoltage );
+        chprintf(chp, "Aux motor current: %.2f A\n\r", motorCurrent );
+        chprintf(chp, "Motor:             L%d R%d\n\r", leftMotor, rightMotor );
+        chprintf(chp, "Speed:             L%d R%d\n\r", leftSpeed, rightSpeed );
 
         if (loopcount > 0)
             chThdSleepMilliseconds(delay);

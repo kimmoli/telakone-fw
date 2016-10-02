@@ -334,7 +334,7 @@
 
 
 
-#define VAL_GPIOA_MODER             (PIN_MODE_ANALOG(GPIOA_PA0_MEAS12V) | \
+#define VAL_GPIOA_MODER             (PIN_MODE_ANALOG(GPIOA_PA0_MEAS12V) /* ADC3 IN0 */| \
                                      PIN_MODE_INPUT(GPIOA_PA1_NC) | \
                                      PIN_MODE_OUTPUT(GPIOA_PA2_CCHIBL) | \
                                      PIN_MODE_OUTPUT(GPIOA_PA3_CCSPICSL) | \
@@ -857,9 +857,9 @@
 #define VAL_GPIOF_MODER             (PIN_MODE_INPUT(GPIOF_PF0_NC) | \
                                      PIN_MODE_INPUT(GPIOF_PF1_BUTTON1) | \
                                      PIN_MODE_INPUT(GPIOF_PF2_BUTTON2) | \
-                                     PIN_MODE_ANALOG(GPIOF_PF3_MOTORCURR) | \
-                                     PIN_MODE_ANALOG(GPIOF_PF4_POT1) | \
-                                     PIN_MODE_ANALOG(GPIOF_PF5_POT2) | \
+                                     PIN_MODE_ANALOG(GPIOF_PF3_MOTORCURR) /* ADC3 IN9 */| \
+                                     PIN_MODE_ANALOG(GPIOF_PF4_POT1) /* ADC3 IN14 */| \
+                                     PIN_MODE_ANALOG(GPIOF_PF5_POT2) /* ADC3 IN15 */| \
                                      PIN_MODE_ALTERNATE(GPIOF_PF6_OUT1) | \
                                      PIN_MODE_ALTERNATE(GPIOF_PF7_OUT2) | \
                                      PIN_MODE_ALTERNATE(GPIOF_PF8_OUT3) | \
