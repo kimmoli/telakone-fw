@@ -24,10 +24,8 @@ int main(void)
     adcTKStartConv();
     pwmTKInit();
     eicuTKInit();
-    i2cInit();
-    spiInit();
-
-    (void) initAccelerationSensor();
+    i2cTKInit();
+    spiTKInit();
 
     /* Start threads */
     startBlinkerThread(); /* Blinks the green led */

@@ -22,7 +22,6 @@ SPIConfig spiconfigDrive2 =
 float driveAfeHandle(int drive, float value)
 {
     SPIDriver *spipc;
-    SPIConfig *spiconfigDrive;
 
     uint8_t rxBuf[2];
     uint8_t txBuf[2];
@@ -38,25 +37,13 @@ float driveAfeHandle(int drive, float value)
     txBuf[1] = voutD & 0xFF;
 
     if (drive == 1)
-    {
         spipc = &SPID2;
-        spiconfigDrive = &spiconfigDrive1;
-    }
     else
-    {
         spipc = &SPID3;
-        spiconfigDrive = &spiconfigDrive2;
-    }
 
-    spiAcquireBus(spipc);
-    spiStart(spipc, spiconfigDrive);
     spiSelect(spipc);
-
     spiExchange(spipc, 1, txBuf, rxBuf);
-
     spiUnselect(spipc);
-    spiStop(spipc);
-    spiReleaseBus(spipc);
 
     /*
      *  Read comes from MPC3201 ADC
@@ -64,4 +51,10 @@ float driveAfeHandle(int drive, float value)
      */
 
     return EXT_VREF / ADC_MEAS48V_SCALE * (float)(int16_t)((rxBuf[0]<<11) | ((rxBuf[1] & 0xFE) << 3));
+}
+
+void spiTKInit(void)
+{
+    spiStart(&SPID2, &spiconfigDrive1);
+    spiStart(&SPID3, &spiconfigDrive2);
 }

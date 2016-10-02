@@ -19,8 +19,8 @@ extern float accelY;
 extern float accelZ;
 
 float getExtTemperature(void);
-int initAccelerationSensor(void);
 void getAcceleration(void);
+void i2cTKInit(void);
 
 #endif
 
