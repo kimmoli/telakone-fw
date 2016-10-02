@@ -34,9 +34,10 @@ void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
         chprintf(chp, "Ext temp:          %.2f C\n\r", getExtTemperature());
         chprintf(chp, "Voltage:           %.2f V\n\r", supplyVoltage );
         chprintf(chp, "Aux motor current: %.2f A\n\r", motorCurrent );
-        chprintf(chp, "Motor:             L%d R%d\n\r", leftMotor, rightMotor );
-        chprintf(chp, "Speed:             L%d R%d\n\r", leftSpeed, rightSpeed );
-        chprintf(chp, "Acceleration:      X%.2f Y%.2f Z%.2f g\n\r", accelX, accelY, accelZ);
+        chprintf(chp, "Motor:             L %d R %d\n\r", leftMotor, rightMotor );
+        chprintf(chp, "Speed:             L %d R %d\n\r", leftSpeed, rightSpeed );
+        chprintf(chp, "Battery voltages:  L %.2f V R %.2f V\n\r", leftBatteryVoltage, rightBatteryVoltage);
+        chprintf(chp, "Acceleration:      X %.2f g Y %.2f g Z %.2f g\n\r", accelX, accelY, accelZ);
 
         if (loopcount > 0)
             chThdSleepMilliseconds(delay);

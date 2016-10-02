@@ -3,6 +3,7 @@
 #include "joystick.h"
 
 #include "adc.h"
+#include "spi.h"
 
 static THD_WORKING_AREA(waJoystickThread, 128);
 
@@ -10,6 +11,8 @@ int joystickLR;
 int joystickBF;
 int leftMotor;
 int rightMotor;
+float leftBatteryVoltage;
+float rightBatteryVoltage;
 
 static THD_FUNCTION(joystickThread, arg)
 {
@@ -41,6 +44,18 @@ static THD_FUNCTION(joystickThread, arg)
         // Convert to differential motor control values Left and Right, -500..+500
         leftMotor = MAX(MIN(joystickBF + joystickLR, 500), -500);
         rightMotor = MAX(MIN(joystickBF - joystickLR, 500), -500);
+
+        leftBatteryVoltage = driveAfeHandle(1, (float)abs(leftMotor)/100);
+        if (leftMotor < 0)
+            palSetLine(LINE_D1REVERSE);
+        else
+            palClearLine(LINE_D1REVERSE);
+
+        rightBatteryVoltage = driveAfeHandle(2, (float)abs(rightMotor/100));
+        if (rightMotor < 0)
+            palSetLine(LINE_D2REVERSE);
+        else
+            palClearLine(LINE_D2REVERSE);
 
         chThdSleepMilliseconds(50);
     }

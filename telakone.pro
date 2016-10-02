@@ -14,7 +14,8 @@ SOURCES += \
     pwm.c \
     eicu.c \
     shell/cmd_auxmotor.c \
-    i2c.c
+    i2c.c \
+    spi.c
 
 HEADERS += \
     adc.h \
@@ -30,7 +31,8 @@ HEADERS += \
     halconf_community.h \
     mcuconf_community.h \
     eicu.h \
-    i2c.h
+    i2c.h \
+    spi.h
 
 OTHER_FILES += \
     Makefile \

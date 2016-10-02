@@ -8,6 +8,7 @@
 #include "pwm.h"
 #include "eicu.h"
 #include "i2c.h"
+#include "spi.h"
 
 #include "blinker.h"
 #include "joystick.h"
@@ -24,6 +25,7 @@ int main(void)
     pwmTKInit();
     eicuTKInit();
     i2cInit();
+    spiInit();
 
     (void) initAccelerationSensor();
 
@@ -33,6 +35,9 @@ int main(void)
 
     /* Everything is initialised, turh red led off */
     palClearLine(LINE_REDLED);
+
+    palClearLine(LINE_D1BRAKE);
+    palClearLine(LINE_D2BRAKE);
 
     while (true)
     {
