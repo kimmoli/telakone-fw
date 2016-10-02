@@ -1,6 +1,13 @@
 #ifndef TK_PWM_H
 #define TK_PWM_H
 
+#define TK_PWM_OUT1     0
+#define TK_PWM_OUT2     1
+#define TK_PWM_OUT3     2
+#define TK_PWM_OUT4     3
+#define TK_PWM_MOTORH1  4
+#define TK_PWM_MOTORH2  5
+
 void pwmTKInit(void);
 void pwmSetChannel(int ch, int range, int value);
 

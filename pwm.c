@@ -41,17 +41,17 @@ void pwmSetChannel(int ch, int range, int value)
 {
     switch (ch)
     {
-        case 0:
+        case TK_PWM_OUT1:
             pwmTKEnableChannelI(&PWMD10, 1, PWM_FRACTION_TO_WIDTH(&PWMD10, range, value)); break;
-        case 1:
+        case TK_PWM_OUT2:
             pwmTKEnableChannelI(&PWMD11, 1, PWM_FRACTION_TO_WIDTH(&PWMD11, range, value)); break;
-        case 2:
+        case TK_PWM_OUT3:
             pwmTKEnableChannelI(&PWMD13, 1, PWM_FRACTION_TO_WIDTH(&PWMD13, range, value)); break;
-        case 3:
+        case TK_PWM_OUT4:
             pwmTKEnableChannelI(&PWMD14, 1, PWM_FRACTION_TO_WIDTH(&PWMD14, range, value)); break;
-        case 4:
+        case TK_PWM_MOTORH1:
             pwmEnableChannelI(&PWMD9, 1,  PWM_FRACTION_TO_WIDTH(&PWMD9, range, value)); break;
-        case 5:
+        case TK_PWM_MOTORH2:
             pwmEnableChannelI(&PWMD9, 2,  PWM_FRACTION_TO_WIDTH(&PWMD9, range, value)); break;
         default:
             ;

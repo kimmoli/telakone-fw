@@ -8,6 +8,7 @@
 
 extern void cmd_status(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_out(BaseSequentialStream *chp, int argc, char *argv[]);
+extern void cmd_auxmotor(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_reboot(BaseSequentialStream *chp, int argc, char *argv[]);
 
 extern const ShellCommand commands[];

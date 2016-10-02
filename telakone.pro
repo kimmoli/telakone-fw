@@ -12,7 +12,8 @@ SOURCES += \
     threads/joystick.c \
     shell/cmd_out.c \
     pwm.c \
-    eicu.c
+    eicu.c \
+    shell/cmd_auxmotor.c
 
 HEADERS += \
     adc.h \
