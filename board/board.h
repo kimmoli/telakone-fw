@@ -56,10 +56,9 @@
  * Board specific analog stuff
  */
 #define EXT_VREF                   ( (float)(2.500) )
-#define ADC_MEAS12V_SCALE          ( (float)(4096*(5900+825)/825) )
-#define ADC_MEAS48V_SCALE          ( (float)(4096*(19100+825)/825) )
-#define ADC_MOTORCURR_SCALE        ( (float)(4096*(0.01*(10+499)/10)) )
-#define ADC_POT_SCALE              ( (float)(1000/4096) )
+#define ADC_MEAS12V_SCALE          ( (float)(EXT_VREF/4096*(5900+825)/825) )
+#define ADC_MEAS48V_SCALE          ( (float)(EXT_VREF/4096*(19100+825)/825) )
+#define ADC_MOTORCURR_SCALE        ( (float)(EXT_VREF/(4096*(0.01*(10+499)/10))) )
 
 /*
  * IO pins assignments.

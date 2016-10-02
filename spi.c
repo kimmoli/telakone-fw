@@ -50,7 +50,7 @@ float driveAfeHandle(int drive, float value)
      * X X 0 D11 D10 D9 D8 D7 D6 D5 D4 D3 D2 D1 D0 X
      */
 
-    return EXT_VREF / ADC_MEAS48V_SCALE * (float)(int16_t)((rxBuf[0]<<11) | ((rxBuf[1] & 0xFE) << 3));
+    return ADC_MEAS48V_SCALE * (float)(((rxBuf[0]<<11) | ((rxBuf[1] & 0xFE) << 3)) / 16);
 }
 
 void spiTKInit(void)

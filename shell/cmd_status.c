@@ -24,8 +24,8 @@ void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
         // Temp at 25C 0.76V
         // Average slope 2.5mV/C
         float temp = ((( 3.3 / 4096 * (float)adcAvgTempSensor) - 0.76 ) / 0.0025 ) + 25.0;
-        float supplyVoltage = EXT_VREF / ADC_MEAS12V_SCALE * (float)adcAvgSupplyVoltage;
-        float motorCurrent = EXT_VREF / ADC_MOTORCURR_SCALE * (float)adcAvgMotorCurrent;
+        float supplyVoltage = ADC_MEAS12V_SCALE * (float)adcAvgSupplyVoltage;
+        float motorCurrent = ADC_MOTORCURR_SCALE * (float)adcAvgMotorCurrent;
 
         getAcceleration();
 
