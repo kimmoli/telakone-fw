@@ -6,6 +6,7 @@
 #include "adc.h"
 #include "joystick.h"
 #include "eicu.h"
+#include "i2c.h"
 
 void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
 {
@@ -26,12 +27,16 @@ void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
         float supplyVoltage = EXT_VREF / ADC_MEAS12V_SCALE * (float)adcAvgSupplyVoltage;
         float motorCurrent = EXT_VREF / ADC_MOTORCURR_SCALE * (float)adcAvgMotorCurrent;
 
+        getAcceleration();
+
         chprintf(chp, "ADC Count:         %d\n\r", adcCount);
         chprintf(chp, "Temp:              %.2f C\n\r", temp );
+        chprintf(chp, "Ext temp:          %.2f C\n\r", getExtTemperature());
         chprintf(chp, "Voltage:           %.2f V\n\r", supplyVoltage );
         chprintf(chp, "Aux motor current: %.2f A\n\r", motorCurrent );
         chprintf(chp, "Motor:             L%d R%d\n\r", leftMotor, rightMotor );
         chprintf(chp, "Speed:             L%d R%d\n\r", leftSpeed, rightSpeed );
+        chprintf(chp, "Acceleration:      X%.2f Y%.2f Z%.2f g\n\r", accelX, accelY, accelZ);
 
         if (loopcount > 0)
             chThdSleepMilliseconds(delay);

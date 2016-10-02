@@ -7,6 +7,7 @@
 #include "adc.h"
 #include "pwm.h"
 #include "eicu.h"
+#include "i2c.h"
 
 #include "blinker.h"
 #include "joystick.h"
@@ -22,6 +23,9 @@ int main(void)
     adcTKStartConv();
     pwmTKInit();
     eicuTKInit();
+    i2cInit();
+
+    (void) initAccelerationSensor();
 
     /* Start threads */
     startBlinkerThread(); /* Blinks the green led */
