@@ -1,8 +1,6 @@
 #ifndef TK_EICU_H
 #define TK_EICU_H
 
-extern const EICUChannelConfig speedinputcfg;
-
 extern int leftSpeed;
 extern int rightSpeed;
 

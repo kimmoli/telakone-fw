@@ -1,7 +1,7 @@
 #include "hal.h"
 #include "spi.h"
 
-SPIConfig spiconfigDrive1 =
+const SPIConfig spiconfigDrive1 =
 {
     NULL,
     GPIOB,
@@ -10,7 +10,7 @@ SPIConfig spiconfigDrive1 =
     0
 };
 
-SPIConfig spiconfigDrive2 =
+const SPIConfig spiconfigDrive2 =
 {
     NULL,
     GPIOC,
