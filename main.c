@@ -16,8 +16,7 @@ int main(void)
     halInit();
     chSysInit();
 
-    /* Start peripherals */
-    sdStart(&SD3, NULL);
+    sdStart(&SD3, NULL);  /* Serial console in USART3 */
 
     adcTKInit();
     adcTKStartConv();
@@ -25,8 +24,8 @@ int main(void)
     eicuTKInit();
 
     /* Start threads */
-    startBlinkerThread();
-    startJoystickThread();
+    startBlinkerThread(); /* Blinks the green led */
+    startJoystickThread(); /* Processes joystick input values */
 
     while (true)
     {

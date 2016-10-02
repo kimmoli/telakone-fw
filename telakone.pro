@@ -37,6 +37,7 @@ OTHER_FILES += \
 INCLUDEPATH += \
  ./threads \
  ./shell \
+ ./board \
  ../ChibiOS/os/license \
  ../ChibiOS/os/common/startup/ARMCMx/compilers/GCC \
  ../ChibiOS/os/common/startup/ARMCMx/devices/STM32F2xx \

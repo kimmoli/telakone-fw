@@ -22,30 +22,6 @@ const PWMConfig pwmcfgOutput =
     0
 };
 
-const PWMConfig pwmcfg1 =                     /* TIM1 */
-{
-    10000,                                    /* 10KHz PWM clock frequency.   */
-    10000,                                    /* PWM period 1S (in ticks).    */
-    pwmpcb,
-    {
-        {PWM_OUTPUT_DISABLED, NULL},
-        {PWM_COMPLEMENTARY_OUTPUT_ACTIVE_HIGH, NULL},
-        {PWM_OUTPUT_DISABLED, NULL},
-        {PWM_OUTPUT_DISABLED, NULL},
-    },
-    0,
-    0
-};
-
-void pwmpcb(PWMDriver *pwmp)
-{
-    (void) pwmp;
-    /*
-    * Do nothing here for now
-    * cb in config could set to NULL to remove this completely
-    */
-}
-
 void pwmSetChannel(int ch, int range, int value)
 {
     if (ch == 0)
@@ -56,15 +32,11 @@ void pwmSetChannel(int ch, int range, int value)
         pwmTKEnableChannelI(&PWMD13, 1, PWM_FRACTION_TO_WIDTH(&PWMD13, range, value));
     else if (ch == 3)
         pwmTKEnableChannelI(&PWMD14, 1, PWM_FRACTION_TO_WIDTH(&PWMD14, range, value));
-    else if (ch == 4)
-        pwmEnableChannelI(&PWMD1, 2, PWM_FRACTION_TO_WIDTH(&PWMD1, range, value));
 }
 
 void pwmTKInit(void)
 {
     pwm_TK_lld_init();
-    pwmStart(&PWMD1, &pwmcfg1);
-    palSetPadMode(GPIOB, GPIOB_LED3, PAL_MODE_ALTERNATE(1));
     pwmTKStart(&PWMD10, &pwmcfgOutput);
     pwmTKStart(&PWMD11, &pwmcfgOutput);
     pwmTKStart(&PWMD13, &pwmcfgOutput);

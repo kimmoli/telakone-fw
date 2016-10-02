@@ -11,9 +11,9 @@ static THD_FUNCTION(blinkerThread, arg)
 
     while (true)
     {
-        palSetLine(LINE_LED1);
+        palSetLine(LINE_GREENLED);
         chThdSleepMilliseconds(200);
-        palClearLine(LINE_LED1);
+        palClearLine(LINE_GREENLED);
         chThdSleepMilliseconds(200);
     }
 }
