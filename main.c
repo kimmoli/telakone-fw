@@ -27,6 +27,9 @@ int main(void)
     startBlinkerThread(); /* Blinks the green led */
     startJoystickThread(); /* Processes joystick input values */
 
+    /* Everything is initialised, turh red led off */
+    palClearLine(LINE_REDLED);
+
     while (true)
     {
         thread_t *shelltp = chThdCreateFromHeap(NULL, SHELL_WA_SIZE, "shell", NORMALPRIO + 1,

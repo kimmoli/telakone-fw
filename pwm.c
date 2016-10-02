@@ -22,16 +22,40 @@ const PWMConfig pwmcfgOutput =
     0
 };
 
+const PWMConfig pwmcfgMotor =
+{
+    10000,                                    /* 10KHz PWM clock frequency.   */
+    10000,                                    /* PWM period 1S (in ticks).    */
+    NULL,
+    {
+        {PWM_OUTPUT_ACTIVE_HIGH, NULL},
+        {PWM_OUTPUT_ACTIVE_HIGH, NULL},
+        {PWM_OUTPUT_DISABLED, NULL},
+        {PWM_OUTPUT_DISABLED, NULL},
+    },
+    0,
+    0
+};
+
 void pwmSetChannel(int ch, int range, int value)
 {
-    if (ch == 0)
-        pwmTKEnableChannelI(&PWMD10, 1, PWM_FRACTION_TO_WIDTH(&PWMD10, range, value));
-    else if (ch == 1)
-        pwmTKEnableChannelI(&PWMD11, 1, PWM_FRACTION_TO_WIDTH(&PWMD11, range, value));
-    else if (ch == 2)
-        pwmTKEnableChannelI(&PWMD13, 1, PWM_FRACTION_TO_WIDTH(&PWMD13, range, value));
-    else if (ch == 3)
-        pwmTKEnableChannelI(&PWMD14, 1, PWM_FRACTION_TO_WIDTH(&PWMD14, range, value));
+    switch (ch)
+    {
+        case 0:
+            pwmTKEnableChannelI(&PWMD10, 1, PWM_FRACTION_TO_WIDTH(&PWMD10, range, value)); break;
+        case 1:
+            pwmTKEnableChannelI(&PWMD11, 1, PWM_FRACTION_TO_WIDTH(&PWMD11, range, value)); break;
+        case 2:
+            pwmTKEnableChannelI(&PWMD13, 1, PWM_FRACTION_TO_WIDTH(&PWMD13, range, value)); break;
+        case 3:
+            pwmTKEnableChannelI(&PWMD14, 1, PWM_FRACTION_TO_WIDTH(&PWMD14, range, value)); break;
+        case 4:
+            pwmEnableChannelI(&PWMD9, 1,  PWM_FRACTION_TO_WIDTH(&PWMD9, range, value)); break;
+        case 5:
+            pwmEnableChannelI(&PWMD9, 2,  PWM_FRACTION_TO_WIDTH(&PWMD9, range, value)); break;
+        default:
+            ;
+    }
 }
 
 void pwmTKInit(void)
@@ -41,6 +65,7 @@ void pwmTKInit(void)
     pwmTKStart(&PWMD11, &pwmcfgOutput);
     pwmTKStart(&PWMD13, &pwmcfgOutput);
     pwmTKStart(&PWMD14, &pwmcfgOutput);
+    pwmStart(&PWMD9, &pwmcfgMotor);
 }
 
 /*
