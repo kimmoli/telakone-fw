@@ -3,14 +3,18 @@
 
 #define AUXLINK_MSG_SIZE 7
 
-static void auxlinkrxendcb(UARTDriver *uartp);
-static void auxlinktxendphycb(UARTDriver *uartp);
+#define AUXTYPE_PING 0x00
+#define AUXTYPE_PONG 0x01
 
 extern uint16_t auxlinkRxBuffer[AUXLINK_MSG_SIZE];
 extern int auxlinkRxCount;
 extern int auxlinkTxCount;
 
-void auxlinkTKInit(uint8_t myAddress);
+extern uint8_t myAddress;
+
+extern thread_reference_t auxDeviceTrp;
+
+void auxlinkTKInit(uint8_t address);
 void auxlinkTransmit(const uint16_t *buf);
 
 #endif

@@ -8,12 +8,17 @@
  *  Source address
  *  Message type
  *   0x00 ping
+ *   0x01 pong
  *  Payload 4 bytes
  */
 
 uint16_t auxlinkRxBuffer[AUXLINK_MSG_SIZE];
 int auxlinkRxCount;
 int auxlinkTxCount;
+uint8_t myAddress;
+
+static void auxlinkrxendcb(UARTDriver *uartp);
+static void auxlinktxendphycb(UARTDriver *uartp);
 
 static UARTConfig auxlinkConfig =
 {
@@ -28,14 +33,16 @@ static UARTConfig auxlinkConfig =
     /* CR3 */ 0
 };
 
-void auxlinkTKInit(uint8_t myAddress)
+void auxlinkTKInit(uint8_t address)
 {
     auxlinkRxCount = 0;
     auxlinkTxCount = 0;
     memset(auxlinkRxBuffer, 0x00, AUXLINK_MSG_SIZE);
 
     auxlinkConfig.cr2 &= ~0x7;
-    auxlinkConfig.cr2 |= myAddress;
+    auxlinkConfig.cr2 |= address;
+
+    myAddress = address;
 
     uartStart(&UARTD2, &auxlinkConfig);
 }
@@ -56,6 +63,10 @@ static void auxlinkrxendcb(UARTDriver *uartp)
         for (i=0; i<AUXLINK_MSG_SIZE; i++)
             auxlinkRxBuffer[i] = uartp->rxbuf+i;
         auxlinkRxCount++;
+
+        chSysLock();
+        chThdResumeI(&auxDeviceTrp, (msg_t) 0x8000 | auxlinkRxBuffer[2]);
+        chSysUnlock();
     }
 }
 

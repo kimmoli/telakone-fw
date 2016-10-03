@@ -16,7 +16,9 @@ SOURCES += \
     shell/cmd_auxmotor.c \
     i2c.c \
     spi.c \
-    auxlink.c
+    auxlink.c \
+    threads/auxdevice.c \
+    shell/cmd_ping.c
 
 HEADERS += \
     adc.h \
@@ -34,7 +36,8 @@ HEADERS += \
     eicu.h \
     i2c.h \
     spi.h \
-    auxlink.h
+    auxlink.h \
+    threads/auxdevice.h
 
 OTHER_FILES += \
     Makefile \
