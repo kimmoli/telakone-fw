@@ -3,6 +3,8 @@
 
 #define JOYSTICK_DEADZONE (100)
 
+extern int joystickLR;
+extern int joystickBF;
 extern int leftMotor;
 extern int rightMotor;
 extern float leftBatteryVoltage;
