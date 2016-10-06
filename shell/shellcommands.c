@@ -2,6 +2,8 @@
 #include "shell.h"
 #include "shellcommands.h"
 
+char shellHistoryBuffer[SHELL_MAX_HIST_BUFF];
+
 const ShellCommand commands[] =
 {
     { "status", cmd_status },
@@ -15,7 +17,9 @@ const ShellCommand commands[] =
 const ShellConfig shell_cfg1 =
 {
     (BaseSequentialStream *)&SD3,
-    commands
+    commands,
+    shellHistoryBuffer,
+    SHELL_MAX_HIST_BUFF
 };
 
 
