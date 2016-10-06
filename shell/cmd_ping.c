@@ -4,7 +4,7 @@
 #include "chprintf.h"
 #include "shellcommands.h"
 #include "auxlink.h"
-#include "joystick.h"
+#include "helpers.h"
 
 void cmd_ping(BaseSequentialStream *chp, int argc, char *argv[])
 {

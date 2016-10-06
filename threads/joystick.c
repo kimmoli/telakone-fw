@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "hal.h"
 #include "joystick.h"
+#include "helpers.h"
 
 #include "adc.h"
 #include "spi.h"

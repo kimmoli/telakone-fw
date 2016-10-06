@@ -2,6 +2,7 @@
 #include "chprintf.h"
 #include "auxdevice.h"
 #include "auxlink.h"
+#include "helpers.h"
 
 static THD_WORKING_AREA(waAuxDeviceThread, 128);
 
@@ -24,12 +25,12 @@ static THD_FUNCTION(auxDeviceThread, arg)
         if (msg & 0x8000)
         {
             msg &= 0xFF;
-            chprintf((BaseSequentialStream *)&SD3, "RX Count %d\n\r", auxlinkRxCount);
+            PRINT("RX Count %d\n\r", auxlinkRxCount);
 
             switch (msg)
             {
                 case (msg_t)AUXTYPE_PING: // Received a ping, reply with pong
-                    chprintf((BaseSequentialStream *)&SD3, "Got pinged by %02x with payload %02x %02x %02x %02x\n\r",
+                    PRINT("Got pinged by %02x with payload %02x %02x %02x %02x\n\r",
                              auxlinkRxBuffer[1], auxlinkRxBuffer[3], auxlinkRxBuffer[4], auxlinkRxBuffer[5], auxlinkRxBuffer[6]);
 
                     txBuf[0] = 0x100 | auxlinkRxBuffer[1];
@@ -43,12 +44,12 @@ static THD_FUNCTION(auxDeviceThread, arg)
                     break;
 
                 case (msg_t)AUXTYPE_PONG: // Received a pong
-                    chprintf((BaseSequentialStream *)&SD3, "Got pong from %02x with payload %02x %02x %02x %02x\n\r",
+                    PRINT("Got pong from %02x with payload %02x %02x %02x %02x\n\r",
                              auxlinkRxBuffer[1], auxlinkRxBuffer[3], auxlinkRxBuffer[4], auxlinkRxBuffer[5], auxlinkRxBuffer[6]);
                     break;
 
                 default:
-                    chprintf((BaseSequentialStream *)&SD3, "Got unknown messagetype %02x from %02x with payload %02x %02x %02x %02x\n\r",
+                    PRINT("Got unknown messagetype %02x from %02x with payload %02x %02x %02x %02x\n\r",
                              auxlinkRxBuffer[2], auxlinkRxBuffer[1], auxlinkRxBuffer[3], auxlinkRxBuffer[4], auxlinkRxBuffer[5], auxlinkRxBuffer[6]);
                     break;
 

@@ -3,6 +3,7 @@
 #include "chprintf.h"
 #include "shell.h"
 
+#include "helpers.h"
 #include "shellcommands.h"
 #include "adc.h"
 #include "pwm.h"
@@ -22,6 +23,11 @@ int main(void)
 
     sdStart(&SD3, NULL);  /* Serial console in USART3, 38400 */
 
+    PRINT("\n\r");
+    PRINT("\n\rtelakone controller\n\r");
+    PRINT("-------------------\n\r");
+    PRINT("\n\r");
+
     adcTKInit();
     adcTKStartConv();
     pwmTKInit();
@@ -30,10 +36,17 @@ int main(void)
     spiTKInit();
     auxlinkTKInit(0x01);
 
+    PRINT(" - Initialisation complete\n\r");
+
     /* Start threads */
     startBlinkerThread(); /* Blinks the green led */
     startJoystickThread(); /* Processes joystick input values */
     startAuxDeviceThread(); /* Auxiliary device handling */
+
+    PRINT(" - threads started\n\r");
+
+    PRINT("\n\r");
+    cmd_status((BaseSequentialStream *)&SD3, 0, NULL);
 
     /* Everything is initialised, turh red led off */
     palClearLine(LINE_REDLED);
