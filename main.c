@@ -34,14 +34,14 @@ int main(void)
     eicuTKInit();
     i2cTKInit();
     spiTKInit();
-    auxlinkTKInit(0x01);
+//    auxlinkTKInit(0x01);
 
     PRINT(" - Initialisation complete\n\r");
 
     /* Start threads */
     startBlinkerThread(); /* Blinks the green led */
     startJoystickThread(); /* Processes joystick input values */
-    startAuxDeviceThread(); /* Auxiliary device handling */
+//    startAuxDeviceThread(); /* Auxiliary device handling */
 
     PRINT(" - threads started\n\r");
 

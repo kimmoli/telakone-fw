@@ -460,8 +460,8 @@
                                      PIN_OTYPE_PUSHPULL(GPIOB_PB3_NC) | \
                                      PIN_OTYPE_PUSHPULL(GPIOB_PB4_NC) | \
                                      PIN_OTYPE_PUSHPULL(GPIOB_PB5_NC) | \
-                                     PIN_OTYPE_PUSHPULL(GPIOB_PB6_I2C1SCL) | \
-                                     PIN_OTYPE_PUSHPULL(GPIOB_PB7_I2C1SDA) | \
+                                     PIN_OTYPE_OPENDRAIN(GPIOB_PB6_I2C1SCL) | \
+                                     PIN_OTYPE_OPENDRAIN(GPIOB_PB7_I2C1SDA) | \
                                      PIN_OTYPE_PUSHPULL(GPIOB_PB8_REDLED) | \
                                      PIN_OTYPE_PUSHPULL(GPIOB_PB9_GREENLED) | \
                                      PIN_OTYPE_PUSHPULL(GPIOB_PB10_D1BRAKE) | \
