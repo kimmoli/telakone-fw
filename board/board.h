@@ -18,14 +18,14 @@
 #define _BOARD_H_
 
 /*
- * Setup for Kimmoli's telakone STM32F207ZG board.
+ * Setup for Kimmoli's telakone STM32F407ZG board.
  */
 
 /*
  * Board identifier.
  */
 #define BOARD_KIMMOLI_TELAKONE
-#define BOARD_NAME                  "Kimmoli's telakone STM32F207ZG"
+#define BOARD_NAME                  "Kimmoli's telakone STM32F407ZG"
 
 /*
  * Board oscillators-related settings.
@@ -36,10 +36,10 @@
 #endif
 
 #if !defined(STM32_HSECLK)
-#define STM32_HSECLK                8000000U
+#define STM32_HSECLK                25000000U
 #endif
 
-#define STM32_HSE_BYPASS
+//#define STM32_HSE_BYPASS
 
 /*
  * Board voltages.
@@ -50,7 +50,7 @@
 /*
  * MCU type as defined in the ST header.
  */
-#define STM32F207xx
+#define STM32F407xx
 
 /*
  * Board specific analog stuff
@@ -71,9 +71,9 @@
 #define GPIOA_PA5_CCSPICLK          5U
 #define GPIOA_PA6_CCSPIMISO         6U
 #define GPIOA_PA7_CCSPIMOSI         7U
-#define GPIOA_PA8_NC                8U
+#define GPIOA_PA8_NC_MCO1           8U
 #define GPIOA_PA9_USART1TX          9U
-#define GPIOA_PA10_USART1RX          10U
+#define GPIOA_PA10_USART1RX         10U
 #define GPIOA_PA11_USART1CTS        11U
 #define GPIOA_PA12_USART1RTS        12U
 #define GPIOA_PA13_SWDIO            13U
@@ -341,7 +341,7 @@
                                      PIN_MODE_ALTERNATE(GPIOA_PA5_CCSPICLK) | \
                                      PIN_MODE_ALTERNATE(GPIOA_PA6_CCSPIMISO) | \
                                      PIN_MODE_ALTERNATE(GPIOA_PA7_CCSPIMOSI) | \
-                                     PIN_MODE_INPUT(GPIOA_PA8_NC) | \
+                                     PIN_MODE_ALTERNATE(GPIOA_PA8_NC_MCO1) | \
                                      PIN_MODE_ALTERNATE(GPIOA_PA9_USART1TX) | \
                                      PIN_MODE_ALTERNATE(GPIOA_PA10_USART1RX) | \
                                      PIN_MODE_ALTERNATE(GPIOA_PA11_USART1CTS) | \
@@ -358,7 +358,7 @@
                                      PIN_OTYPE_PUSHPULL(GPIOA_PA5_CCSPICLK) | \
                                      PIN_OTYPE_PUSHPULL(GPIOA_PA6_CCSPIMISO) | \
                                      PIN_OTYPE_PUSHPULL(GPIOA_PA7_CCSPIMOSI) | \
-                                     PIN_OTYPE_PUSHPULL(GPIOA_PA8_NC) | \
+                                     PIN_OTYPE_PUSHPULL(GPIOA_PA8_NC_MCO1) | \
                                      PIN_OTYPE_PUSHPULL(GPIOA_PA9_USART1TX) | \
                                      PIN_OTYPE_PUSHPULL(GPIOA_PA10_USART1RX) | \
                                      PIN_OTYPE_PUSHPULL(GPIOA_PA11_USART1CTS) | \
@@ -375,7 +375,7 @@
                                      PIN_OSPEED_HIGH(GPIOA_PA5_CCSPICLK) | \
                                      PIN_OSPEED_HIGH(GPIOA_PA6_CCSPIMISO) | \
                                      PIN_OSPEED_HIGH(GPIOA_PA7_CCSPIMOSI) | \
-                                     PIN_OSPEED_HIGH(GPIOA_PA8_NC) | \
+                                     PIN_OSPEED_HIGH(GPIOA_PA8_NC_MCO1) | \
                                      PIN_OSPEED_HIGH(GPIOA_PA9_USART1TX) | \
                                      PIN_OSPEED_HIGH(GPIOA_PA10_USART1RX) | \
                                      PIN_OSPEED_HIGH(GPIOA_PA11_USART1CTS) | \
@@ -392,7 +392,7 @@
                                      PIN_PUPDR_PULLUP(GPIOA_PA5_CCSPICLK) | \
                                      PIN_PUPDR_PULLUP(GPIOA_PA6_CCSPIMISO) | \
                                      PIN_PUPDR_PULLUP(GPIOA_PA7_CCSPIMOSI) | \
-                                     PIN_PUPDR_PULLUP(GPIOA_PA8_NC) | \
+                                     PIN_PUPDR_PULLUP(GPIOA_PA8_NC_MCO1) | \
                                      PIN_PUPDR_PULLUP(GPIOA_PA9_USART1TX) | \
                                      PIN_PUPDR_PULLUP(GPIOA_PA10_USART1RX) | \
                                      PIN_PUPDR_PULLUP(GPIOA_PA11_USART1CTS) | \
@@ -409,7 +409,7 @@
                                      PIN_ODR_HIGH(GPIOA_PA5_CCSPICLK) | \
                                      PIN_ODR_HIGH(GPIOA_PA6_CCSPIMISO) | \
                                      PIN_ODR_HIGH(GPIOA_PA7_CCSPIMOSI) | \
-                                     PIN_ODR_HIGH(GPIOA_PA8_NC) | \
+                                     PIN_ODR_HIGH(GPIOA_PA8_NC_MCO1) | \
                                      PIN_ODR_HIGH(GPIOA_PA9_USART1TX) | \
                                      PIN_ODR_HIGH(GPIOA_PA10_USART1RX) | \
                                      PIN_ODR_HIGH(GPIOA_PA11_USART1CTS) | \
@@ -426,7 +426,7 @@
                                      PIN_AFIO_AF(GPIOA_PA5_CCSPICLK, 5) /* SPI1 */ | \
                                      PIN_AFIO_AF(GPIOA_PA6_CCSPIMISO, 5) /* SPI1 */ | \
                                      PIN_AFIO_AF(GPIOA_PA7_CCSPIMOSI, 5)) /* SPI1 */
-#define VAL_GPIOA_AFRH              (PIN_AFIO_AF(GPIOA_PA8_NC, 0) | \
+#define VAL_GPIOA_AFRH              (PIN_AFIO_AF(GPIOA_PA8_NC_MCO1, 0) | \
                                      PIN_AFIO_AF(GPIOA_PA9_USART1TX, 7) /* USART1 */ | \
                                      PIN_AFIO_AF(GPIOA_PA10_USART1RX, 7) /* USART1 */ | \
                                      PIN_AFIO_AF(GPIOA_PA11_USART1CTS, 7) /* USART1 */ | \

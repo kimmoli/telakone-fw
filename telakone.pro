@@ -50,9 +50,9 @@ INCLUDEPATH += \
  ./board \
  ../ChibiOS/os/license \
  ../ChibiOS/os/common/startup/ARMCMx/compilers/GCC \
- ../ChibiOS/os/common/startup/ARMCMx/devices/STM32F2xx \
+ ../ChibiOS/os/common/startup/ARMCMx/devices/STM32F4xx \
  ../ChibiOS/os/common/ext/CMSIS/include \
- ../ChibiOS/os/common/ext/CMSIS/ST/STM32F2xx \
+ ../ChibiOS/os/common/ext/CMSIS/ST/STM32F4xx \
  ../ChibiOS/os/rt/include \
  ../ChibiOS/os/common/oslib/include \
  ../ChibiOS/os/common/ports/ARMCMx \
