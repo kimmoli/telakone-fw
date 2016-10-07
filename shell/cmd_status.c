@@ -23,7 +23,7 @@ void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
     {
         // Temp at 25C 0.76V
         // Average slope 2.5mV/C
-        float temp = ((( 3.3 / 4096 * (float)adcAvgTempSensor) - 0.76 ) / 0.0025 ) + 25.0;
+        float temp = ((( EXT_VREF / 4096 * (float)adcAvgTempSensor) - 0.76 ) / 0.0025 ) + 25.0;
         float supplyVoltage = ADC_MEAS12V_SCALE * (float)adcAvgSupplyVoltage;
         float motorCurrent = ADC_MOTORCURR_SCALE * (float)adcAvgMotorCurrent;
 
@@ -31,14 +31,14 @@ void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
 
         chprintf(chp, "ADC Count:         %d\n\r", adcCount);
         chprintf(chp, "Temp:              %.2f C\n\r", temp );
-        chprintf(chp, "Ext temp:          %.2f C\n\r", getExtTemperature());
+        chprintf(chp, "Ext temp:          %.2f C %s\n\r", getExtTemperature(), (extTempOK ? "" : "Error"));
         chprintf(chp, "Voltage:           %.2f V\n\r", supplyVoltage );
         chprintf(chp, "Aux motor current: %.2f A\n\r", motorCurrent );
         chprintf(chp, "Joystick           LR %d BF %d\n\r", joystickLR, joystickBF);
         chprintf(chp, "Motor:             L %d R %d\n\r", leftMotor, rightMotor );
         chprintf(chp, "Speed:             L %d R %d\n\r", leftSpeed, rightSpeed );
         chprintf(chp, "Battery voltages:  L %.2f V R %.2f V\n\r", leftBatteryVoltage, rightBatteryVoltage);
-        chprintf(chp, "Acceleration:      X %.2f g Y %.2f g Z %.2f g\n\r", accelX, accelY, accelZ);
+        chprintf(chp, "Acceleration:      X %.2f g Y %.2f g Z %.2f g %s\n\r", accelX, accelY, accelZ, (accelOK ? "" : "Error"));
 
         if (loopcount > 0)
             chThdSleepMilliseconds(delay);

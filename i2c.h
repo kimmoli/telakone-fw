@@ -17,6 +17,8 @@
 extern float accelX;
 extern float accelY;
 extern float accelZ;
+extern int accelOK;
+extern int extTempOK;
 
 float getExtTemperature(void);
 void getAcceleration(void);
