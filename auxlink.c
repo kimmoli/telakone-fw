@@ -1,82 +1,42 @@
-#include <string.h>
 #include "hal.h"
 #include "auxlink.h"
 
-/*
- * Aux Link message. Fixed size
- *  Target address 0x00..0x0F
- *  Source address
- *  Message type
- *   0x00 ping
- *   0x01 pong
- *  Payload 4 bytes
- */
+uint8_t myAuxlinkAddress;
 
-uint16_t auxlinkRxBuffer[AUXLINK_MSG_SIZE];
-int auxlinkRxCount;
-int auxlinkTxCount;
-uint8_t myAddress;
-
-static void auxlinkrxendcb(UARTDriver *uartp);
-static void auxlinktxendphycb(UARTDriver *uartp);
-
-static UARTConfig auxlinkConfig =
+static SerialConfig auxlinkConfig =
 {
-    /* txend (buf) cb */NULL,
-    /* txend (phy) cb */ auxlinktxendphycb,
-    /* rxend cb */ auxlinkrxendcb,
-    /* rxchar cb */ NULL,
-    /* rxerr cb */ NULL,
     /* speed */ 9600,
-    /* CR1 */ USART_CR1_M | USART_CR1_WAKE,
+    /* CR1 */ 0,
     /* CR2 */ 0,
     /* CR3 */ 0
 };
 
 void auxlinkTKInit(uint8_t address)
 {
-    auxlinkRxCount = 0;
-    auxlinkTxCount = 0;
-    memset(auxlinkRxBuffer, 0x00, AUXLINK_MSG_SIZE);
+    myAuxlinkAddress = address;
 
-    auxlinkConfig.cr2 &= ~0x7;
-    auxlinkConfig.cr2 |= address;
-
-    myAddress = address;
-
-    uartStart(&UARTD2, &auxlinkConfig);
+    sdStart(&SD2, &auxlinkConfig);
 }
 
-static void auxlinktxendphycb(UARTDriver *uartp)
+void auxlinkTransmit(int count, uint8_t * buf)
 {
-    (void) uartp;
+    int i;
+
+    palSetLine(LINE_ACCLINKTXE);
+
+    for (i=0 ; i<count ; i++)
+        chnPutTimeout(&SD2, *(buf+i), MS2ST(10));
 
     palClearLine(LINE_ACCLINKTXE);
-    uartStartReceive(uartp, AUXLINK_MSG_SIZE, auxlinkRxBuffer);
 }
 
-static void auxlinkrxendcb(UARTDriver *uartp)
+uint8_t auxlinkChecksum(int count, uint8_t * buf)
 {
-    if (uartp->rxstate == UART_RX_COMPLETE)
-    {
-        int i;
-        for (i=0; i<AUXLINK_MSG_SIZE; i++)
-            auxlinkRxBuffer[i] = uartp->rxbuf+i;
-        auxlinkRxCount++;
+    uint8_t chksum = 0xff;
+    int i;
 
-        chSysLock();
-        chThdResumeI(&auxDeviceTrp, (msg_t) 0x8000 | auxlinkRxBuffer[2]);
-        chSysUnlock();
-    }
+    for (i=0 ; i<count ; i++)
+        chksum -= *(buf+i);
+
+    return ~chksum;
 }
-
-void auxlinkTransmit(const uint16_t *buf)
-{
-    if (UARTD2.txstate == UART_TX_IDLE)
-    {
-        palSetLine(LINE_ACCLINKTXE);
-        uartStartSend(&UARTD2, AUXLINK_MSG_SIZE, buf);
-        auxlinkTxCount++;
-    }
-}
-

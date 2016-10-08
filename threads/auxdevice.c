@@ -1,3 +1,4 @@
+#include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
 #include "auxdevice.h"
@@ -6,55 +7,44 @@
 
 static THD_WORKING_AREA(waAuxDeviceThread, 128);
 
-thread_reference_t auxDeviceTrp = NULL;
-
 static THD_FUNCTION(auxDeviceThread, arg)
 {
     (void)arg;
-    msg_t msg;
-    uint16_t txBuf[AUXLINK_MSG_SIZE];
-
-    chRegSetThreadName("auxdevice");
+    uint8_t rxBuf[AUXLINK_MAX_MSG_SIZE];
+    int count = 0;
+    int i;
 
     while (true)
     {
-        chSysLock();
-        msg = chThdSuspendS(&auxDeviceTrp);
-        chSysUnlock();
-
-        if (msg & 0x8000)
+        msg_t charbuf;
+        do
         {
-            msg &= 0xFF;
-            PRINT("RX Count %d\n\r", auxlinkRxCount);
+            charbuf = chnGetTimeout(&SD2, MS2ST(100));
 
-            switch (msg)
+            if (charbuf == Q_TIMEOUT)
             {
-                case (msg_t)AUXTYPE_PING: // Received a ping, reply with pong
-                    PRINT("Got pinged by %02x with payload %02x %02x %02x %02x\n\r",
-                             auxlinkRxBuffer[1], auxlinkRxBuffer[3], auxlinkRxBuffer[4], auxlinkRxBuffer[5], auxlinkRxBuffer[6]);
+                if (count > 7 && rxBuf[0] == 'T' && rxBuf[1] == 'K')
+                {
+                    PRINT("RX:");
+                    for (i=0 ; i<count; i++)
+                        PRINT(" %02x", rxBuf[i]);
+                    if (auxlinkChecksum(count-1, rxBuf) == rxBuf[count-i])
+                        PRINT(" CHKSUM OK\n\r");
+                    else
+                        PRINT(" CHKSUM ERROR\n\r");
+                }
 
-                    txBuf[0] = 0x100 | auxlinkRxBuffer[1];
-                    txBuf[1] = (uint16_t)myAddress;
-                    txBuf[2] = AUXTYPE_PONG;
-                    txBuf[3] = auxlinkRxBuffer[3];
-                    txBuf[4] = auxlinkRxBuffer[4];
-                    txBuf[5] = auxlinkRxBuffer[5];
-                    txBuf[6] = auxlinkRxBuffer[6];
-                    auxlinkTransmit(txBuf);
-                    break;
+                count = 0;
+            }
+            else
+            {
+                rxBuf[count++] = charbuf;
 
-                case (msg_t)AUXTYPE_PONG: // Received a pong
-                    PRINT("Got pong from %02x with payload %02x %02x %02x %02x\n\r",
-                             auxlinkRxBuffer[1], auxlinkRxBuffer[3], auxlinkRxBuffer[4], auxlinkRxBuffer[5], auxlinkRxBuffer[6]);
-                    break;
-
-                default:
-                    PRINT("Got unknown messagetype %02x from %02x with payload %02x %02x %02x %02x\n\r",
-                             auxlinkRxBuffer[2], auxlinkRxBuffer[1], auxlinkRxBuffer[3], auxlinkRxBuffer[4], auxlinkRxBuffer[5], auxlinkRxBuffer[6]);
-                    break;
-
+                if (count >= AUXLINK_MAX_MSG_SIZE)
+                    count = 0;
             }
         }
+        while (charbuf != Q_TIMEOUT);
 
         chThdSleepMilliseconds(50);
     }
