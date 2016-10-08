@@ -11,6 +11,7 @@
 #include "i2c.h"
 #include "spi.h"
 #include "auxlink.h"
+#include "exti.h"
 
 #include "blinker.h"
 #include "joystick.h"
@@ -34,14 +35,15 @@ int main(void)
     eicuTKInit();
     i2cTKInit();
     spiTKInit();
-//    auxlinkTKInit(0x01);
+    extiTKInit();
+    auxlinkTKInit(0x01);
 
     PRINT(" - Initialisation complete\n\r");
 
     /* Start threads */
     startBlinkerThread(); /* Blinks the green led */
     startJoystickThread(); /* Processes joystick input values */
-//    startAuxDeviceThread(); /* Auxiliary device handling */
+    startAuxDeviceThread(); /* Auxiliary device handling */
 
     PRINT(" - threads started\n\r");
 

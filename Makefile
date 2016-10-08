@@ -122,7 +122,7 @@ CSRC = $(STARTUPSRC) \
        $(TESTSRC) \
        $(STREAMSSRC) \
        $(SHELLSRC) \
-       adc.c pwm.c eicu.c i2c.c spi.c auxlink.c \
+       adc.c pwm.c eicu.c i2c.c spi.c auxlink.c exti.c \
        shell/cmd_status.c shell/cmd_out.c shell/cmd_auxmotor.c shell/cmd_reboot.c \
        shell/cmd_ping.c shell/cmd_diic.c shell/cmd_piic.c \
        shell/shellcommands.c \
