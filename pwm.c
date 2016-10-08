@@ -10,7 +10,7 @@ PWMDriver PWMD14;
 const PWMConfig pwmcfgOutput =
 {
     1000000,                                  /* 1 MHz PWM clock frequency.   */
-    10000,                                    /* PWM period 10 ms (in ticks). */
+    1000,                                     /* PWM period 1 ms */
     NULL,
     {
         {PWM_OUTPUT_ACTIVE_HIGH, NULL},
@@ -25,7 +25,7 @@ const PWMConfig pwmcfgOutput =
 const PWMConfig pwmcfgMotor =
 {
     1000000,                                  /* 1 MHz PWM clock frequency.   */
-    10000,                                    /* PWM period 10 ms (in ticks). */
+    1000,                                     /* PWM period 10 ms */
     NULL,
     {
         {PWM_OUTPUT_ACTIVE_HIGH, NULL},
