@@ -100,7 +100,6 @@ include $(CHIBIOS)/os/hal/osal/rt/osal.mk
 include $(CHIBIOS)/os/rt/rt.mk
 include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # Other files (optional).
-include $(CHIBIOS)/test/rt/test.mk
 include $(CHIBIOS)/os/hal/lib/streams/streams.mk
 include $(CHIBIOS)/os/various/shell/shell.mk
 # ChibiOS-Contrib
@@ -119,7 +118,6 @@ CSRC = $(STARTUPSRC) \
        $(HALSRC) \
        $(PLATFORMSRC) \
        $(BOARDSRC) \
-       $(TESTSRC) \
        $(STREAMSSRC) \
        $(SHELLSRC) \
        adc.c pwm.c eicu.c i2c.c spi.c auxlink.c exti.c \
@@ -161,7 +159,6 @@ INCDIR = ./shell ./threads \
          $(CHIBIOS)/os/license \
          $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) \
-         $(TESTINC) \
          $(STREAMSINC) $(SHELLINC)
 
 
