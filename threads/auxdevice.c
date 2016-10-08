@@ -14,6 +14,8 @@ static THD_FUNCTION(auxDeviceThread, arg)
     int count = 0;
     int i;
 
+    chRegSetThreadName("auxdevice");
+
     while (true)
     {
         msg_t charbuf;
