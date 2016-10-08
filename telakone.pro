@@ -18,7 +18,9 @@ SOURCES += \
     spi.c \
     auxlink.c \
     threads/auxdevice.c \
-    shell/cmd_ping.c
+    shell/cmd_ping.c \
+    shell/cmd_diic.c \
+    shell/cmd_piic.c
 
 HEADERS += \
     adc.h \

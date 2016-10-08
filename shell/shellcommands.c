@@ -10,6 +10,8 @@ const ShellCommand commands[] =
     { "out", cmd_out },
     { "am", cmd_auxmotor },
     { "ping", cmd_ping },
+    { "diic", cmd_diic },
+    { "piic", cmd_piic },
     { "reboot", cmd_reboot },
     {NULL, NULL}
 };
