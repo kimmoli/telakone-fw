@@ -18,13 +18,13 @@ void cmd_out(BaseSequentialStream *chp, int argc, char *argv[])
   	channel = strtol(argv[0], NULL, 0);
     newValue = strtol(argv[1], NULL, 0);
 
-    if (channel < 0 || channel > 3 || newValue < 0 || newValue > 100)
+    if (channel < 1 || channel > 4 || newValue < 0 || newValue > 100)
     {
         chprintf(chp, "out channel dutycycle\n\r");
         return;
     }
 
-    chprintf(chp, "Setting %d to %d %\n\r", channel, newValue);
+    chprintf(chp, "Setting output %d to %d %%\n\r", channel, newValue);
     pwmSetChannel(channel, 100, newValue);
 }
 

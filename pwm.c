@@ -9,8 +9,8 @@ PWMDriver PWMD14;
 
 const PWMConfig pwmcfgOutput =
 {
-    10000,                                    /* 10KHz PWM clock frequency.   */
-    10000,                                    /* PWM period 1S (in ticks).    */
+    1000000,                                  /* 1 MHz PWM clock frequency.   */
+    10000,                                    /* PWM period 10 ms (in ticks). */
     NULL,
     {
         {PWM_OUTPUT_ACTIVE_HIGH, NULL},
@@ -24,8 +24,8 @@ const PWMConfig pwmcfgOutput =
 
 const PWMConfig pwmcfgMotor =
 {
-    10000,                                    /* 10KHz PWM clock frequency.   */
-    10000,                                    /* PWM period 1S (in ticks).    */
+    1000000,                                  /* 1 MHz PWM clock frequency.   */
+    10000,                                    /* PWM period 10 ms (in ticks). */
     NULL,
     {
         {PWM_OUTPUT_ACTIVE_HIGH, NULL},
@@ -42,17 +42,17 @@ void pwmSetChannel(int ch, int range, int value)
     switch (ch)
     {
         case TK_PWM_OUT1:
-            pwmTKEnableChannelI(&PWMD10, 1, PWM_FRACTION_TO_WIDTH(&PWMD10, range, value)); break;
+            pwmTKEnableChannelI(&PWMD10, 0, PWM_FRACTION_TO_WIDTH(&PWMD10, range, value)); break;
         case TK_PWM_OUT2:
-            pwmTKEnableChannelI(&PWMD11, 1, PWM_FRACTION_TO_WIDTH(&PWMD11, range, value)); break;
+            pwmTKEnableChannelI(&PWMD11, 0, PWM_FRACTION_TO_WIDTH(&PWMD11, range, value)); break;
         case TK_PWM_OUT3:
-            pwmTKEnableChannelI(&PWMD13, 1, PWM_FRACTION_TO_WIDTH(&PWMD13, range, value)); break;
+            pwmTKEnableChannelI(&PWMD13, 0, PWM_FRACTION_TO_WIDTH(&PWMD13, range, value)); break;
         case TK_PWM_OUT4:
-            pwmTKEnableChannelI(&PWMD14, 1, PWM_FRACTION_TO_WIDTH(&PWMD14, range, value)); break;
+            pwmTKEnableChannelI(&PWMD14, 0, PWM_FRACTION_TO_WIDTH(&PWMD14, range, value)); break;
         case TK_PWM_MOTORH1:
-            pwmEnableChannelI(&PWMD9, 1,  PWM_FRACTION_TO_WIDTH(&PWMD9, range, value)); break;
+            pwmEnableChannelI(&PWMD9, 0,  PWM_FRACTION_TO_WIDTH(&PWMD9, range, value)); break;
         case TK_PWM_MOTORH2:
-            pwmEnableChannelI(&PWMD9, 2,  PWM_FRACTION_TO_WIDTH(&PWMD9, range, value)); break;
+            pwmEnableChannelI(&PWMD9, 1,  PWM_FRACTION_TO_WIDTH(&PWMD9, range, value)); break;
         default:
             ;
     }
@@ -103,13 +103,9 @@ void pwm_TK_lld_init(void)
 
     pwmObjectInit(&PWMD14);
     PWMD14.channels = STM32_TIM14_CHANNELS;
-    PWMD14.tim = STM32_TIM10;
-
-    pwm_TK_lld_start(&PWMD10);
-    pwm_TK_lld_start(&PWMD11);
-    pwm_TK_lld_start(&PWMD13);
-    pwm_TK_lld_start(&PWMD14);
+    PWMD14.tim = STM32_TIM14;
 }
+
 
 void pwm_TK_lld_start(PWMDriver *pwmp)
 {
@@ -234,8 +230,7 @@ void pwmTKStart(PWMDriver *pwmp, const PWMConfig *config)
     osalDbgCheck((pwmp != NULL) && (config != NULL));
 
     osalSysLock();
-    osalDbgAssert((pwmp->state == PWM_STOP) || (pwmp->state == PWM_READY),
-                "invalid state");
+    osalDbgAssert((pwmp->state == PWM_STOP) || (pwmp->state == PWM_READY), "invalid state");
     pwmp->config = config;
     pwmp->period = config->period;
     pwm_TK_lld_start(pwmp);
