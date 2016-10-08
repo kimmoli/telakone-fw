@@ -7,6 +7,7 @@
 #include "joystick.h"
 #include "eicu.h"
 #include "i2c.h"
+#include "spi.h"
 
 void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
 {
@@ -37,7 +38,7 @@ void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
         chprintf(chp, "Joystick           LR %d BF %d\n\r", joystickLR, joystickBF);
         chprintf(chp, "Motor:             L %d R %d\n\r", leftMotor, rightMotor );
         chprintf(chp, "Speed:             L %d R %d\n\r", leftSpeed, rightSpeed );
-        chprintf(chp, "Battery voltages:  L %.2f V R %.2f V\n\r", leftBatteryVoltage, rightBatteryVoltage);
+        chprintf(chp, "Battery voltages:  L %.2f V R %.2f V %s\n\r", leftBatteryVoltage, rightBatteryVoltage, (spiOK ? "" : "Error"));
         chprintf(chp, "Acceleration:      X %.2f g Y %.2f g Z %.2f g %s\n\r", accelX, accelY, accelZ, (accelOK ? "" : "Error"));
 
         if (loopcount > 0)

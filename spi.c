@@ -19,6 +19,8 @@ const SPIConfig spiconfigDrive2 =
     0
 };
 
+int spiOK;
+
 float driveAfeHandle(int drive, float value)
 {
     SPIDriver *spipc;
@@ -47,14 +49,25 @@ float driveAfeHandle(int drive, float value)
 
     /*
      *  Read comes from MPC3201 ADC
-     * X X 0 D11 D10 D9 D8 D7 D6 D5 D4 D3 D2 D1 D0 X
+     * Z Z 0 D11 D10 D9 D8 D7 D6 D5 D4 D3 D2 D1 D0 D0
      */
 
-    return ADC_MEAS48V_SCALE * (float)(((rxBuf[0]<<11) | ((rxBuf[1] & 0xFE) << 3)) / 16);
+    if ((rxBuf[0] & 0xe0) == 0x00)
+    {
+        spiOK |= drive;
+        return ADC_MEAS48V_SCALE * (float)(((rxBuf[0]<<11) | ((rxBuf[1] & 0xFE) << 3)) / 16);
+    }
+    else
+    {
+        spiOK &= ~drive;
+        return (float)0.0;
+    }
 }
 
 void spiTKInit(void)
 {
+    spiOK = 0;
+
     spiStart(&SPID2, &spiconfigDrive1);
     spiStart(&SPID3, &spiconfigDrive2);
 }
