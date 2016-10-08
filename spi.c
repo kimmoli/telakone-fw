@@ -1,5 +1,6 @@
 #include "hal.h"
 #include "spi.h"
+#include "helpers.h"
 
 const SPIConfig spiconfigDrive1 =
 {
@@ -34,7 +35,7 @@ float driveAfeHandle(int drive, float value)
      * Write to DAC-A, Buffered, 2x gain, Normal operation + 12 bit data
      */
 
-    int voutD = (int)((value*4096)/(2*EXT_VREF));
+    uint16_t voutD = MIN((uint16_t)((value*4096)/(2*EXT_VREF)), 0xFFF);
     txBuf[0] = 0x50 | ((voutD & 0x0F00) >> 8);
     txBuf[1] = voutD & 0xFF;
 
@@ -44,7 +45,7 @@ float driveAfeHandle(int drive, float value)
         spipc = &SPID3;
 
     spiSelect(spipc);
-    spiExchange(spipc, 1, txBuf, rxBuf);
+    spiExchange(spipc, 2, txBuf, rxBuf);
     spiUnselect(spipc);
 
     /*
