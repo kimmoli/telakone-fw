@@ -20,7 +20,9 @@ SOURCES += \
     threads/auxdevice.c \
     shell/cmd_ping.c \
     shell/cmd_diic.c \
-    shell/cmd_piic.c
+    shell/cmd_piic.c \
+    threads/auxmotor.c \
+    exti.c
 
 HEADERS += \
     adc.h \
@@ -39,7 +41,9 @@ HEADERS += \
     i2c.h \
     spi.h \
     auxlink.h \
-    threads/auxdevice.h
+    threads/auxdevice.h \
+    threads/auxmotor.h \
+    exti.h
 
 OTHER_FILES += \
     Makefile \

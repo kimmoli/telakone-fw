@@ -124,7 +124,7 @@ CSRC = $(STARTUPSRC) \
        shell/cmd_status.c shell/cmd_out.c shell/cmd_auxmotor.c shell/cmd_reboot.c \
        shell/cmd_ping.c shell/cmd_diic.c shell/cmd_piic.c \
        shell/shellcommands.c \
-       threads/blinker.c threads/joystick.c threads/auxdevice.c \
+       threads/blinker.c threads/joystick.c threads/auxdevice.c threads/auxmotor.c \
        main.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global

@@ -9,6 +9,8 @@ static virtual_timer_t button2debounce_vt;
 
 static void buttonExtIrqHandler(EXTDriver *extp, expchannel_t channel);
 
+event_source_t buttonEvent;
+
 static const EXTConfig extcfg =
 {
   {
@@ -38,11 +40,11 @@ static void button1debouncecb(void *arg)
     if (palReadLine(LINE_BUTTON1) == PAL_LOW)
     {
         button1count++;
-        palSetLine(LINE_REDLED);
+        chEvtBroadcastFlagsI(&buttonEvent, BUTTON1DOWN);
     }
     else
     {
-        palClearLine(LINE_REDLED);
+        chEvtBroadcastFlagsI(&buttonEvent, BUTTON1UP);
     }
 
     extChannelEnable(&EXTD1, 1);
@@ -55,7 +57,11 @@ static void button2debouncecb(void *arg)
     if (palReadLine(LINE_BUTTON2) == PAL_LOW)
     {
         button2count++;
-        palToggleLine(LINE_REDLED);
+        chEvtBroadcastFlagsI(&buttonEvent, BUTTON2DOWN);
+    }
+    else
+    {
+        chEvtBroadcastFlagsI(&buttonEvent, BUTTON2UP);
     }
 
     extChannelEnable(&EXTD1, 2);
@@ -65,6 +71,8 @@ void buttonExtIrqHandler(EXTDriver *extp, expchannel_t channel)
 {
     extChannelDisable(extp, channel);
 
+    chSysLockFromISR();
+
     if (channel == 1)
     {
         chVTSet(&button1debounce_vt, MS2ST(100), button1debouncecb, NULL);
@@ -73,12 +81,16 @@ void buttonExtIrqHandler(EXTDriver *extp, expchannel_t channel)
     {
         chVTSet(&button2debounce_vt, MS2ST(100), button2debouncecb, NULL);
     }
+
+    chSysUnlockFromISR();
 }
 
 void extiTKInit(void)
 {
     button1count = 0;
     button2count = 0;
+
+    chEvtObjectInit(&buttonEvent);
 
     extStart(&EXTD1, &extcfg);
 

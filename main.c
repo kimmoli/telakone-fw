@@ -44,6 +44,7 @@ int main(void)
     startBlinkerThread(); /* Blinks the green led */
     startJoystickThread(); /* Processes joystick input values */
     startAuxDeviceThread(); /* Auxiliary device handling */
+    startAuxmotorThread(); /* Auxiliary motor control */
 
     PRINT(" - threads started\n\r");
 

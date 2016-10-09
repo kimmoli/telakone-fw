@@ -2,13 +2,11 @@
 #include "hal.h"
 #include "chprintf.h"
 #include "shellcommands.h"
-#include "pwm.h"
+#include "auxmotor.h"
 
 void cmd_auxmotor(BaseSequentialStream *chp, int argc, char *argv[])
 {
     int newValue;
-
-    volatile int prevValue = 0;
 
     if (argc != 1)
     {
@@ -29,29 +27,6 @@ void cmd_auxmotor(BaseSequentialStream *chp, int argc, char *argv[])
     else
         chprintf(chp, "Aux motor direction %s at %d %% speed\n\r", ((newValue<0) ? "in" : "out"), abs(newValue));
 
-    if (prevValue*newValue <= 0) /* Stop or change direction */
-    {
-        palClearLine(LINE_MOTORL1);
-        palClearLine(LINE_MOTORL2);
-        pwmSetChannel(TK_PWM_MOTORH1, 100, 0);
-        pwmSetChannel(TK_PWM_MOTORH2, 100, 0);
-        chThdSleepMilliseconds(100);
-    }
-    if (newValue < 0) /* in */
-    {
-        palSetLine(LINE_MOTORL1);
-        palClearLine(LINE_MOTORL2);
-        pwmSetChannel(TK_PWM_MOTORH1, 100, 0);
-        pwmSetChannel(TK_PWM_MOTORH2, 100, abs(newValue));
-    }
-    else if (newValue > 0) /* out */
-    {
-        palClearLine(LINE_MOTORL1);
-        palSetLine(LINE_MOTORL2);
-        pwmSetChannel(TK_PWM_MOTORH1, 100, abs(newValue));
-        pwmSetChannel(TK_PWM_MOTORH2, 100, 0);
-    }
-
-    prevValue = newValue;
+    auxmotorControl(newValue);
 }
 
