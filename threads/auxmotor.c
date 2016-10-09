@@ -11,8 +11,6 @@ static volatile int newValue = 0;
 static volatile int prevValue = 0;
 static volatile int currentValue = 0;
 
-int auxmotorDrive;
-
 const int linearaccelstep = 10;
 const int linearacceldelay = 50;
 
@@ -92,8 +90,6 @@ void linearaccelcb(void *arg)
 
     if (newValue != currentValue)
         chVTSet(&linearaccel_vt, MS2ST(linearacceldelay), linearaccelcb, NULL);
-
-    auxmotorDrive = currentValue;
 }
 
 void auxmotorControl(int value)

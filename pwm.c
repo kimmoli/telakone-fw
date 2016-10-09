@@ -10,7 +10,7 @@ PWMDriver PWMD14;
 const PWMConfig pwmcfgOutput =
 {
     1000000,                                  /* 1 MHz PWM clock frequency.   */
-    1000,                                     /* PWM period 1 ms */
+    500,                                      /* PWM period 500 us, 2kHz */
     NULL,
     {
         {PWM_OUTPUT_ACTIVE_HIGH, NULL},
@@ -25,7 +25,7 @@ const PWMConfig pwmcfgOutput =
 const PWMConfig pwmcfgMotor =
 {
     1000000,                                  /* 1 MHz PWM clock frequency.   */
-    1000,                                     /* PWM period 1 ms */
+    100,                                      /* PWM period 100 us 10kHz */
     NULL,
     {
         {PWM_OUTPUT_ACTIVE_HIGH, NULL},
@@ -56,6 +56,43 @@ void pwmSetChannel(int ch, int range, int value)
         default:
             ;
     }
+}
+
+int pwmGetChannel(int ch, int range)
+{
+    int width = 0;
+    int period = 1;
+
+    switch (ch)
+    {
+        case TK_PWM_OUT1:
+            width = PWMD10.tim->CCR[0];
+            period = PWMD10.period;
+            break;
+        case TK_PWM_OUT2:
+            width = PWMD11.tim->CCR[0];
+            period = PWMD11.period;
+            break;
+        case TK_PWM_OUT3:
+            width = PWMD13.tim->CCR[0];
+            period = PWMD13.period;
+            break;
+        case TK_PWM_OUT4:
+            width = PWMD14.tim->CCR[0];
+            period = PWMD14.period;
+            break;
+        case TK_PWM_MOTORH1:
+            width = PWMD9.tim->CCR[0];
+            period = PWMD9.period;
+            break;
+        case TK_PWM_MOTORH2:
+            width = PWMD9.tim->CCR[1];
+            period = PWMD9.period;
+            break;
+        default:
+            ;
+    }
+    return (range * width) / period;
 }
 
 void pwmTKInit(void)

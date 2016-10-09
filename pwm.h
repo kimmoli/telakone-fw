@@ -10,6 +10,7 @@
 
 void pwmTKInit(void);
 void pwmSetChannel(int ch, int range, int value);
+int pwmGetChannel(int ch, int range);
 
 #define pwmTKEnableChannelI(pwmp, channel, width) do {                     \
     (pwmp)->enabled |= ((pwmchnmsk_t)1U << (pwmchnmsk_t)(channel));          \
