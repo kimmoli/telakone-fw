@@ -16,6 +16,7 @@
 #include "blinker.h"
 #include "joystick.h"
 #include "auxdevice.h"
+#include "auxmotor.h"
 
 int main(void)
 {
