@@ -59,11 +59,12 @@ int main(void)
     palClearLine(LINE_D1BRAKE);
     palClearLine(LINE_D2BRAKE);
 
+    chThdCreateFromHeap(NULL, SHELL_WA_SIZE, "shell", NORMALPRIO + 1,
+                                            shellThread, (void *)&shell_cfg1);
+
     while (true)
     {
-        thread_t *shelltp = chThdCreateFromHeap(NULL, SHELL_WA_SIZE, "shell", NORMALPRIO + 1,
-                                                shellThread, (void *)&shell_cfg1);
-        chThdWait(shelltp);
-        chThdSleepMilliseconds(1000);
+        chThdSleepMilliseconds(200);
+        palToggleLine(LINE_GREENLED);
     }
 }
