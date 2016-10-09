@@ -3,8 +3,18 @@
 #include "auxmotor.h"
 #include "exti.h"
 #include "pwm.h"
-
 #include "helpers.h"
+
+static virtual_timer_t linearaccel_vt;
+
+static volatile int newValue = 0;
+static volatile int prevValue = 0;
+static volatile int currentValue = 0;
+
+int auxmotorDrive;
+
+const int linearaccelstep = 10;
+const int linearacceldelay = 50;
 
 static THD_WORKING_AREA(waAuxmotorThread, 128);
 
@@ -40,39 +50,58 @@ void startAuxmotorThread(void)
     (void) chThdCreateStatic(waAuxmotorThread, sizeof(waAuxmotorThread), NORMALPRIO + 1, auxmotorThread, NULL);
 }
 
-void auxmotorControl(int newValue)
+void linearaccelcb(void *arg)
 {
-    volatile int prevValue = 0;
+    (void) arg;
 
-    PRINT("%d\n\r", newValue);
+    if (newValue > (currentValue + linearaccelstep))
+        currentValue += linearaccelstep;
+    else if (newValue < (currentValue - linearaccelstep))
+        currentValue -= linearaccelstep;
+    else
+        currentValue = newValue;
 
-    if (prevValue*newValue <= 0) /* Stop or change direction */
+    if (prevValue*currentValue < 0) /* change direction */
+    {
+        currentValue = 0;
+    }
+
+    if (currentValue == 0) /* stop */
     {
         palClearLine(LINE_MOTORL1);
         palClearLine(LINE_MOTORL2);
         pwmSetChannel(TK_PWM_MOTORH1, 100, 0);
         pwmSetChannel(TK_PWM_MOTORH2, 100, 0);
-        chThdSleepMilliseconds(100);
     }
-
-    if (newValue < 0) /* in */
+    else if (currentValue < 0) /* in */
     {
         palSetLine(LINE_MOTORL1);
         palClearLine(LINE_MOTORL2);
         pwmSetChannel(TK_PWM_MOTORH1, 100, 0);
-        pwmSetChannel(TK_PWM_MOTORH2, 100, abs(newValue)/2);
-        chThdSleepMilliseconds(100);
-        pwmSetChannel(TK_PWM_MOTORH2, 100, abs(newValue));
+        pwmSetChannel(TK_PWM_MOTORH2, 100, abs(currentValue));
     }
-    else if (newValue > 0) /* out */
+    else if (currentValue) /* out */
     {
         palClearLine(LINE_MOTORL1);
         palSetLine(LINE_MOTORL2);
-        pwmSetChannel(TK_PWM_MOTORH1, 100, abs(newValue)/2);
+        pwmSetChannel(TK_PWM_MOTORH1, 100, abs(currentValue));
         pwmSetChannel(TK_PWM_MOTORH2, 100, 0);
-        chThdSleepMilliseconds(100);
-        pwmSetChannel(TK_PWM_MOTORH1, 100, abs(newValue));
     }
 
-    prevValue = newValue;
+    prevValue = currentValue;
+
+    if (newValue != currentValue)
+        chVTSet(&linearaccel_vt, MS2ST(linearacceldelay), linearaccelcb, NULL);
+
+    auxmotorDrive = currentValue;
+}
+
+void auxmotorControl(int value)
+{
+    if (value == currentValue)
+        return;
+
+    newValue = value;
+
+    linearaccelcb(0);
 }

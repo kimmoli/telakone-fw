@@ -9,6 +9,7 @@
 #include "i2c.h"
 #include "spi.h"
 #include "exti.h"
+#include "auxmotor.h"
 
 void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
 {
@@ -27,7 +28,7 @@ void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
         // Average slope 2.5mV/C
         float temp = ((( EXT_VREF / 4096 * (float)adcAvgTempSensor) - 0.76 ) / 0.0025 ) + 25.0;
         float supplyVoltage = ADC_MEAS12V_SCALE * (float)adcAvgSupplyVoltage;
-        float motorCurrent = ADC_MOTORCURR_SCALE * (float)adcAvgMotorCurrent;
+        float auxmotorCurrent = ADC_MOTORCURR_SCALE * (float)adcAvgMotorCurrent;
 
         getAcceleration();
 
@@ -35,9 +36,10 @@ void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
         chprintf(chp, "Temp:              %.2f C\n\r", temp );
         chprintf(chp, "Ext temp:          %.2f C %s\n\r", getExtTemperature(), (extTempOK ? "" : "Error"));
         chprintf(chp, "Voltage:           %.2f V\n\r", supplyVoltage );
-        chprintf(chp, "Aux motor current: %.2f A\n\r", motorCurrent );
+        chprintf(chp, "Aux motor drive:   %d %%\n\r", auxmotorDrive );
+        chprintf(chp, "Aux motor current: %.2f A\n\r", auxmotorCurrent );
         chprintf(chp, "Joystick           LR %d BF %d\n\r", joystickLR, joystickBF);
-        chprintf(chp, "Motor:             L %d R %d\n\r", leftMotor, rightMotor );
+        chprintf(chp, "Motor drive:       L %d R %d\n\r", leftMotor, rightMotor );
         chprintf(chp, "Speed:             L %d R %d\n\r", leftSpeed, rightSpeed );
         chprintf(chp, "Battery voltages:  L %.2f V R %.2f V %s\n\r", leftBatteryVoltage, rightBatteryVoltage, (spiOK ? "" : "Error"));
         chprintf(chp, "Acceleration:      X %.2f g Y %.2f g Z %.2f g %s\n\r", accelX, accelY, accelZ, (accelOK ? "" : "Error"));
