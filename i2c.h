@@ -5,6 +5,7 @@
 #define LM75_TEMPREG 0x00
 
 #define TK_I2C_IIS328_ADDR 0x18
+#define IIS328_REG_AUTOINC 0x80
 #define IIS328_CTRL1REG 0x20
 #define IIS328_CTRL1REG_VALUE 0xC7 /* Low power 10Hz, 37Hz LPF, XYZ enabled */
 #define IIS328_CTRL4REG 0x23

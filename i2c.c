@@ -41,14 +41,10 @@ void getAcceleration(void)
 {
     uint8_t rxBuf[6];
     msg_t ret = MSG_OK;
-    int i;
 
     i2cAcquireBus(&I2CD1);
-    for (i=0 ; i<6; i++)
-    {
-        i2cMasterTransmit(&I2CD1, TK_I2C_IIS328_ADDR, (uint8_t[]){IIS328_OUTREG+i}, 1, NULL, 0);
-        ret |= i2cMasterReceive(&I2CD1, TK_I2C_IIS328_ADDR, rxBuf+i, 1);
-    }
+    i2cMasterTransmit(&I2CD1, TK_I2C_IIS328_ADDR, (uint8_t[]){IIS328_OUTREG | IIS328_REG_AUTOINC}, 1, NULL, 0);
+    ret = i2cMasterReceive(&I2CD1, TK_I2C_IIS328_ADDR, rxBuf, 6);
     i2cReleaseBus(&I2CD1);
 
     if (ret == MSG_OK)
