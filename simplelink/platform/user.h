@@ -949,9 +949,9 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
 
     \warning
 */
-/*
-#define sl_GeneralEvtHdlr
- */
+
+#define sl_GeneralEvtHdlr                 SimpleLinkGeneralEventHandler
+
 
 /*!
     \brief          An event handler for WLAN connection or disconnection indication

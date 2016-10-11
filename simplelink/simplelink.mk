@@ -9,7 +9,8 @@ SIMPLELINKSRC := ${SIMPLELINK}/source/device.c \
                  ${SIMPLELINK}/source/spawn.c \
                  ${SIMPLELINK}/source/wlan.c \
                  ${SIMPLELINK}/platform/platform.c \
-                 ${SIMPLELINK}/platform/platform_spi.c
+                 ${SIMPLELINK}/platform/platform_spi.c \
+                 ${SIMPLELINK}/platform/wifi.c
 
 SIMPLELINKINC := ${SIMPLELINK}/include \
                  ${SIMPLELINK}/source \

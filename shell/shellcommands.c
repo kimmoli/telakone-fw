@@ -12,6 +12,7 @@ const ShellCommand commands[] =
     { "ping", cmd_ping },
     { "diic", cmd_diic },
     { "piic", cmd_piic },
+    { "wifi", cmd_wifi },
     { "reboot", cmd_reboot },
     {NULL, NULL}
 };

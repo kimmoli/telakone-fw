@@ -18,6 +18,8 @@
 #include "auxdevice.h"
 #include "auxmotor.h"
 
+#include "wifi.h"
+
 int main(void)
 {
     halInit();
@@ -46,6 +48,8 @@ int main(void)
     startJoystickThread(); /* Processes joystick input values */
     startAuxDeviceThread(); /* Auxiliary device handling */
     startAuxmotorThread(); /* Auxiliary motor control */
+
+    startWifiThread();
 
     PRINT(" - threads started\n\r");
 

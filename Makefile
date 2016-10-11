@@ -126,7 +126,7 @@ CSRC = $(STARTUPSRC) \
        $(SIMPLELINKSRC) \
        adc.c pwm.c eicu.c i2c.c spi.c auxlink.c exti.c \
        shell/cmd_status.c shell/cmd_out.c shell/cmd_auxmotor.c shell/cmd_reboot.c \
-       shell/cmd_ping.c shell/cmd_diic.c shell/cmd_piic.c \
+       shell/cmd_ping.c shell/cmd_diic.c shell/cmd_piic.c cmd_wifi.c \
        shell/shellcommands.c \
        threads/blinker.c threads/joystick.c threads/auxdevice.c threads/auxmotor.c \
        main.c
