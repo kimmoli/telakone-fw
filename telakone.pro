@@ -22,7 +22,21 @@ SOURCES += \
     shell/cmd_diic.c \
     shell/cmd_piic.c \
     threads/auxmotor.c \
-    exti.c
+    exti.c \
+    simplelink/source/device.c \
+    simplelink/source/driver.c \
+    simplelink/source/flowcont.c \
+    simplelink/source/fs.c \
+    simplelink/source/netapp.c \
+    simplelink/source/netcfg.c \
+    simplelink/source/nonos.c \
+    simplelink/source/socket.c \
+    simplelink/source/spawn.c \
+    simplelink/source/wlan.c \
+    simplelink/platform/platform.c \
+    simplelink/platform/platform_spi.c \
+    simplelink/platform/wifi.c \
+    shell/cmd_wifi.c
 
 HEADERS += \
     adc.h \
@@ -43,12 +57,32 @@ HEADERS += \
     auxlink.h \
     threads/auxdevice.h \
     threads/auxmotor.h \
-    exti.h
+    exti.h \
+    simplelink/include/device.h \
+    simplelink/include/fs.h \
+    simplelink/include/netapp.h \
+    simplelink/include/netcfg.h \
+    simplelink/include/simplelink.h \
+    simplelink/include/socket.h \
+    simplelink/include/trace.h \
+    simplelink/include/wlan.h \
+    simplelink/include/wlan_rx_filters.h \
+    simplelink/platform/user.h \
+    simplelink/source/driver.h \
+    simplelink/source/flowcont.h \
+    simplelink/source/nonos.h \
+    simplelink/source/objInclusion.h \
+    simplelink/source/protocol.h \
+    simplelink/source/spawn.h \
+    helpers.h \
+    simplelink/platform/platform.h \
+    simplelink/platform/platform_spi.h \
+    simplelink/platform/wifi.h
 
 OTHER_FILES += \
     Makefile \
-    docs/joystick.png \
-    docs/README.md
+    docs/README.md \
+    simplelink/simplelink.mk
 
 INCLUDEPATH += \
  ./threads \
@@ -91,5 +125,7 @@ INCLUDEPATH += \
  ../ChibiOS-Contrib/os/hal/ports/STM32/LLD/FSMCv1 \
  ../ChibiOS-Contrib/os/hal/ports/STM32/LLD/LTDCv1 \
  ../ChibiOS-Contrib/os/hal/ports/STM32/LLD/TIMv1 \
- ../ChibiOS-Contrib/os/hal/ports/STM32/LLD/USBHv1
+ ../ChibiOS-Contrib/os/hal/ports/STM32/LLD/USBHv1 \
+ ./simplelink/platform \
+ ./simplelink/include
 
