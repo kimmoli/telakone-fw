@@ -13,7 +13,11 @@ const EICUChannelConfig speedinputcfg =
 
 const EICUConfig eicucfg =
 {
-    1000000,    /* EICU clock frequency in Hz.*/
+    10000,
+    /*
+     * EICU clock frequency in Hz.
+     * max 480 RPM, 14 tooth gear, pulse high ~4.5 ms
+     */
     {
         &speedinputcfg,
         &speedinputcfg
