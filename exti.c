@@ -9,6 +9,8 @@ static virtual_timer_t button2debounce_vt;
 
 static void buttonExtIrqHandler(EXTDriver *extp, expchannel_t channel);
 
+extern void HAL_GPIO_EXTI_Callback(EXTDriver *extp, expchannel_t channel);
+
 event_source_t buttonEvent;
 
 static const EXTConfig extcfg =
@@ -18,7 +20,7 @@ static const EXTConfig extcfg =
     {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOF, buttonExtIrqHandler},
     {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOF, buttonExtIrqHandler},
     {EXT_CH_MODE_DISABLED, NULL},
-    {EXT_CH_MODE_DISABLED, NULL},
+    {EXT_CH_MODE_RISING_EDGE | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOA, HAL_GPIO_EXTI_Callback},
     {EXT_CH_MODE_DISABLED, NULL},
     {EXT_CH_MODE_DISABLED, NULL},
     {EXT_CH_MODE_DISABLED, NULL},
@@ -47,7 +49,7 @@ static void button1debouncecb(void *arg)
         chEvtBroadcastFlagsI(&buttonEvent, BUTTON1UP);
     }
 
-    extChannelEnable(&EXTD1, 1);
+    extChannelEnable(&EXTD1, GPIOF_PF1_BUTTON1);
 }
 
 static void button2debouncecb(void *arg)
@@ -64,7 +66,7 @@ static void button2debouncecb(void *arg)
         chEvtBroadcastFlagsI(&buttonEvent, BUTTON2UP);
     }
 
-    extChannelEnable(&EXTD1, 2);
+    extChannelEnable(&EXTD1, GPIOF_PF2_BUTTON2);
 }
 
 void buttonExtIrqHandler(EXTDriver *extp, expchannel_t channel)
@@ -94,6 +96,6 @@ void extiTKInit(void)
 
     extStart(&EXTD1, &extcfg);
 
-    extChannelEnable(&EXTD1, 1);
-    extChannelEnable(&EXTD1, 2);
+    extChannelEnable(&EXTD1, GPIOF_PF1_BUTTON1);
+    extChannelEnable(&EXTD1, GPIOF_PF2_BUTTON2);
 }

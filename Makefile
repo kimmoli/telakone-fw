@@ -88,6 +88,7 @@ PROJECT = telakone
 # Imported source files and paths
 CHIBIOS = ../ChibiOS
 CHIBIOS_CONTRIB = ../ChibiOS-Contrib
+SIMPLELINK = ./simplelink
 
 # Startup files.
 include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
@@ -105,6 +106,8 @@ include $(CHIBIOS)/os/various/shell/shell.mk
 # ChibiOS-Contrib
 include ${CHIBIOS_CONTRIB}/os/hal/hal.mk
 include ${CHIBIOS_CONTRIB}/os/hal/ports/STM32/STM32F4xx/platform.mk
+# TI Simplelink
+include $(SIMPLELINK)/simplelink.mk
 
 # Define linker script file here
 LDSCRIPT= $(STARTUPLD)/STM32F407xG.ld
@@ -120,6 +123,7 @@ CSRC = $(STARTUPSRC) \
        $(BOARDSRC) \
        $(STREAMSSRC) \
        $(SHELLSRC) \
+       $(SIMPLELINKSRC) \
        adc.c pwm.c eicu.c i2c.c spi.c auxlink.c exti.c \
        shell/cmd_status.c shell/cmd_out.c shell/cmd_auxmotor.c shell/cmd_reboot.c \
        shell/cmd_ping.c shell/cmd_diic.c shell/cmd_piic.c \
@@ -159,7 +163,8 @@ INCDIR = ./shell ./threads \
          $(CHIBIOS)/os/license \
          $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) \
-         $(STREAMSINC) $(SHELLINC)
+         $(STREAMSINC) $(SHELLINC) \
+         $(SIMPLELINKINC)
 
 
 #
