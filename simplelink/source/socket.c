@@ -264,6 +264,8 @@ typedef union
 #if _SL_INCLUDE_FUNC(sl_Bind)
 _i16 sl_Bind(_i16 sd, const SlSockAddr_t *addr, _i16 addrlen)
 {
+    (void) addrlen;
+
 	_SlSockBindMsg_u    Msg;
     _SlCmdCtrl_t         CmdCtrl = {0, 0, (_SlArgSize_t)sizeof(_SocketResponse_t)};
 
@@ -320,6 +322,8 @@ typedef union
 #if _SL_INCLUDE_FUNC(sl_SendTo)
 _i16 sl_SendTo(_i16 sd, const void *pBuf, _i16 Len, _i16 flags, const SlSockAddr_t *to, SlSocklen_t tolen)
 {
+    (void) tolen;
+
     _SlSendtoMsg_u   Msg;
     _SlCmdCtrl_t     CmdCtrl = {0, 0, 0};
     _SlCmdExt_t      CmdExt;
@@ -500,6 +504,8 @@ typedef union
 #if _SL_INCLUDE_FUNC(sl_Connect)
 _i16 sl_Connect(_i16 sd, const SlSockAddr_t *addr, _i16 addrlen)
 {
+    (void) addrlen;
+
       _SlSockConnectMsg_u  Msg;
       _SlReturnVal_t       RetVal;
       _SlCmdCtrl_t         CmdCtrl = {0, (_SlArgSize_t)0, (_SlArgSize_t)sizeof(_SocketResponse_t)};
@@ -1103,6 +1109,8 @@ static const _SlCmdCtrl_t _SlSelectCmdCtrl =
 
 _i16 sl_Select(_i16 nfds, SlFdSet_t *readsds, SlFdSet_t *writesds, SlFdSet_t *exceptsds, struct SlTimeval_t *timeout)
 {
+    (void) exceptsds;
+
     _SlSelectMsg_u          Msg;
     _SelectAsyncResponse_t  AsyncRsp;
 	_u8 ObjIdx = MAX_CONCURRENT_ACTIONS;
