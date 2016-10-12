@@ -36,10 +36,10 @@
 
 #include "hal.h"
 #include "platform.h"
+#include "helpers.h"
 
 /**/
 P_EVENT_HANDLER     pIrqEventHandler = 0;
-
 
 void HAL_GPIO_EXTI_Callback(EXTDriver *extp, expchannel_t channel);
 
@@ -52,6 +52,7 @@ void HAL_GPIO_EXTI_Callback(EXTDriver *extp, expchannel_t channel);
 */
 void CC3100_disable(void)
 {
+    PRINT("disable\n\r");
     palClearLine(LINE_CCHIBL);
 }
 
@@ -64,6 +65,7 @@ void CC3100_disable(void)
 */
 void CC3100_enable(void)
 {
+    PRINT("enable\n\r");
     palSetLine(LINE_CCHIBL);
 }
 
@@ -76,6 +78,7 @@ void CC3100_enable(void)
 */
 void CC3100_InterruptEnable(void)
 {
+    PRINT("enable IRQ\n\r");
     /* Configure EXTI Line0 (connected to PA0 pin) in interrupt mode */
     extChannelEnable(&EXTD1, GPIOA_PA4_CCIRQ);
 }
@@ -89,6 +92,7 @@ void CC3100_InterruptEnable(void)
 */
 void CC3100_InterruptDisable(void)
 {
+    PRINT("disable IRQ\n\r");
     extChannelDisable(&EXTD1, GPIOA_PA4_CCIRQ);
 }
 
@@ -101,6 +105,8 @@ void HAL_GPIO_EXTI_Callback(EXTDriver *extp, expchannel_t channel)
 {
     (void) extp;
 
+    PRINT("IRQ %d\n\r", channel);
+
     if ( (channel == GPIOA_PA4_CCIRQ) && (NULL != pIrqEventHandler) )
     {
         pIrqEventHandler(0);
@@ -111,6 +117,8 @@ void HAL_GPIO_EXTI_Callback(EXTDriver *extp, expchannel_t channel)
 int registerInterruptHandler(P_EVENT_HANDLER InterruptHdl , void* pValue)
 {
     (void) pValue;
+
+    PRINT("register IRQ handler\n\r");
 
     pIrqEventHandler = InterruptHdl;
     return 0;
@@ -126,4 +134,17 @@ int registerInterruptHandler(P_EVENT_HANDLER InterruptHdl , void* pValue)
 void Delay(unsigned long delay)
 {
     chThdSleepMilliseconds(delay);
+}
+
+msg_t spawnTK(void *pEntry, void *pValue, uint32_t flags)
+{
+    (void) pValue;
+    (void) flags;
+
+    thread_t *spawnedThread = chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(1024), "spawn", NORMALPRIO, (tfunc_t)pEntry, NULL);
+
+    if (spawnedThread == NULL)
+        PRINT("ERROR spawning\n\r");
+
+    return MSG_OK;
 }

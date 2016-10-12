@@ -45,6 +45,7 @@
 #include "hal.h"
 #include "platform.h"
 #include "platform_spi.h"
+#include "helpers.h"
 
 const SPIConfig spiconfigCC3100 =
 {
@@ -83,6 +84,7 @@ Fd_t spi_Open(char *ifName, unsigned long flags)
 {
     (void) ifName;
     (void) flags;
+    PRINT("open\n\r");
 
     CC3100_disable();
     spiStart(&SPID1, &spiconfigCC3100);
@@ -107,6 +109,7 @@ int spi_Close(Fd_t fd)
 {
     (void) fd;
 
+    PRINT("close\n\r");
     CC3100_InterruptDisable();
 
     return 0;
@@ -136,9 +139,15 @@ int spi_Write (Fd_t fd, unsigned char *pBuff, int len)
 {
     (void) fd;
 
+    PRINT("write %d\n\r", len);
+
     spiSelect(&SPID1);
     spiSend(&SPID1, len, pBuff);
     spiUnselect(&SPID1);
+
+    for (int i=0; i<len; i++)
+        PRINT(" %02x", pBuff[i]);
+    PRINT("\n\r");
 
     return 0;
 }
@@ -163,9 +172,15 @@ int spi_Read(Fd_t fd, unsigned char *pBuff, int len)
 {
     (void) fd;
 
+    PRINT("read %d\n\r", len);
+
     spiSelect(&SPID1);
     spiReceive(&SPID1, len, pBuff);
     spiUnselect(&SPID1);
+
+    for (int i=0; i<len; i++)
+        PRINT(" %02x", pBuff[i]);
+    PRINT("\n\r");
 
     return 0;
 }

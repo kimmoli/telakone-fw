@@ -41,6 +41,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#include "hal.h"
+#include "helpers.h"
+
 /**/
 typedef void (*P_EVENT_HANDLER)(void* pValue);
 
@@ -102,6 +105,83 @@ int registerInterruptHandler(P_EVENT_HANDLER InterruptHdl , void* pValue);
     \warning
 */
 void Delay(unsigned long delay);
+
+/*
+ * Wrapper functions for semaphore and mutex calls which return void,
+ * Simplelink assumes they return 0 when succes.
+ */
+
+static inline msg_t dummyOsiFunc(void)
+{
+    return MSG_OK;
+}
+
+static inline msg_t chBSemObjectInitTK(binary_semaphore_t *bsp)
+{
+    chBSemObjectInit(bsp, FALSE);
+    return MSG_OK;
+}
+
+static inline msg_t chBSemSignalTK(binary_semaphore_t *bsp)
+{
+    if (bsp == NULL)
+        return MSG_RESET;
+
+    chBSemSignal(bsp);
+    return MSG_OK;
+}
+
+static inline msg_t chBSemWaitTimeoutTK(binary_semaphore_t *bsp, systime_t time)
+{
+    return chBSemWaitTimeoutS(bsp, time);
+}
+
+static inline msg_t chBSemDeleteTK(binary_semaphore_t *bsp)
+{
+    if (bsp == NULL)
+        return MSG_RESET;
+
+    bsp = NULL;
+    return MSG_OK;
+}
+
+static inline msg_t chMtxObjectInitTK(mutex_t *mp)
+{
+    if (mp == NULL)
+        return MSG_RESET;
+
+    chMtxObjectInit(mp);
+    return MSG_OK;
+}
+
+static inline msg_t chMtxLockTK(mutex_t *mp)
+{
+    if (mp == NULL)
+        return MSG_RESET;
+
+    chMtxLockS(mp);
+    return MSG_OK;
+}
+
+static inline msg_t chMtxUnlockTK(mutex_t *mp)
+{
+    if (mp == NULL)
+        return MSG_RESET;
+
+    chMtxUnlockS(mp);
+    return MSG_OK;
+}
+
+static inline msg_t chMtxDeleteTK(mutex_t *mp)
+{
+    if (mp == NULL)
+        return MSG_RESET;
+
+    mp = NULL;
+    return MSG_OK;
+}
+
+msg_t spawnTK(void *pEntry, void *pValue, uint32_t flags);
 
 #ifdef __cplusplus
 }

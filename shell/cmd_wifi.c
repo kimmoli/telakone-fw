@@ -19,7 +19,7 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
     }
     else if (strcmp(argv[0], "stop") == 0)
     {
-        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_START);
+        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_STOP);
     }
     else
     {

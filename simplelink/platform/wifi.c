@@ -7,7 +7,7 @@ event_source_t wifiEvent;
 static uint32_t g_Status = 0;
 static uint32_t g_GatewayIP = 0;
 
-static THD_WORKING_AREA(waWifiThread, 128);
+static THD_WORKING_AREA(waWifiThread, 1024);
 
 static THD_FUNCTION(wifiThread, arg)
 {
@@ -29,12 +29,13 @@ static THD_FUNCTION(wifiThread, arg)
 
         if (flags & WIFIEVENT_START)
         {
-            PRINT("wifi start\n\r");
+            PRINT("starting...\n\r");
             sl_Start(0, 0, 0);
         }
         else if (flags & WIFIEVENT_STOP)
         {
-            PRINT("wifi stop\n\r");
+            PRINT("stopping...\n\r");
+            sl_Stop(0);
         }
     }
 }
@@ -144,11 +145,12 @@ void SimpleLinkWlanEventHandler(SlWlanEvent_t *pWlanEvent)
 
 void SimpleLinkGeneralEventHandler(SlDeviceEvent_t *pDevEvent)
 {
-    (void) pDevEvent;
     /*
      * Most of the general errors are not FATAL are are to be handled
      * appropriately by the application
      */
-    PRINT(" [GENERAL EVENT] \n\r");
+    PRINT(" [GENERAL EVENT %d] ID %d, Sender %d\n\r", pDevEvent->Event,
+            pDevEvent->EventData.deviceEvent.status,
+            pDevEvent->EventData.deviceEvent.sender);
 }
 

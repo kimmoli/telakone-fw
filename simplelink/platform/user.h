@@ -62,6 +62,7 @@ extern "C" {
  */
 
 #include <string.h>
+#include "hal.h"
 #include "platform.h"
 #include "platform_spi.h"
 
@@ -702,9 +703,9 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
  ******************************************************************************
 */
 
-/*
+
 #define SL_PLATFORM_MULTI_THREADED
-*/
+
 
 #ifdef SL_PLATFORM_MULTI_THREADED
 
@@ -714,7 +715,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note           belongs to \ref proting_sec
     \warning
 */
-#define SL_OS_RET_CODE_OK
+#define SL_OS_RET_CODE_OK  MSG_OK
 
 /*!
     \brief
@@ -722,7 +723,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note           belongs to \ref proting_sec
     \warning
 */
-#define SL_OS_WAIT_FOREVER
+#define SL_OS_WAIT_FOREVER  TIME_INFINITE
 
 /*!
     \brief
@@ -730,7 +731,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note           belongs to \ref proting_sec
     \warning
 */
-#define SL_OS_NO_WAIT
+#define SL_OS_NO_WAIT  TIME_IMMEDIATE
 
 /*!
     \brief type definition for a time value
@@ -739,7 +740,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
 
     \note       belongs to \ref proting_sec
 */
-#define _SlTime_t
+#define _SlTime_t  systime_t
 
 /*!
     \brief  type definition for a sync object container
@@ -754,7 +755,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
 
     \note       belongs to \ref proting_sec
 */
-#define _SlSyncObj_t
+#define _SlSyncObj_t binary_semaphore_t
 
 
 /*!
@@ -771,7 +772,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note       belongs to \ref proting_sec
     \warning
 */
-#define sl_SyncObjCreate(pSyncObj,pName)
+#define sl_SyncObjCreate(pSyncObj,pName) chBSemObjectInitTK(pSyncObj)
 
 
 /*!
@@ -784,7 +785,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note       belongs to \ref proting_sec
     \warning
 */
-#define sl_SyncObjDelete(pSyncObj)
+#define sl_SyncObjDelete(pSyncObj)  chBSemDeleteTK(pSyncObj)
 
 
 /*!
@@ -799,7 +800,9 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note       the function could be called from ISR context
     \warning
 */
-#define sl_SyncObjSignal(pSyncObj)
+#define sl_SyncObjSignal(pSyncObj)  chBSemSignalTK(pSyncObj)
+
+#define sl_SyncObjSignalFromIRQ(pSyncObj)  chBSemSignalTK(pSyncObj)
 
 /*!
     \brief  This function waits for a sync signal of the specific sync object
@@ -816,7 +819,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note       belongs to \ref proting_sec
     \warning
 */
-#define sl_SyncObjWait(pSyncObj,Timeout)
+#define sl_SyncObjWait(pSyncObj,Timeout)  chBSemWaitTimeoutTK(pSyncObj, Timeout)
 
 /*!
     \brief  type definition for a locking object container
@@ -828,7 +831,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note   On each porting or platform the type could be whatever is needed - integer, structure etc.
     \note       belongs to \ref proting_sec
 */
-#define _SlLockObj_t
+#define _SlLockObj_t  mutex_t
 
 /*!
     \brief  This function creates a locking object.
@@ -843,7 +846,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note       belongs to \ref proting_sec
     \warning
 */
-#define sl_LockObjCreate(pLockObj,pName)
+#define sl_LockObjCreate(pLockObj,pName)  chMtxObjectInitTK(pLockObj)
 
 /*!
     \brief  This function deletes a locking object.
@@ -855,7 +858,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note       belongs to \ref proting_sec
     \warning
 */
-#define sl_LockObjDelete(pLockObj)
+#define sl_LockObjDelete(pLockObj)  chMtxDeleteTK(pLockObj)
 
 /*!
     \brief  This function locks a locking object.
@@ -876,7 +879,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note       belongs to \ref proting_sec
     \warning
 */
-#define sl_LockObjLock(pLockObj,Timeout)
+#define sl_LockObjLock(pLockObj,Timeout)  chMtxLockTK(pLockObj)
 
 /*!
     \brief  This function unlock a locking object.
@@ -888,7 +891,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note       belongs to \ref proting_sec
     \warning
 */
-#define sl_LockObjUnlock(pLockObj)
+#define sl_LockObjUnlock(pLockObj)  chMtxUnlockTK(pLockObj)
 
 #endif
 /*!
@@ -908,12 +911,12 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note       belongs to \ref proting_sec
     \warning
 */
-/*
+
 #define SL_PLATFORM_EXTERNAL_SPAWN
-*/
+
 
 #ifdef SL_PLATFORM_EXTERNAL_SPAWN
-#define sl_Spawn(pEntry,pValue,flags)
+#define sl_Spawn(pEntry,pValue,flags)  spawnTK(pEntry, pValue, flags)
 #endif
 
 /*!
