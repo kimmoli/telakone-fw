@@ -21,6 +21,10 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
     {
         chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_STOP);
     }
+    else if (strcmp(argv[0], "prog") == 0)
+    {
+        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_PROG);
+    }
     else
     {
         usage(chp);
@@ -32,4 +36,5 @@ void usage(BaseSequentialStream *chp)
     chprintf(chp, "wifi command\n\r");
     chprintf(chp, "- start\n\r");
     chprintf(chp, "- stop\n\r");
+    chprintf(chp, "- prog\n\r");
 }

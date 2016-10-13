@@ -14,4 +14,5 @@ SIMPLELINKSRC := ${SIMPLELINK}/source/device.c \
 
 SIMPLELINKINC := ${SIMPLELINK}/include \
                  ${SIMPLELINK}/source \
-                 ${SIMPLELINK}/platform                 
+                 ${SIMPLELINK}/platform \
+                 ${SIMPLELINK}/hostprog

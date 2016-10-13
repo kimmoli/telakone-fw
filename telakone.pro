@@ -77,7 +77,9 @@ HEADERS += \
     helpers.h \
     simplelink/platform/platform.h \
     simplelink/platform/platform_spi.h \
-    simplelink/platform/wifi.h
+    simplelink/platform/wifi.h \
+    simplelink/hostprog/host_programming_1.0.1.6-2.7.0.0_ucf.h \
+    simplelink/hostprog/host_programming_1.0.1.6-2.7.0.0_ucf-signed.h
 
 OTHER_FILES += \
     Makefile \
@@ -127,5 +129,6 @@ INCLUDEPATH += \
  ../ChibiOS-Contrib/os/hal/ports/STM32/LLD/TIMv1 \
  ../ChibiOS-Contrib/os/hal/ports/STM32/LLD/USBHv1 \
  ./simplelink/platform \
- ./simplelink/include
+ ./simplelink/include \
+ ./simplelink/hostprog
 

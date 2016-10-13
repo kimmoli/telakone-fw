@@ -52,7 +52,7 @@ void HAL_GPIO_EXTI_Callback(EXTDriver *extp, expchannel_t channel);
 */
 void CC3100_disable(void)
 {
-    PRINT("disable\n\r");
+//    PRINT("disable\n\r");
     palClearLine(LINE_CCHIBL);
 }
 
@@ -65,7 +65,7 @@ void CC3100_disable(void)
 */
 void CC3100_enable(void)
 {
-    PRINT("enable\n\r");
+//    PRINT("enable\n\r");
     palSetLine(LINE_CCHIBL);
 }
 
@@ -78,7 +78,7 @@ void CC3100_enable(void)
 */
 void CC3100_InterruptEnable(void)
 {
-    PRINT("enable IRQ\n\r");
+//    PRINT("enable IRQ\n\r");
     /* Configure EXTI Line0 (connected to PA0 pin) in interrupt mode */
     extChannelEnable(&EXTD1, GPIOA_PA4_CCIRQ);
 }
@@ -92,7 +92,7 @@ void CC3100_InterruptEnable(void)
 */
 void CC3100_InterruptDisable(void)
 {
-    PRINT("disable IRQ\n\r");
+//    PRINT("disable IRQ\n\r");
     extChannelDisable(&EXTD1, GPIOA_PA4_CCIRQ);
 }
 
@@ -105,7 +105,7 @@ void HAL_GPIO_EXTI_Callback(EXTDriver *extp, expchannel_t channel)
 {
     (void) extp;
 
-    PRINT("IRQ %d\n\r", channel);
+//    PRINT("IRQ %d\n\r", channel);
 
     if ( (channel == GPIOA_PA4_CCIRQ) && (NULL != pIrqEventHandler) )
     {
@@ -118,7 +118,7 @@ int registerInterruptHandler(P_EVENT_HANDLER InterruptHdl , void* pValue)
 {
     (void) pValue;
 
-    PRINT("register IRQ handler\n\r");
+//    PRINT("register IRQ handler\n\r");
 
     pIrqEventHandler = InterruptHdl;
     return 0;

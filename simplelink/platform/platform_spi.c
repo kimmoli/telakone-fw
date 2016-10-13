@@ -52,7 +52,7 @@ const SPIConfig spiconfigCC3100 =
     NULL,
     GPIOA,
     GPIOA_PA3_CCSPICSL,
-    SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_BR_2,
+    0, //SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_BR_2,
     0
 };
 
@@ -84,7 +84,7 @@ Fd_t spi_Open(char *ifName, unsigned long flags)
 {
     (void) ifName;
     (void) flags;
-    PRINT("open\n\r");
+//    PRINT("open\n\r");
 
     CC3100_disable();
     spiStart(&SPID1, &spiconfigCC3100);
@@ -109,7 +109,7 @@ int spi_Close(Fd_t fd)
 {
     (void) fd;
 
-    PRINT("close\n\r");
+//    PRINT("close\n\r");
     CC3100_InterruptDisable();
 
     return 0;
@@ -149,6 +149,8 @@ int spi_Write (Fd_t fd, unsigned char *pBuff, int len)
         PRINT(" %02x", pBuff[i]);
     PRINT("\n\r");
 
+    Delay(50);
+
     return 0;
 }
 
@@ -181,6 +183,8 @@ int spi_Read(Fd_t fd, unsigned char *pBuff, int len)
     for (int i=0; i<len; i++)
         PRINT(" %02x", pBuff[i]);
     PRINT("\n\r");
+
+    Delay(50);
 
     return 0;
 }

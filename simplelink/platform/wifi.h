@@ -5,6 +5,7 @@
 
 #define WIFIEVENT_START  1
 #define WIFIEVENT_STOP   2
+#define WIFIEVENT_PROG   4
 
 extern event_source_t wifiEvent;
 
