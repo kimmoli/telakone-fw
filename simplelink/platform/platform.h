@@ -44,6 +44,8 @@ extern "C" {
 #include "hal.h"
 #include "helpers.h"
 
+extern thread_t *spawnedThreadRef;
+
 /**/
 typedef void (*P_EVENT_HANDLER)(void* pValue);
 
@@ -133,7 +135,7 @@ static inline msg_t chBSemSignalTK(binary_semaphore_t *bsp)
 
 static inline msg_t chBSemWaitTimeoutTK(binary_semaphore_t *bsp, systime_t time)
 {
-    return chBSemWaitTimeoutS(bsp, time);
+    return chBSemWaitTimeout(bsp, time);
 }
 
 static inline msg_t chBSemDeleteTK(binary_semaphore_t *bsp)
@@ -154,12 +156,16 @@ static inline msg_t chMtxObjectInitTK(mutex_t *mp)
     return MSG_OK;
 }
 
-static inline msg_t chMtxLockTK(mutex_t *mp)
+static inline msg_t chMtxLockTK(mutex_t *mp, systime_t timeout)
 {
     if (mp == NULL)
         return MSG_RESET;
 
-    chMtxLockS(mp);
+    if (timeout == TIME_IMMEDIATE)
+        return (chMtxTryLock(mp) ? MSG_OK : MSG_RESET);
+    else
+        chMtxLock(mp);
+
     return MSG_OK;
 }
 
@@ -168,7 +174,7 @@ static inline msg_t chMtxUnlockTK(mutex_t *mp)
     if (mp == NULL)
         return MSG_RESET;
 
-    chMtxUnlockS(mp);
+    chMtxUnlock(mp);
     return MSG_OK;
 }
 

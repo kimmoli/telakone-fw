@@ -2,17 +2,31 @@
 #include "wifi.h"
 #include "helpers.h"
 
+#ifdef TK_CC3100_PROGRAMMING
 #include "host_programming_1.0.1.6-2.7.0.0_ucf.h"
 #include "host_programming_1.0.1.6-2.7.0.0_ucf-signed.h"
+#endif
 
 event_source_t wifiEvent;
 
 static uint32_t g_Status = 0;
+static uint32_t g_ulStatus = 0;
 static uint32_t g_GatewayIP = 0;
+static uint32_t g_ulStaIp = 0;
 
+static void slFlashReadVersion(void);
+static msg_t startWifi(void);
+static void startWifiCallback(uint32_t status);
+
+#ifdef TK_CC3100_PROGRAMMING
 static void slFlashProgram(void);
 static void slFlashProgramAbort(char *msg);
-static void slFlashReadVersion(void);
+#endif
+
+thread_t *wifiThreadRef;
+
+static bool wifiRunning = false;
+static bool wifiError = false;
 
 static THD_WORKING_AREA(waWifiThread, 2048);
 
@@ -34,24 +48,39 @@ static THD_FUNCTION(wifiThread, arg)
         flags = chEvtGetAndClearFlagsI(&elWifi);
         chSysUnlock();
 
-        if (flags & WIFIEVENT_START)
+        if (flags & WIFIEVENT_START && !wifiRunning)
         {
-            PRINT("starting...\n\r");
-            signed long ret = sl_Start(0, 0, 0);
-            PRINT("Returned %d\n\r", ret);
+            PRINT("starting... ");
+            chThdSleepMilliseconds(50);
+
+            if (startWifi() == MSG_OK)
+                PRINT("ok\n\r");
+            else
+                PRINT("failed\n\r");
         }
-        else if (flags & WIFIEVENT_STOP)
+        else if (flags & WIFIEVENT_STOP && wifiRunning)
         {
-            PRINT("stopping...\n\r");
-            sl_Stop(0);
+            PRINT("stopping... ");
+            chThdSleepMilliseconds(50);
+
+            if (sl_Stop(0) == MSG_OK)
+                PRINT("ok\n\r");
+            else
+                PRINT("failed\n\r");
         }
-        else if (flags & WIFIEVENT_PROG)
+#ifdef TK_CC3100_PROGRAMMING
+        else if (flags & WIFIEVENT_PROG && !wifiRunning)
         {
             slFlashProgram();
         }
-        else if (flags & WIFIEVENT_VERSION)
+#endif
+        else if (flags & WIFIEVENT_VERSION && wifiRunning)
         {
             slFlashReadVersion();
+        }
+        else
+        {
+            PRINT("Unknown event or wifi in wrong state. Wifi is now %s\n\r", (wifiRunning ? "running" : "not running"));
         }
     }
 }
@@ -59,7 +88,37 @@ static THD_FUNCTION(wifiThread, arg)
 void startWifiThread(void)
 {
     chEvtObjectInit(&wifiEvent);
-    (void) chThdCreateStatic(waWifiThread, sizeof(waWifiThread), NORMALPRIO + 1, wifiThread, NULL);
+    wifiThreadRef = chThdCreateStatic(waWifiThread, sizeof(waWifiThread), HIGHPRIO-1, wifiThread, NULL);
+}
+
+msg_t startWifi(void)
+{
+    sl_Start(0, 0, startWifiCallback);
+
+    while (!wifiRunning && !wifiError)
+    {
+        chThdSleepMilliseconds(10);
+    }
+
+    return (wifiRunning ? MSG_OK : MSG_RESET);
+}
+
+/*
+ * Callbacks
+ */
+
+void startWifiCallback(uint32_t status)
+{
+    if (status != ROLE_AP)
+    {
+        sl_WlanSetMode(ROLE_AP);
+        wifiError = true;
+    }
+    else
+    {
+        wifiError = false;
+        wifiRunning = true;
+    }
 }
 
 void SimpleLinkHttpServerCallback(SlHttpServerEvent_t *pHttpEvent,
@@ -96,9 +155,32 @@ void SimpleLinkNetAppEventHandler(SlNetAppEvent_t *pNetAppEvent)
         }
         break;
 
+        case SL_NETAPP_IP_LEASED_EVENT:
+        {
+            SET_STATUS_BIT(g_ulStatus, STATUS_BIT_IP_LEASED);
+
+            g_ulStaIp = (pNetAppEvent)->EventData.ipLeased.ip_address;
+
+            PRINT("[NETAPP EVENT] IP Leased to Client: IP=%d.%d.%d.%d\n\r",
+                        SL_IPV4_BYTE(g_ulStaIp,3), SL_IPV4_BYTE(g_ulStaIp,2),
+                        SL_IPV4_BYTE(g_ulStaIp,1), SL_IPV4_BYTE(g_ulStaIp,0));
+        }
+        break;
+
+        case SL_NETAPP_IP_RELEASED_EVENT:
+        {
+            CLR_STATUS_BIT(g_ulStatus, STATUS_BIT_IP_LEASED);
+
+            PRINT("[NETAPP EVENT] IP Released for Client: IP=%d.%d.%d.%d\n\r",
+                        SL_IPV4_BYTE(g_ulStaIp,3), SL_IPV4_BYTE(g_ulStaIp,2),
+                        SL_IPV4_BYTE(g_ulStaIp,1), SL_IPV4_BYTE(g_ulStaIp,0));
+
+        }
+        break;
+
         default:
         {
-            PRINT(" [NETAPP EVENT] Unexpected event \n\r");
+            PRINT(" [NETAPP EVENT] Unexpected event %d\n\r", pNetAppEvent->Event);
         }
         break;
     }
@@ -127,6 +209,8 @@ void SimpleLinkWlanEventHandler(SlWlanEvent_t *pWlanEvent)
              * pEventData = &pWlanEvent->EventData.STAandP2PModeWlanConnected;
              *
              */
+
+            PRINT(" [WLAN EVENT] Connected\n\r");
         }
         break;
 
@@ -142,18 +226,30 @@ void SimpleLinkWlanEventHandler(SlWlanEvent_t *pWlanEvent)
             /* If the user has initiated 'Disconnect' request, 'reason_code' is SL_USER_INITIATED_DISCONNECTION */
             if(SL_WLAN_DISCONNECT_USER_INITIATED_DISCONNECTION == pEventData->reason_code)
             {
-                PRINT(" Device disconnected from the AP on application's request \n\r");
+                PRINT(" [WLAN EVENT] Device disconnected from the AP on application's request \n\r");
             }
             else
             {
-                PRINT(" Device disconnected from the AP on an ERROR..!! \n\r");
+                PRINT(" [WLAN EVENT] Device disconnected from the AP on an ERROR..!! \n\r");
             }
+        }
+        break;
+
+        case SL_WLAN_STA_CONNECTED_EVENT:
+        {
+            PRINT(" [WLAN EVENT] Station connected.\r\n");
+        }
+        break;
+
+        case SL_WLAN_STA_DISCONNECTED_EVENT:
+        {
+            PRINT(" [WLAN EVENT] Station disconnected.\r\n");
         }
         break;
 
         default:
         {
-            PRINT(" [WLAN EVENT] Unexpected event \n\r");
+            PRINT(" [WLAN EVENT] Unexpected event %d\n\r", pWlanEvent->Event);
         }
         break;
     }
@@ -170,9 +266,49 @@ void SimpleLinkGeneralEventHandler(SlDeviceEvent_t *pDevEvent)
             pDevEvent->EventData.deviceEvent.sender);
 }
 
+void slFlashReadVersion(void)
+{
+    SlVersionFull ver;
+    uint8_t pConfigOpt;
+    uint8_t pConfigLen;
+    int32_t retVal = 0;
+
+    /* read the version and print it on terminal */
+    pConfigOpt = SL_DEVICE_GENERAL_VERSION;
+    pConfigLen = sizeof(SlVersionFull);
+    retVal = sl_DevGet(SL_DEVICE_GENERAL_CONFIGURATION,&pConfigOpt,&pConfigLen,(_u8 *)(&ver));
+
+    if(retVal < 0)
+    {
+        PRINT("Reading version failed. Error code: %d\r\n", (int)retVal);
+        chThdSleepMilliseconds(50);
+        return;
+    }
+
+    if (ver.ChipFwAndPhyVersion.ChipId & 0x10)
+        PRINT("This is a CC3200");
+    else
+        PRINT("This is a CC3100");
+
+    if (ver.ChipFwAndPhyVersion.ChipId & 0x2)
+        PRINT("Z device\r\n");
+    else
+        PRINT("R device\r\n");
+
+    PRINT("NWP %d.%d.%d.%d\n\rMAC 31.%d.%d.%d.%d\n\rPHY %d.%d.%d.%d\n\r\n\r", \
+        (_u8)ver.NwpVersion[0],(_u8)ver.NwpVersion[1],(_u8)ver.NwpVersion[2],(_u8)ver.NwpVersion[3], \
+        (_u8)ver.ChipFwAndPhyVersion.FwVersion[0],(_u8)ver.ChipFwAndPhyVersion.FwVersion[1], \
+        (_u8)ver.ChipFwAndPhyVersion.FwVersion[2],(_u8)ver.ChipFwAndPhyVersion.FwVersion[3], \
+        ver.ChipFwAndPhyVersion.PhyVersion[0],(_u8)ver.ChipFwAndPhyVersion.PhyVersion[1], \
+        ver.ChipFwAndPhyVersion.PhyVersion[2],(_u8)ver.ChipFwAndPhyVersion.PhyVersion[3]);
+
+    chThdSleepMilliseconds(50);
+}
+
 /*
  * Host programming related stuff
  */
+#ifdef TK_CC3100_PROGRAMMING
 
 static SerialConfig slConfig =
 {
@@ -287,8 +423,6 @@ void slFlashProgram(void)
 
     PRINT("ok\n\r");
 
-    slFlashReadVersion();
-
     uint32_t Token;
     int32_t fileHandle;
 
@@ -296,7 +430,7 @@ void slFlashProgram(void)
     chThdSleepMilliseconds(50);
 
     /* create/open the servicepack file for 128KB with rollback, secured and public write */
-    retVal = sl_FsOpen("/sys/servicepack.ucf", FS_MODE_OPEN_CREATE(131072,
+    retVal = sl_FsOpen((const unsigned char *)"/sys/servicepack.ucf", FS_MODE_OPEN_CREATE(131072,
         _FS_FILE_OPEN_FLAG_SECURE|_FS_FILE_OPEN_FLAG_COMMIT|_FS_FILE_PUBLIC_WRITE), &Token, &fileHandle);
 
     if(retVal < 0)
@@ -318,12 +452,17 @@ void slFlashProgram(void)
             slFlashProgramAbort("Error programming file. Aborting...\n\r");
             return;
         }
+        PRINT(" %d", retVal);
+        chThdSleepMilliseconds(50);
 
         remainingLen -= chunkLen;
         movingOffset += chunkLen;
         chunkLen = (_u32)MIN(1024 /*CHUNK_LEN*/, remainingLen);
     }
     while (chunkLen > 0);
+
+    PRINT(" done.\n\r");
+    chThdSleepMilliseconds(50);
 
     /* close the servicepack file */
     retVal = sl_FsClose(fileHandle, 0, (_u8 *)servicePackImageSig, sizeof(servicePackImageSig));
@@ -332,6 +471,8 @@ void slFlashProgram(void)
         slFlashProgramAbort("Error closing file. Aborting...\n\r");
         return;
     }
+
+    slFlashProgramAbort("Programming completed.\n\r");
 }
 
 void slFlashProgramAbort(char *msg)
@@ -344,41 +485,4 @@ void slFlashProgramAbort(char *msg)
     palSetLine(LINE_CCHIBL);
 }
 
-void slFlashReadVersion(void)
-{
-    SlVersionFull ver;
-    uint8_t pConfigOpt;
-    uint8_t pConfigLen;
-    int32_t retVal = 0;
-
-    /* read the version and print it on terminal */
-    pConfigOpt = SL_DEVICE_GENERAL_VERSION;
-    pConfigLen = sizeof(SlVersionFull);
-    retVal = sl_DevGet(SL_DEVICE_GENERAL_CONFIGURATION,&pConfigOpt,&pConfigLen,(_u8 *)(&ver));
-
-    if(retVal < 0)
-    {
-        PRINT("Reading version failed. Error code: %d\r\n", (int)retVal);
-        chThdSleepMilliseconds(50);
-        return;
-    }
-
-    if (ver.ChipFwAndPhyVersion.ChipId & 0x10)
-        PRINT("This is a CC3200");
-    else
-        PRINT("This is a CC3100");
-
-    if (ver.ChipFwAndPhyVersion.ChipId & 0x2)
-        PRINT("Z device\r\n");
-    else
-        PRINT("R device\r\n");
-
-    PRINT("NWP %d.%d.%d.%d\n\rMAC 31.%d.%d.%d.%d\n\rPHY %d.%d.%d.%d\n\r\n\r", \
-        (_u8)ver.NwpVersion[0],(_u8)ver.NwpVersion[1],(_u8)ver.NwpVersion[2],(_u8)ver.NwpVersion[3], \
-        (_u8)ver.ChipFwAndPhyVersion.FwVersion[0],(_u8)ver.ChipFwAndPhyVersion.FwVersion[1], \
-        (_u8)ver.ChipFwAndPhyVersion.FwVersion[2],(_u8)ver.ChipFwAndPhyVersion.FwVersion[3], \
-        ver.ChipFwAndPhyVersion.PhyVersion[0],(_u8)ver.ChipFwAndPhyVersion.PhyVersion[1], \
-        ver.ChipFwAndPhyVersion.PhyVersion[2],(_u8)ver.ChipFwAndPhyVersion.PhyVersion[3]);
-
-    chThdSleepMilliseconds(50);
-}
+#endif // TK_CC3100_PROGRAMMING

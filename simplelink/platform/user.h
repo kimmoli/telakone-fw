@@ -879,7 +879,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note       belongs to \ref proting_sec
     \warning
 */
-#define sl_LockObjLock(pLockObj,Timeout)  chMtxLockTK(pLockObj)
+#define sl_LockObjLock(pLockObj,Timeout)  chMtxLockTK(pLockObj, Timeout)
 
 /*!
     \brief  This function unlock a locking object.
