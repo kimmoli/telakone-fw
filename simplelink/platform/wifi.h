@@ -3,9 +3,10 @@
 
 #include "simplelink.h"
 
-#define WIFIEVENT_START  1
-#define WIFIEVENT_STOP   2
-#define WIFIEVENT_PROG   4
+#define WIFIEVENT_START   1
+#define WIFIEVENT_STOP    2
+#define WIFIEVENT_PROG    4
+#define WIFIEVENT_VERSION 8
 
 extern event_source_t wifiEvent;
 

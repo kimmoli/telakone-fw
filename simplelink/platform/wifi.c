@@ -14,7 +14,7 @@ static void slFlashProgram(void);
 static void slFlashProgramAbort(char *msg);
 static void slFlashReadVersion(void);
 
-static THD_WORKING_AREA(waWifiThread, 1024);
+static THD_WORKING_AREA(waWifiThread, 2048);
 
 static THD_FUNCTION(wifiThread, arg)
 {
@@ -48,6 +48,10 @@ static THD_FUNCTION(wifiThread, arg)
         else if (flags & WIFIEVENT_PROG)
         {
             slFlashProgram();
+        }
+        else if (flags & WIFIEVENT_VERSION)
+        {
+            slFlashReadVersion();
         }
     }
 }

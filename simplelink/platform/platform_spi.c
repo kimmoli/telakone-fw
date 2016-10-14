@@ -139,19 +139,19 @@ int spi_Write (Fd_t fd, unsigned char *pBuff, int len)
 {
     (void) fd;
 
-    PRINT("write %d\n\r", len);
+//    PRINT("write %d\n\r", len);
 
     spiSelect(&SPID1);
     spiSend(&SPID1, len, pBuff);
     spiUnselect(&SPID1);
 
-    for (int i=0; i<len; i++)
-        PRINT(" %02x", pBuff[i]);
-    PRINT("\n\r");
+//    for (int i=0; i<len; i++)
+//        PRINT(" %02x", pBuff[i]);
+//    PRINT("\n\r");
 
-    Delay(50);
+//    Delay(50);
 
-    return 0;
+    return len;
 }
 
 /*!
@@ -173,20 +173,24 @@ int spi_Write (Fd_t fd, unsigned char *pBuff, int len)
 int spi_Read(Fd_t fd, unsigned char *pBuff, int len)
 {
     (void) fd;
+//    uint8_t rxBuf[1024];
 
-    PRINT("read %d\n\r", len);
+//    PRINT("read %d\n\r", len);
 
     spiSelect(&SPID1);
     spiReceive(&SPID1, len, pBuff);
     spiUnselect(&SPID1);
 
-    for (int i=0; i<len; i++)
-        PRINT(" %02x", pBuff[i]);
-    PRINT("\n\r");
+//    for (int i=0; i<len; i++)
+//    {
+//        PRINT(" %02x", rxBuf[i]);
+//        *(pBuff+i) = rxBuf[i];
+//    }
+//    PRINT("\n\r");
 
-    Delay(50);
+//    Delay(50);
 
-    return 0;
+    return len;
 }
 
 

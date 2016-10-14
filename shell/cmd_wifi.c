@@ -25,6 +25,10 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
     {
         chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_PROG);
     }
+    else if (strcmp(argv[0], "ver") == 0)
+    {
+        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_VERSION);
+    }
     else
     {
         usage(chp);
