@@ -16,7 +16,6 @@ static uint32_t g_ulStaIp = 0;
 
 static void slFlashReadVersion(void);
 static msg_t startWifi(void);
-static void startWifiCallback(uint32_t status);
 
 #ifdef TK_CC3100_PROGRAMMING
 static void slFlashProgram(void);
@@ -26,7 +25,7 @@ static void slFlashProgramAbort(char *msg);
 thread_t *wifiThreadRef;
 
 static bool wifiRunning = false;
-static bool wifiError = false;
+static uint32_t wifiMode = ROLE_AP;
 
 static THD_WORKING_AREA(waWifiThread, 2048);
 
@@ -48,10 +47,18 @@ static THD_FUNCTION(wifiThread, arg)
         flags = chEvtGetAndClearFlagsI(&elWifi);
         chSysUnlock();
 
+        chThdSleepMilliseconds(50);
+
         if (flags & WIFIEVENT_START && !wifiRunning)
         {
-            PRINT("starting... ");
-            chThdSleepMilliseconds(50);
+            PRINT("Starting wifi");
+            wifiMode = flags & 0x7;
+            if (wifiMode == ROLE_STA)
+                PRINT(" station... ");
+            else if (wifiMode == ROLE_AP)
+                PRINT(" access point... ");
+            else
+                PRINT("in unknown mode... ");
 
             if (startWifi() == MSG_OK)
                 PRINT("ok\n\r");
@@ -60,8 +67,7 @@ static THD_FUNCTION(wifiThread, arg)
         }
         else if (flags & WIFIEVENT_STOP && wifiRunning)
         {
-            PRINT("stopping... ");
-            chThdSleepMilliseconds(50);
+            PRINT("Stopping wifi... ");
 
             if (sl_Stop(0) == MSG_OK)
                 PRINT("ok\n\r");
@@ -69,7 +75,7 @@ static THD_FUNCTION(wifiThread, arg)
                 PRINT("failed\n\r");
         }
 #ifdef TK_CC3100_PROGRAMMING
-        else if (flags & WIFIEVENT_PROG && !wifiRunning)
+        else if (flags & WIFIEVENT_PROG)
         {
             slFlashProgram();
         }
@@ -80,7 +86,7 @@ static THD_FUNCTION(wifiThread, arg)
         }
         else
         {
-            PRINT("Unknown event or wifi in wrong state. Wifi is now %s\n\r", (wifiRunning ? "running" : "not running"));
+            PRINT("Wifi is in wrong state. Wifi is now %s.\n\r", (wifiRunning ? "running" : "not running"));
         }
     }
 }
@@ -91,35 +97,28 @@ void startWifiThread(void)
     wifiThreadRef = chThdCreateStatic(waWifiThread, sizeof(waWifiThread), HIGHPRIO-1, wifiThread, NULL);
 }
 
+/*
+ * Simplelink stuff
+ */
+
 msg_t startWifi(void)
 {
-    sl_Start(0, 0, startWifiCallback);
+    uint32_t res = sl_Start(0, 0, 0);
 
-    while (!wifiRunning && !wifiError)
+    if (res != wifiMode)
     {
-        chThdSleepMilliseconds(10);
+        sl_WlanSetMode(wifiMode);
+        wifiRunning = false;
+        return MSG_RESET;
     }
 
-    return (wifiRunning ? MSG_OK : MSG_RESET);
+    wifiRunning = true;
+    return MSG_OK;
 }
 
 /*
  * Callbacks
  */
-
-void startWifiCallback(uint32_t status)
-{
-    if (status != ROLE_AP)
-    {
-        sl_WlanSetMode(ROLE_AP);
-        wifiError = true;
-    }
-    else
-    {
-        wifiError = false;
-        wifiRunning = true;
-    }
-}
 
 void SimpleLinkHttpServerCallback(SlHttpServerEvent_t *pHttpEvent,
                                   SlHttpServerResponse_t *pHttpResponse)
@@ -413,8 +412,6 @@ void slFlashProgram(void)
 
     retVal = sl_Start(0, 0, 0);
 
-    PRINT("[%d] ", retVal);
-
     if (retVal < 0)
     {
         slFlashProgramAbort("Failed.\n\r");
@@ -452,12 +449,13 @@ void slFlashProgram(void)
             slFlashProgramAbort("Error programming file. Aborting...\n\r");
             return;
         }
-        PRINT(" %d", retVal);
-        chThdSleepMilliseconds(50);
 
         remainingLen -= chunkLen;
         movingOffset += chunkLen;
         chunkLen = (_u32)MIN(1024 /*CHUNK_LEN*/, remainingLen);
+
+        PRINT(".");
+        chThdSleepMilliseconds(50);
     }
     while (chunkLen > 0);
 

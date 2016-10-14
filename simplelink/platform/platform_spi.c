@@ -52,7 +52,7 @@ const SPIConfig spiconfigCC3100 =
     NULL,
     GPIOA,
     GPIOA_PA3_CCSPICSL,
-    SPI_CR1_BR_0, // | SPI_CR1_BR_1 | SPI_CR1_BR_2,
+    SPI_CR1_BR_0,
     0
 };
 
@@ -137,9 +137,12 @@ int spi_Write (Fd_t fd, unsigned char *pBuff, int len)
 {
     (void) fd;
 
-    spiSelect(&SPID1);
-    spiSend(&SPID1, len, pBuff);
-    spiUnselect(&SPID1);
+    if (len > 0)
+    {
+        spiSelect(&SPID1);
+        spiSend(&SPID1, len, pBuff);
+        spiUnselect(&SPID1);
+    }
 
     return len;
 }
@@ -164,9 +167,12 @@ int spi_Read(Fd_t fd, unsigned char *pBuff, int len)
 {
     (void) fd;
 
-    spiSelect(&SPID1);
-    spiReceive(&SPID1, len, pBuff);
-    spiUnselect(&SPID1);
+    if (len > 0)
+    {
+        spiSelect(&SPID1);
+        spiReceive(&SPID1, len, pBuff);
+        spiUnselect(&SPID1);
+    }
 
     return len;
 }

@@ -3,12 +3,15 @@
 
 #include "simplelink.h"
 
-//#define TK_CC3100_PROGRAMMING
+#define TK_CC3100_PROGRAMMING
 
-#define WIFIEVENT_START   1
-#define WIFIEVENT_STOP    2
-#define WIFIEVENT_PROG    4
-#define WIFIEVENT_VERSION 8
+#define WIFIEVENT_START   0x100
+#define WIFIEVENT_STOP    0x200
+#define WIFIEVENT_PROG    0x400
+#define WIFIEVENT_VERSION 0x800
+
+#define WIFIEVENT_MODE_STATION ROLE_STA
+#define WIFIEVENT_MODE_AP      ROLE_AP
 
 extern event_source_t wifiEvent;
 extern thread_t *wifiThreadRef;

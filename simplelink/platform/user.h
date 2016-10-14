@@ -640,9 +640,9 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
 
     \warning
 */
-/*
+
 #define SL_MEMORY_MGMT_DYNAMIC
-*/
+
 
 #ifdef SL_MEMORY_MGMT_DYNAMIC
 
@@ -655,7 +655,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
 
     \warning
 */
-#define sl_Malloc(Size)
+#define sl_Malloc(Size)  chHeapAlloc(NULL, Size)
 
 /*!
     \brief
@@ -666,7 +666,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
 
     \warning
 */
-#define sl_Free(pMem)
+#define sl_Free(pMem) chHeapFree(pMem)
 
 #endif
 

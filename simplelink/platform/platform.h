@@ -135,7 +135,7 @@ static inline msg_t chBSemSignalTK(binary_semaphore_t *bsp)
 
 static inline msg_t chBSemWaitTimeoutTK(binary_semaphore_t *bsp, systime_t time)
 {
-    return chBSemWaitTimeout(bsp, time);
+    return chBSemWaitTimeout(bsp, MS2ST(time));
 }
 
 static inline msg_t chBSemDeleteTK(binary_semaphore_t *bsp)
