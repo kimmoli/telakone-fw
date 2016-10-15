@@ -124,9 +124,10 @@ CSRC = $(STARTUPSRC) \
        $(STREAMSSRC) \
        $(SHELLSRC) \
        $(SIMPLELINKSRC) \
-       adc.c pwm.c eicu.c i2c.c spi.c auxlink.c exti.c wdog.c \
+       adc.c pwm.c eicu.c i2c.c spi.c auxlink.c exti.c wdog.c flash.c env.c \
        shell/cmd_status.c shell/cmd_out.c shell/cmd_auxmotor.c shell/cmd_reboot.c \
-       shell/cmd_ping.c shell/cmd_diic.c shell/cmd_piic.c cmd_wifi.c \
+       shell/cmd_ping.c shell/cmd_diic.c shell/cmd_piic.c shell/cmd_wifi.c shell/cmd_env.c \
+       shell/cmd_dm.c \
        shell/shellcommands.c \
        threads/blinker.c threads/joystick.c threads/auxdevice.c threads/auxmotor.c \
        main.c
@@ -184,7 +185,7 @@ CPPC = $(TRGT)g++
 # Enable loading with g++ only if you need C++ runtime support.
 # NOTE: You can use C++ even without C++ support if you are careful. C++
 #       runtime support makes code size explode.
-LD   = $(TRGT)gcc
+LD   = $(TRGT)gcc --specs=rdimon.specs -lrdimon
 #LD   = $(TRGT)g++
 CP   = $(TRGT)objcopy
 AS   = $(TRGT)gcc -x assembler-with-cpp
@@ -227,7 +228,7 @@ UINCDIR =
 ULIBDIR =
 
 # List all user libraries here
-ULIBS =
+ULIBS = ../../gcc-arm-none-eabi-5_4-2016q2/arm-none-eabi/lib/librdimon.a
 
 #
 # End of user defines

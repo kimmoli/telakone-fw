@@ -13,6 +13,7 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
     {
         usage(chp);
     }
+
     else if (strcmp(argv[0], "start") == 0)
     {
         uint32_t wifimode = WIFIEVENT_MODE_AP;
@@ -25,6 +26,7 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
 
         chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_START | wifimode);
     }
+
     else if (strcmp(argv[0], "stop") == 0)
     {
         chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_STOP);
@@ -43,6 +45,14 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
     {
         chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_VERSION);
     }
+
+    else if (strcmp(argv[0], "conf") == 0)
+    {
+        chprintf(chp, "Mode = %s\n\r", getenv("wifimode"));
+        chprintf(chp, "SSID = %s\n\r", getenv("ssid"));
+        chprintf(chp, "IP   = %s\n\r", getenv("ip"));
+    }
+
     else
     {
         usage(chp);
@@ -51,5 +61,5 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
 
 void usage(BaseSequentialStream *chp)
 {
-    chprintf(chp, "wifi commands: start stop prog ver\n\r");
+    chprintf(chp, "wifi commands: start stop prog ver conf\n\r");
 }

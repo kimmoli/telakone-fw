@@ -37,7 +37,11 @@ SOURCES += \
     simplelink/platform/platform_spi.c \
     simplelink/platform/wifi.c \
     shell/cmd_wifi.c \
-    wdog.c
+    wdog.c \
+    flash.c \
+    shell/cmd_env.c \
+    shell/cmd_dm.c \
+    env.c
 
 HEADERS += \
     adc.h \
@@ -81,7 +85,9 @@ HEADERS += \
     simplelink/platform/wifi.h \
     simplelink/hostprog/host_programming_1.0.1.6-2.7.0.0_ucf.h \
     simplelink/hostprog/host_programming_1.0.1.6-2.7.0.0_ucf-signed.h \
-    wdog.h
+    wdog.h \
+    flash.h \
+    env.h
 
 OTHER_FILES += \
     Makefile \
@@ -132,5 +138,6 @@ INCLUDEPATH += \
  ../ChibiOS-Contrib/os/hal/ports/STM32/LLD/USBHv1 \
  ./simplelink/platform \
  ./simplelink/include \
- ./simplelink/hostprog
+ ./simplelink/hostprog \
+ ../../gcc-arm-none-eabi-5_4-2016q2/arm-none-eabi/include
 

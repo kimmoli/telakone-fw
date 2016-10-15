@@ -13,6 +13,10 @@ const ShellCommand commands[] =
     { "diic", cmd_diic },
     { "piic", cmd_piic },
     { "wifi", cmd_wifi },
+    { "env", cmd_env },
+    { "dm", cmd_dmb },
+    { "dmb", cmd_dmb },
+    { "dmw", cmd_dmw },
     { "reboot", cmd_reboot },
     {NULL, NULL}
 };

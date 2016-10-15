@@ -8,5 +8,7 @@
 
 #define PRINT(f_, ...) chprintf((BaseSequentialStream *)&SD3, (f_), ##__VA_ARGS__)
 
+#define ISPRINT(c) (char)(((((char)c)>=((char)32))&&(((char)c)<=((char)126)))?((char)c):((char)'.'))
+
 #endif
 

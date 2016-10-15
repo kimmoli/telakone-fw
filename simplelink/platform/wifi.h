@@ -3,7 +3,7 @@
 
 #include "simplelink.h"
 
-#define TK_CC3100_PROGRAMMING
+//#define TK_CC3100_PROGRAMMING
 
 #define WIFIEVENT_START   0x100
 #define WIFIEVENT_STOP    0x200

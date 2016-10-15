@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <string.h>
+
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
@@ -13,6 +16,7 @@
 #include "auxlink.h"
 #include "exti.h"
 #include "wdog.h"
+#include "env.h"
 
 #include "blinker.h"
 #include "joystick.h"
@@ -21,11 +25,14 @@
 
 #include "wifi.h"
 
+char *environment;
+char **environ;
+
 int main(void)
 {
     halInit();
     chSysInit();
-    wdogTKInit();
+    wdogTKInit(WDG_TIMEOUT_NORMAL);
 
     sdStart(&SD3, NULL);  /* Serial console in USART3, 38400 */
 
@@ -33,6 +40,12 @@ int main(void)
     PRINT("\n\rtelakone controller\n\r");
     PRINT("-------------------\n\r");
     PRINT("\n\r");
+
+    environment = chHeapAlloc(NULL, ENV_PAGE_SIZE);
+    environ = chHeapAlloc(NULL, ENV_PAGE_SIZE*sizeof(char*));
+
+    memset(environment, 0, ENV_PAGE_SIZE);
+    memset(environ, 0, ENV_PAGE_SIZE*sizeof(char*));
 
     adcTKInit();
     adcTKStartConv();
@@ -55,7 +68,7 @@ int main(void)
 
     startWifiThread();
 
-    PRINT(" - threads started\n\r");
+    PRINT(" - Threads started\n\r");
 
     PRINT("\n\r");
     cmd_status((BaseSequentialStream *)&SD3, 0, NULL);
