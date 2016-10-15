@@ -36,7 +36,8 @@ SOURCES += \
     simplelink/platform/platform.c \
     simplelink/platform/platform_spi.c \
     simplelink/platform/wifi.c \
-    shell/cmd_wifi.c
+    shell/cmd_wifi.c \
+    wdog.c
 
 HEADERS += \
     adc.h \
@@ -79,7 +80,8 @@ HEADERS += \
     simplelink/platform/platform_spi.h \
     simplelink/platform/wifi.h \
     simplelink/hostprog/host_programming_1.0.1.6-2.7.0.0_ucf.h \
-    simplelink/hostprog/host_programming_1.0.1.6-2.7.0.0_ucf-signed.h
+    simplelink/hostprog/host_programming_1.0.1.6-2.7.0.0_ucf-signed.h \
+    wdog.h
 
 OTHER_FILES += \
     Makefile \

@@ -12,6 +12,7 @@
 #include "spi.h"
 #include "auxlink.h"
 #include "exti.h"
+#include "wdog.h"
 
 #include "blinker.h"
 #include "joystick.h"
@@ -24,6 +25,7 @@ int main(void)
 {
     halInit();
     chSysInit();
+    wdogTKInit();
 
     sdStart(&SD3, NULL);  /* Serial console in USART3, 38400 */
 
@@ -40,6 +42,8 @@ int main(void)
     spiTKInit();
     extiTKInit();
     auxlinkTKInit(0x01);
+
+    wdogTKKick();
 
     PRINT(" - Initialisation complete\n\r");
 
@@ -68,6 +72,7 @@ int main(void)
 
     while (true)
     {
+        wdogTKKick();
         chThdSleepMilliseconds(200);
         palToggleLine(LINE_GREENLED);
     }
