@@ -14,15 +14,11 @@ static volatile int currentValue = 0;
 const int linearaccelstep = 10;
 const int linearacceldelay = 50;
 
-static THD_WORKING_AREA(waAuxmotorThread, 128);
-
 static THD_FUNCTION(auxmotorThread, arg)
 {
     (void)arg;
     event_listener_t elButton;
     eventflags_t  flags;
-
-    chRegSetThreadName("auxmotor");
 
     chEvtRegister(&buttonEvent, &elButton, 0);
 
@@ -45,7 +41,7 @@ static THD_FUNCTION(auxmotorThread, arg)
 
 void startAuxmotorThread(void)
 {
-    (void) chThdCreateStatic(waAuxmotorThread, sizeof(waAuxmotorThread), NORMALPRIO + 1, auxmotorThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "auxmotor", NORMALPRIO+1, auxmotorThread, NULL);
 }
 
 void linearaccelcb(void *arg)

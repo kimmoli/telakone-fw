@@ -47,6 +47,8 @@ int main(void)
     memset(environment, 0, ENV_PAGE_SIZE);
     memset(environ, 0, ENV_PAGE_SIZE*sizeof(char*));
 
+    PRINT(" - Loaded %d variables\n\r", envLoader());
+
     adcTKInit();
     adcTKStartConv();
     pwmTKInit();
@@ -61,12 +63,11 @@ int main(void)
     PRINT(" - Initialisation complete\n\r");
 
     /* Start threads */
-    startBlinkerThread(); /* Blinks the green led */
-    startJoystickThread(); /* Processes joystick input values */
+    startBlinkerThread(); /* Controls the external warning lamps on OUT1 */
+    startJoystickThread(); /* Processes joystick input values and drive motors */
     startAuxDeviceThread(); /* Auxiliary device handling */
     startAuxmotorThread(); /* Auxiliary motor control */
-
-    startWifiThread();
+    startWifiThread(); /* Wifi */
 
     PRINT(" - Threads started\n\r");
 

@@ -6,8 +6,6 @@
 #include "adc.h"
 #include "spi.h"
 
-static THD_WORKING_AREA(waJoystickThread, 128);
-
 int joystickLR;
 int joystickBF;
 int leftMotor;
@@ -18,8 +16,6 @@ float rightBatteryVoltage;
 static THD_FUNCTION(joystickThread, arg)
 {
     (void)arg;
-
-    chRegSetThreadName("joystick");
 
     while (true)
     {
@@ -64,5 +60,5 @@ static THD_FUNCTION(joystickThread, arg)
 
 void startJoystickThread(void)
 {
-    (void) chThdCreateStatic(waJoystickThread, sizeof(waJoystickThread), NORMALPRIO + 1, joystickThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "joystick", NORMALPRIO+1, joystickThread, NULL);
 }

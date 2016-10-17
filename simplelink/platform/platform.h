@@ -44,8 +44,6 @@ extern "C" {
 #include "hal.h"
 #include "helpers.h"
 
-extern thread_t *spawnedThreadRef;
-
 /**/
 typedef void (*P_EVENT_HANDLER)(void* pValue);
 

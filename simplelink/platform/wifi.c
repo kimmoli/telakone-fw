@@ -22,12 +22,8 @@ static void slFlashProgram(void);
 static void slFlashProgramAbort(char *msg);
 #endif
 
-thread_t *wifiThreadRef;
-
 static bool wifiRunning = false;
 static uint32_t wifiMode = ROLE_AP;
-
-static THD_WORKING_AREA(waWifiThread, 2048);
 
 static THD_FUNCTION(wifiThread, arg)
 {
@@ -94,7 +90,7 @@ static THD_FUNCTION(wifiThread, arg)
 void startWifiThread(void)
 {
     chEvtObjectInit(&wifiEvent);
-    wifiThreadRef = chThdCreateStatic(waWifiThread, sizeof(waWifiThread), HIGHPRIO-1, wifiThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "wifi", HIGHPRIO-1, wifiThread, NULL);
 }
 
 /*

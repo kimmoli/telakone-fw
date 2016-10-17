@@ -5,16 +5,12 @@
 #include "auxlink.h"
 #include "helpers.h"
 
-static THD_WORKING_AREA(waAuxDeviceThread, 128);
-
 static THD_FUNCTION(auxDeviceThread, arg)
 {
     (void)arg;
     uint8_t rxBuf[AUXLINK_MAX_MSG_SIZE];
     int count = 0;
     int i;
-
-    chRegSetThreadName("auxdevice");
 
     while (true)
     {
@@ -54,5 +50,5 @@ static THD_FUNCTION(auxDeviceThread, arg)
 
 void startAuxDeviceThread(void)
 {
-    (void) chThdCreateStatic(waAuxDeviceThread, sizeof(waAuxDeviceThread), NORMALPRIO + 1, auxDeviceThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "auxdevice", NORMALPRIO+1, auxDeviceThread, NULL);
 }

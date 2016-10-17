@@ -45,15 +45,11 @@ event_source_t blinkEvent;
 static void blinkvtcb(void *arg);
 static int blinkstep;
 
-static THD_WORKING_AREA(waBlinkerThread, 128);
-
 static THD_FUNCTION(blinkerThread, arg)
 {
     (void)arg;
     event_listener_t elBlink;
     eventflags_t flags;
-
-    chRegSetThreadName("blinker");
 
     chEvtRegister(&blinkEvent, &elBlink, 0);
 
@@ -105,5 +101,5 @@ void blinkvtcb(void *arg)
 void startBlinkerThread(void)
 {
     chEvtObjectInit(&blinkEvent);
-    (void) chThdCreateStatic(waBlinkerThread, sizeof(waBlinkerThread), NORMALPRIO + 1, blinkerThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "auxmotor", NORMALPRIO+1, blinkerThread, NULL);
 }

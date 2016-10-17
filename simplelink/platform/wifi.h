@@ -14,7 +14,6 @@
 #define WIFIEVENT_MODE_AP      ROLE_AP
 
 extern event_source_t wifiEvent;
-extern thread_t *wifiThreadRef;
 
 void startWifiThread(void);
 
