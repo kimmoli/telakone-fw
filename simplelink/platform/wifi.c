@@ -16,6 +16,8 @@ static uint32_t g_ulStatus = 0;
 static uint32_t g_GatewayIP = 0;
 static uint32_t g_ulStaIp = 0;
 
+static const char *secNames[] = {SL_SEC_NAMES};
+
 static msg_t startWifi(void);
 static void slFlashReadVersion(void);
 static void slWifiScan(void);
@@ -203,17 +205,17 @@ void slWifiScan(void)
 
     chThdSleepSeconds(1);
 
-    /* get scan results - all 20 entries in one transaction */
+    /* get scan results - all entries in one transaction */
     numOfEntries = sl_WlanGetNetworkList(0, SL_SCAN_TABLE_SIZE, &netEntries[0]);
 
     PRINT(" ok\n\r");
 
     for (int i=0; i<numOfEntries; i++)
     {
-        PRINT("%2d %-20s %02x:%02x:%02x:%02x:%02x:%02x %4d\n\r", i, netEntries[i].ssid,
+        PRINT("%2d %-20s %02x:%02x:%02x:%02x:%02x:%02x %-7s %4d\n\r", i, netEntries[i].ssid,
               netEntries[i].bssid[0], netEntries[i].bssid[1], netEntries[i].bssid[2],
               netEntries[i].bssid[3], netEntries[i].bssid[4], netEntries[i].bssid[5],
-              netEntries[i].rssi);
+              secNames[netEntries[i].sec_type], netEntries[i].rssi);
     }
 
     /* disable scan */

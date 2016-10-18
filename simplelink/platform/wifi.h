@@ -15,6 +15,11 @@
 #define SL_SCAN_TABLE_SIZE  20
 #define SL_SCAN_INTERVAL    10
 
+#define SL_SEC_NAMES      \
+    "OPEN", "WEP", "WPA", \
+    "WPS-PBC", "WPS-PIN", \
+    "WPA-ENT"
+
 extern event_source_t wifiEvent;
 
 void startWifiThread(void);
