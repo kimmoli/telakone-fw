@@ -28,6 +28,15 @@
 #define BOARD_NAME                  "Kimmoli's telakone STM32F407ZG"
 
 /*
+ * Simplelink CC3100 Firmware update
+ * Uncomment this and update simplelink/hostprog headers
+ * build, and run wifi prog command
+ */
+/*
+#define TK_CC3100_PROGRAMMING
+*/
+
+/*
  * Board oscillators-related settings.
  * NOTE: LSE not fitted.
  */

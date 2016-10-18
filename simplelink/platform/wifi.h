@@ -3,13 +3,17 @@
 
 #include "simplelink.h"
 
-//#define TK_CC3100_PROGRAMMING
-
 #define WIFIEVENT_START     0x0001
 #define WIFIEVENT_STOP      0x0002
 #define WIFIEVENT_PROG      0x0004
 #define WIFIEVENT_VERSION   0x0008
 #define WIFIEVENT_SCAN      0x0010
+
+extern event_source_t wifiEvent;
+
+void startWifiThread(void);
+
+/* Simplelink specific stuff */
 
 #define SL_STOP_TIMEOUT     255
 #define SL_SCAN_TABLE_SIZE  20
@@ -19,12 +23,6 @@
     "OPEN", "WEP", "WPA", \
     "WPS-PBC", "WPS-PIN", \
     "WPA-ENT"
-
-extern event_source_t wifiEvent;
-
-void startWifiThread(void);
-
-/* Simplelink specific stuff */
 
 extern void SimpleLinkHttpServerCallback(SlHttpServerEvent_t *pHttpEvent,
                                   SlHttpServerResponse_t *pHttpResponse);

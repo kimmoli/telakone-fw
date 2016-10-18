@@ -41,7 +41,10 @@ SOURCES += \
     flash.c \
     shell/cmd_env.c \
     shell/cmd_dm.c \
-    env.c
+    env.c \
+    simplelink/platform/wifi_scan.c \
+    simplelink/platform/wifi_version.c \
+    simplelink/platform/wifi_prog.c
 
 HEADERS += \
     adc.h \
@@ -87,7 +90,10 @@ HEADERS += \
     simplelink/hostprog/host_programming_1.0.1.6-2.7.0.0_ucf-signed.h \
     wdog.h \
     flash.h \
-    env.h
+    env.h \
+    simplelink/platform/wifi_scan.h \
+    simplelink/platform/wifi_version.h \
+    simplelink/platform/wifi_prog.h
 
 OTHER_FILES += \
     Makefile \
