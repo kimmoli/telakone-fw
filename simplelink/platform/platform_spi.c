@@ -85,8 +85,10 @@ Fd_t spi_Open(char *ifName, unsigned long flags)
     (void) ifName;
     (void) flags;
 
-    CC3100_disable();
     spiStart(&SPID1, &spiconfigCC3100);
+    CC3100_InterruptEnable();
+    CC3100_disable();
+
     Delay(50);
 
     return 0;
@@ -109,6 +111,7 @@ int spi_Close(Fd_t fd)
     (void) fd;
 
     CC3100_InterruptDisable();
+    spiStop(&SPID1);
 
     return 0;
 }

@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include <string.h>
 #include "hal.h"
 #include "wifi.h"
 #include "helpers.h"
@@ -66,9 +68,14 @@ static THD_FUNCTION(wifiThread, arg)
             PRINT("Stopping wifi... ");
 
             if (sl_Stop(0) == MSG_OK)
+            {
+                wifiRunning = false;
                 PRINT("ok\n\r");
+            }
             else
+            {
                 PRINT("failed\n\r");
+            }
         }
 #ifdef TK_CC3100_PROGRAMMING
         else if (flags & WIFIEVENT_PROG)
@@ -99,12 +106,46 @@ void startWifiThread(void)
 
 msg_t startWifi(void)
 {
-    uint32_t res = sl_Start(0, 0, 0);
+    char *setString;
+    uint16_t setStringLength;
+    uint32_t res;
+
+    res = sl_Start(0, 0, 0);
 
     if (res != wifiMode)
     {
         sl_WlanSetMode(wifiMode);
         wifiRunning = false;
+        return MSG_RESET;
+    }
+
+    setString = getenv("model");
+    if (setString)
+    {
+        setStringLength = strlen((const char *)setString);
+        sl_NetAppSet(SL_NET_APP_DEVICE_CONFIG_ID, NETAPP_SET_GET_DEV_CONF_OPT_DEVICE_URN, setStringLength, (unsigned char*)setString);
+    }
+
+    setString = getenv("ssid");
+    if (setString)
+    {
+        setStringLength = strlen((const char *)setString);
+        sl_WlanSet(SL_WLAN_CFG_AP_ID, WLAN_AP_OPT_SSID, setStringLength, (unsigned char*)setString);
+    }
+
+    setString = getenv("domain");
+    if (setString)
+    {
+        setStringLength = strlen((const char *)setString);
+        sl_NetAppSet(SL_NET_APP_DEVICE_CONFIG_ID, NETAPP_SET_GET_DEV_CONF_OPT_DOMAIN_NAME, setStringLength, (unsigned char*)setString);
+    }
+
+    sl_Stop(SL_STOP_TIMEOUT);
+
+    res = sl_Start(0, 0, 0);
+
+    if (res != wifiMode)
+    {
         return MSG_RESET;
     }
 

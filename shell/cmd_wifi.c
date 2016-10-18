@@ -48,9 +48,10 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
 
     else if (strcmp(argv[0], "conf") == 0)
     {
-        chprintf(chp, "Mode = %s\n\r", getenv("wifimode"));
-        chprintf(chp, "SSID = %s\n\r", getenv("ssid"));
-        chprintf(chp, "IP   = %s\n\r", getenv("ip"));
+        chprintf(chp, "Mode   = %s\n\r", getenv("wifimode"));
+        chprintf(chp, "SSID   = %s\n\r", getenv("ssid"));
+        chprintf(chp, "IP     = %s\n\r", getenv("ip"));
+        chprintf(chp, "Domain = %s\n\r", getenv("domain"));
     }
 
     else

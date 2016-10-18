@@ -13,6 +13,8 @@
 #define WIFIEVENT_MODE_STATION ROLE_STA
 #define WIFIEVENT_MODE_AP      ROLE_AP
 
+#define SL_STOP_TIMEOUT 0xff
+
 extern event_source_t wifiEvent;
 
 void startWifiThread(void);
