@@ -5,15 +5,15 @@
 
 //#define TK_CC3100_PROGRAMMING
 
-#define WIFIEVENT_START   0x100
-#define WIFIEVENT_STOP    0x200
-#define WIFIEVENT_PROG    0x400
-#define WIFIEVENT_VERSION 0x800
+#define WIFIEVENT_START     0x0001
+#define WIFIEVENT_STOP      0x0002
+#define WIFIEVENT_PROG      0x0004
+#define WIFIEVENT_VERSION   0x0008
+#define WIFIEVENT_SCAN      0x0010
 
-#define WIFIEVENT_MODE_STATION ROLE_STA
-#define WIFIEVENT_MODE_AP      ROLE_AP
-
-#define SL_STOP_TIMEOUT 0xff
+#define SL_STOP_TIMEOUT     255
+#define SL_SCAN_TABLE_SIZE  20
+#define SL_SCAN_INTERVAL    10
 
 extern event_source_t wifiEvent;
 

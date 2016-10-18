@@ -16,8 +16,9 @@ static uint32_t g_ulStatus = 0;
 static uint32_t g_GatewayIP = 0;
 static uint32_t g_ulStaIp = 0;
 
-static void slFlashReadVersion(void);
 static msg_t startWifi(void);
+static void slFlashReadVersion(void);
+static void slWifiScan(void);
 
 #ifdef TK_CC3100_PROGRAMMING
 static void slFlashProgram(void);
@@ -32,8 +33,6 @@ static THD_FUNCTION(wifiThread, arg)
     (void)arg;
     event_listener_t elWifi;
     eventflags_t flags;
-
-    chRegSetThreadName("wifi");
 
     chEvtRegister(&wifiEvent, &elWifi, 0);
 
@@ -50,19 +49,29 @@ static THD_FUNCTION(wifiThread, arg)
         if (flags & WIFIEVENT_START && !wifiRunning)
         {
             PRINT("Starting wifi");
-            wifiMode = flags & 0x7;
-            if (wifiMode == ROLE_STA)
-                PRINT(" station... ");
-            else if (wifiMode == ROLE_AP)
+
+            if (strcmp("ap", getenv("wifimode")) == 0)
+            {
+                wifiMode = ROLE_AP;
                 PRINT(" access point... ");
+            }
+            else if (strncmp("sta", getenv("wifimode"), 3) == 0)
+            {
+                wifiMode = ROLE_STA;
+                PRINT(" station... ");
+            }
             else
-                PRINT("in unknown mode... ");
+            {
+                PRINT(" failed. Unknown mode\n\r");
+                return;
+            }
 
             if (startWifi() == MSG_OK)
                 PRINT("ok\n\r");
             else
                 PRINT("failed\n\r");
         }
+
         else if (flags & WIFIEVENT_STOP && wifiRunning)
         {
             PRINT("Stopping wifi... ");
@@ -87,6 +96,12 @@ static THD_FUNCTION(wifiThread, arg)
         {
             slFlashReadVersion();
         }
+
+        else if (flags & WIFIEVENT_SCAN && wifiRunning && wifiMode == ROLE_STA)
+        {
+            slWifiScan();
+        }
+
         else
         {
             PRINT("Wifi is in wrong state. Wifi is now %s.\n\r", (wifiRunning ? "running" : "not running"));
@@ -115,29 +130,30 @@ msg_t startWifi(void)
     if (res != wifiMode)
     {
         sl_WlanSetMode(wifiMode);
-        wifiRunning = false;
-        return MSG_RESET;
     }
 
-    setString = getenv("model");
-    if (setString)
+    if (wifiMode == ROLE_AP)
     {
-        setStringLength = strlen((const char *)setString);
-        sl_NetAppSet(SL_NET_APP_DEVICE_CONFIG_ID, NETAPP_SET_GET_DEV_CONF_OPT_DEVICE_URN, setStringLength, (unsigned char*)setString);
-    }
+        setString = getenv("model");
+        if (setString)
+        {
+            setStringLength = strlen((const char *)setString);
+            sl_NetAppSet(SL_NET_APP_DEVICE_CONFIG_ID, NETAPP_SET_GET_DEV_CONF_OPT_DEVICE_URN, setStringLength, (unsigned char*)setString);
+        }
 
-    setString = getenv("ssid");
-    if (setString)
-    {
-        setStringLength = strlen((const char *)setString);
-        sl_WlanSet(SL_WLAN_CFG_AP_ID, WLAN_AP_OPT_SSID, setStringLength, (unsigned char*)setString);
-    }
+        setString = getenv("ssid");
+        if (setString)
+        {
+            setStringLength = strlen((const char *)setString);
+            sl_WlanSet(SL_WLAN_CFG_AP_ID, WLAN_AP_OPT_SSID, setStringLength, (unsigned char*)setString);
+        }
 
-    setString = getenv("domain");
-    if (setString)
-    {
-        setStringLength = strlen((const char *)setString);
-        sl_NetAppSet(SL_NET_APP_DEVICE_CONFIG_ID, NETAPP_SET_GET_DEV_CONF_OPT_DOMAIN_NAME, setStringLength, (unsigned char*)setString);
+        setString = getenv("domain");
+        if (setString)
+        {
+            setStringLength = strlen((const char *)setString);
+            sl_NetAppSet(SL_NET_APP_DEVICE_CONFIG_ID, NETAPP_SET_GET_DEV_CONF_OPT_DOMAIN_NAME, setStringLength, (unsigned char*)setString);
+        }
     }
 
     sl_Stop(SL_STOP_TIMEOUT);
@@ -151,6 +167,64 @@ msg_t startWifi(void)
 
     wifiRunning = true;
     return MSG_OK;
+}
+
+void slWifiScan(void)
+{
+    int numOfEntries;
+    int res;
+    uint8_t policyOpt;
+    uint32_t policyVal;
+    Sl_WlanNetworkEntry_t netEntries[SL_SCAN_TABLE_SIZE];
+
+    PRINT("Scanning...");
+
+    policyOpt = SL_CONNECTION_POLICY(0, 0, 0, 0, 0);
+
+    res = sl_WlanPolicySet(SL_POLICY_CONNECTION , policyOpt, NULL, 0);
+
+    if (res < 0)
+    {
+        PRINT(" failed\n\r");
+        return;
+    }
+
+    policyOpt = SL_SCAN_POLICY(1);
+    policyVal = SL_SCAN_INTERVAL;
+
+    /* Start scanning */
+    res = sl_WlanPolicySet(SL_POLICY_SCAN , policyOpt, (uint8_t *)&policyVal, sizeof(policyVal));
+
+    if (res < 0)
+    {
+        PRINT(" failed\n\r");
+        return;
+    }
+
+    chThdSleepSeconds(1);
+
+    /* get scan results - all 20 entries in one transaction */
+    numOfEntries = sl_WlanGetNetworkList(0, SL_SCAN_TABLE_SIZE, &netEntries[0]);
+
+    PRINT(" ok\n\r");
+
+    for (int i=0; i<numOfEntries; i++)
+    {
+        PRINT("%2d %-20s %02x:%02x:%02x:%02x:%02x:%02x %4d\n\r", i, netEntries[i].ssid,
+              netEntries[i].bssid[0], netEntries[i].bssid[1], netEntries[i].bssid[2],
+              netEntries[i].bssid[3], netEntries[i].bssid[4], netEntries[i].bssid[5],
+              netEntries[i].rssi);
+    }
+
+    /* disable scan */
+    policyOpt = SL_SCAN_POLICY(0);
+    res = sl_WlanPolicySet(SL_POLICY_SCAN , policyOpt, NULL, 0);
+
+    if (res < 0)
+    {
+        PRINT("Failed to set the connection policy\n\r");
+        return;
+    }
 }
 
 /*

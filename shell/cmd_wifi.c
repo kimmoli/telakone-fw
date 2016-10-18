@@ -16,20 +16,17 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
 
     else if (strcmp(argv[0], "start") == 0)
     {
-        uint32_t wifimode = WIFIEVENT_MODE_AP;
-
-        if (argc == 2)
-        {
-            if (strcmp(argv[1], "station") == 0)
-                wifimode = WIFIEVENT_MODE_STATION;
-        }
-
-        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_START | wifimode);
+        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_START);
     }
 
     else if (strcmp(argv[0], "stop") == 0)
     {
         chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_STOP);
+    }
+
+    else if (strcmp(argv[0], "scan") == 0)
+    {
+        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_SCAN);
     }
 
     else if (strcmp(argv[0], "prog") == 0)
