@@ -45,7 +45,8 @@ SOURCES += \
     simplelink/platform/wifi_scan.c \
     simplelink/platform/wifi_version.c \
     simplelink/platform/wifi_prog.c \
-    simplelink/platform/wifi_ping.c
+    simplelink/platform/wifi_ping.c \
+    simplelink/platform/udp_server.c
 
 HEADERS += \
     adc.h \
@@ -95,7 +96,8 @@ HEADERS += \
     simplelink/platform/wifi_scan.h \
     simplelink/platform/wifi_version.h \
     simplelink/platform/wifi_prog.h \
-    simplelink/platform/wifi_ping.h
+    simplelink/platform/wifi_ping.h \
+    simplelink/platform/udp_server.h
 
 OTHER_FILES += \
     Makefile \

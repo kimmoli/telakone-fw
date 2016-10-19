@@ -4,6 +4,7 @@
 #include "chprintf.h"
 #include "shellcommands.h"
 #include "wifi.h"
+#include "udp_server.h"
 
 static void usage(BaseSequentialStream *chp);
 
@@ -55,6 +56,16 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
         }
 
         chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_PING);
+    }
+
+    else if (strcmp(argv[0], "udpserver") == 0)
+    {
+        int port = 0;
+
+        if (argc == 2)
+            port = strtol(argv[1], NULL, 10);
+
+        startUdpServer(port);
     }
 
     else if (strcmp(argv[0], "prog") == 0)

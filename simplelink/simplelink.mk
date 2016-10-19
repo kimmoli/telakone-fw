@@ -14,7 +14,8 @@ SIMPLELINKSRC := ${SIMPLELINK}/source/device.c \
                  ${SIMPLELINK}/platform/wifi_scan.c \
                  ${SIMPLELINK}/platform/wifi_version.c \
                  ${SIMPLELINK}/platform/wifi_prog.c \
-                 ${SIMPLELINK}/platform/wifi_ping.c
+                 ${SIMPLELINK}/platform/wifi_ping.c \
+                 ${SIMPLELINK}/platform/udp_server.c
 
 SIMPLELINKINC := ${SIMPLELINK}/include \
                  ${SIMPLELINK}/source \
