@@ -3,13 +3,19 @@
 
 #include "simplelink.h"
 
-#define WIFIEVENT_START     0x0001
-#define WIFIEVENT_STOP      0x0002
-#define WIFIEVENT_PROG      0x0004
-#define WIFIEVENT_VERSION   0x0008
-#define WIFIEVENT_SCAN      0x0010
+#define WIFIEVENT_START         0x0001
+#define WIFIEVENT_STOP          0x0002
+#define WIFIEVENT_PROG          0x0004
+#define WIFIEVENT_VERSION       0x0008
+#define WIFIEVENT_SCAN          0x0010
+#define WIFIEVENT_CONNECT       0x0020
+#define WIFIEVENT_DISCONNECT    0x0040
+#define WIFIEVENT_PING          0x0080
 
 extern event_source_t wifiEvent;
+
+extern const char *secNames[];
+extern char *hostToPing;
 
 void startWifiThread(void);
 
@@ -37,45 +43,15 @@ extern void SimpleLinkGeneralEventHandler(SlDeviceEvent_t *pDevEvent);
 /* Status bits - These are used to set/reset the corresponding bits in a 'status_variable' */
 typedef enum
 {
-    STATUS_BIT_CONNECTION =  0, /* If this bit is:
-                                 *      1 in a 'status_variable', the device is connected to the AP
-                                 *      0 in a 'status_variable', the device is not connected to the AP
-                                 */
-
-    STATUS_BIT_STA_CONNECTED,   /* If this bit is:
-                                 *      1 in a 'status_variable', client is connected to device
-                                 *      0 in a 'status_variable', client is not connected to device
-                                 */
-
-    STATUS_BIT_IP_ACQUIRED,     /* If this bit is:
-                                 *      1 in a 'status_variable', the device has acquired an IP
-                                 *      0 in a 'status_variable', the device has not acquired an IP
-                                 */
-
-    STATUS_BIT_IP_LEASED,       /* If this bit is:
-                                 *      1 in a 'status_variable', the device has leased an IP
-                                 *      0 in a 'status_variable', the device has not leased an IP
-                                 */
-
-    STATUS_BIT_CONNECTION_FAILED,   /* If this bit is:
-                                     *      1 in a 'status_variable', failed to connect to device
-                                     *      0 in a 'status_variable'
-                                     */
-
-    STATUS_BIT_P2P_NEG_REQ_RECEIVED,/* If this bit is:
-                                     *      1 in a 'status_variable', connection requested by remote wifi-direct device
-                                     *      0 in a 'status_variable',
-                                     */
-    STATUS_BIT_SMARTCONFIG_DONE,    /* If this bit is:
-                                     *      1 in a 'status_variable', smartconfig completed
-                                     *      0 in a 'status_variable', smartconfig event couldn't complete
-                                     */
-
-    STATUS_BIT_SMARTCONFIG_STOPPED  /* If this bit is:
-                                     *      1 in a 'status_variable', smartconfig process stopped
-                                     *      0 in a 'status_variable', smartconfig process running
-                                     */
-
+    STATUS_BIT_CONNECTION =  0,     /* If this bit is set: the device is connected to the AP */
+    STATUS_BIT_STA_CONNECTED,       /* If this bit is set: client is connected to device */
+    STATUS_BIT_IP_ACQUIRED,         /* If this bit is set: the device has acquired an IP */
+    STATUS_BIT_IP_LEASED,           /* If this bit is set: the device has leased an IP */
+    STATUS_BIT_CONNECTION_FAILED,   /* If this bit is set: failed to connect to device */
+    STATUS_BIT_P2P_NEG_REQ_RECEIVED,/* If this bit is set: connection requested by remote wifi-direct device */
+    STATUS_BIT_SMARTCONFIG_DONE,    /* If this bit is set: smartconfig completed. Cleared: smartconfig event couldn't complete */
+    STATUS_BIT_SMARTCONFIG_STOPPED, /* If this bit is set: smartconfig process stopped. Cleared: smartconfig process running */
+    STATUS_BIT_PING_DONE            /* If this bit is set: the device has completed the ping operation */
 } e_StatusBits;
 
 

@@ -5,8 +5,6 @@
 #include "wifi.h"
 #include "helpers.h"
 
-static const char *secNames[] = {SL_SEC_NAMES};
-
 void slWifiScan(void)
 {
     int numOfEntries;

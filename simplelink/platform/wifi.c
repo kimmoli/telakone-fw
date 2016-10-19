@@ -4,6 +4,7 @@
 #include "wifi.h"
 #include "wifi_scan.h"
 #include "wifi_version.h"
+#include "wifi_ping.h"
 #include "helpers.h"
 
 #ifdef TK_CC3100_PROGRAMMING
@@ -12,15 +13,24 @@
 
 event_source_t wifiEvent;
 
+const char *secNames[] = {SL_SEC_NAMES};
+
 static uint32_t g_Status = 0;
 static uint32_t g_ulStatus = 0;
 static uint32_t g_GatewayIP = 0;
 static uint32_t g_ulStaIp = 0;
 
+static char g_ConnectionSSID[MAXIMAL_SSID_LENGTH + 1];
+static char g_ConnectionBSSID[SL_BSSID_LENGTH];
+
 static msg_t startWifi(void);
+static msg_t slWifiConnect(char *ssid, char *key, int secType);
+static void slWifiDisconnect(void);
 
 static bool wifiRunning = false;
 static uint32_t wifiMode = ROLE_AP;
+
+char *hostToPing;
 
 static THD_FUNCTION(wifiThread, arg)
 {
@@ -29,6 +39,8 @@ static THD_FUNCTION(wifiThread, arg)
     eventflags_t flags;
 
     chEvtRegister(&wifiEvent, &elWifi, 0);
+
+    hostToPing = NULL;
 
     while (true)
     {
@@ -96,6 +108,21 @@ static THD_FUNCTION(wifiThread, arg)
             slWifiScan();
         }
 
+        else if (flags & WIFIEVENT_CONNECT && wifiRunning && wifiMode == ROLE_STA)
+        {
+            slWifiConnect(getenv("ssid"), getenv("key"), strtol(getenv("sec"), NULL, 10));
+        }
+
+        else if (flags & WIFIEVENT_DISCONNECT && wifiRunning)
+        {
+            slWifiDisconnect();
+        }
+
+        else if (flags & WIFIEVENT_PING && wifiRunning)
+        {
+            slPing(g_GatewayIP, hostToPing);
+        }
+
         else
         {
             PRINT("Wifi is in wrong state. Wifi is now %s.\n\r", (wifiRunning ? "running" : "not running"));
@@ -118,6 +145,7 @@ msg_t startWifi(void)
     char *setString;
     uint16_t setStringLength;
     uint32_t res;
+    _WlanRxFilterOperationCommandBuff_t  RxFilterIdMask = {0};
 
     res = sl_Start(0, 0, 0);
 
@@ -135,7 +163,7 @@ msg_t startWifi(void)
             sl_NetAppSet(SL_NET_APP_DEVICE_CONFIG_ID, NETAPP_SET_GET_DEV_CONF_OPT_DEVICE_URN, setStringLength, (unsigned char*)setString);
         }
 
-        setString = getenv("ssid");
+        setString = getenv("myssid");
         if (setString)
         {
             setStringLength = strlen((const char *)setString);
@@ -149,6 +177,45 @@ msg_t startWifi(void)
             sl_NetAppSet(SL_NET_APP_DEVICE_CONFIG_ID, NETAPP_SET_GET_DEV_CONF_OPT_DOMAIN_NAME, setStringLength, (unsigned char*)setString);
         }
     }
+    else if (wifiMode == ROLE_STA)
+    {
+        /* auto + smartconfig */
+        sl_WlanPolicySet(SL_POLICY_CONNECTION, SL_CONNECTION_POLICY(1, 0, 0, 0, 1), NULL, 0);
+
+        /* Delete profiles */
+        sl_WlanProfileDel(0xFF);
+
+        /* Disconnect forcibly */
+        res = sl_WlanDisconnect();
+        if(res == 0)
+        {
+            while (GET_STATUS_BIT(g_Status, STATUS_BIT_CONNECTION))
+            {
+                chThdSleepMilliseconds(100);
+            }
+        }
+
+        /* Enable DHCP */
+        unsigned char val = 1;
+        sl_NetCfgSet(SL_IPV4_STA_P2P_CL_DHCP_ENABLE, 1, 1, &val);
+
+        /* Disable scan */
+        sl_WlanPolicySet(SL_POLICY_SCAN , SL_SCAN_POLICY(0), NULL, 0);
+
+        /* Max power */
+        val = 0;
+        sl_WlanSet(SL_WLAN_CFG_GENERAL_PARAM_ID,  WLAN_GENERAL_PARAM_OPT_STA_TX_POWER, 1, (unsigned char *)&val);
+
+        /* PM normal policy */
+        sl_WlanPolicySet(SL_POLICY_PM , SL_NORMAL_POLICY, NULL, 0);
+
+        /* unregister mDNS */
+        sl_NetAppMDNSUnRegisterService(0, 0);
+
+        /* Remove filters */
+        memset(RxFilterIdMask.FilterIdMask, 0xFF, 8);
+        sl_WlanRxFilterSet(SL_REMOVE_RX_FILTER, (_u8 *)&RxFilterIdMask, sizeof(_WlanRxFilterOperationCommandBuff_t));
+    }
 
     sl_Stop(SL_STOP_TIMEOUT);
 
@@ -161,6 +228,62 @@ msg_t startWifi(void)
 
     wifiRunning = true;
     return MSG_OK;
+}
+
+msg_t slWifiConnect(char *ssid, char *key, int secType)
+{
+    int res = 0;
+    SlSecParams_t secParams = {0};
+    int waitCount = 0;
+
+    PRINT("Connecting to %s (%s)\n\r", ssid, secNames[secType]);
+
+    secParams.Key = (signed char*)key;
+    secParams.KeyLen = strlen(key);
+    secParams.Type = secType;
+
+    res = sl_WlanConnect((signed char*)ssid, strlen(ssid), 0, &secParams, 0);
+    if (res)
+    {
+        PRINT("Connect error %d\n\r", res);
+        return MSG_RESET;
+    }
+
+    // Wait for WLAN Event
+    while (((!GET_STATUS_BIT(g_Status, STATUS_BIT_CONNECTION)) || (!GET_STATUS_BIT(g_Status, STATUS_BIT_IP_ACQUIRED))) && (waitCount++ < 10))
+    {
+        chThdSleepMilliseconds(500);
+    }
+
+    if (waitCount >= 10)
+    {
+        PRINT("timeout\n\r");
+        return MSG_RESET;
+    }
+    else
+    {
+        PRINT("ok\n\r");
+    }
+
+    return MSG_OK;
+}
+
+void slWifiDisconnect(void)
+{
+    int res;
+
+    PRINT("Disconnecting... ");
+
+    res = sl_WlanDisconnect();
+    if(res == 0)
+    {
+        while (GET_STATUS_BIT(g_Status, STATUS_BIT_CONNECTION))
+        {
+            chThdSleepMilliseconds(100);
+        }
+    }
+
+    PRINT("ok\n\r");
 }
 
 /*
@@ -198,6 +321,16 @@ void SimpleLinkNetAppEventHandler(SlNetAppEvent_t *pNetAppEvent)
 
             pEventData = &pNetAppEvent->EventData.ipAcquiredV4;
             g_GatewayIP = pEventData->gateway;
+
+            PRINT(" [NETAPP EVENT] IP Acquired: IP=%d.%d.%d.%d, Gateway=%d.%d.%d.%d\n\r",
+                SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.ip,3),
+                SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.ip,2),
+                SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.ip,1),
+                SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.ip,0),
+                SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.gateway,3),
+                SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.gateway,2),
+                SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.gateway,1),
+                SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.gateway,0));
         }
         break;
 
@@ -255,8 +388,21 @@ void SimpleLinkWlanEventHandler(SlWlanEvent_t *pWlanEvent)
              * pEventData = &pWlanEvent->EventData.STAandP2PModeWlanConnected;
              *
              */
+            if (wifiMode == ROLE_STA)
+            {
+                memcpy(g_ConnectionSSID, pWlanEvent->EventData.STAandP2PModeWlanConnected.ssid_name,
+                       pWlanEvent->EventData.STAandP2PModeWlanConnected.ssid_len);
+                memcpy(g_ConnectionBSSID, pWlanEvent->EventData.STAandP2PModeWlanConnected.bssid, SL_BSSID_LENGTH);
 
-            PRINT(" [WLAN EVENT] Connected\n\r");
+                PRINT(" [WLAN EVENT] Station connected to the AP: %s, BSSID: %x:%x:%x:%x:%x:%x\n\r",
+                          g_ConnectionSSID,
+                          g_ConnectionBSSID[0], g_ConnectionBSSID[1], g_ConnectionBSSID[2],
+                          g_ConnectionBSSID[3], g_ConnectionBSSID[4], g_ConnectionBSSID[5]);
+            }
+            else
+            {
+                PRINT(" [WLAN EVENT] Connected\n\r");
+            }
         }
         break;
 
@@ -278,18 +424,24 @@ void SimpleLinkWlanEventHandler(SlWlanEvent_t *pWlanEvent)
             {
                 PRINT(" [WLAN EVENT] Device disconnected from the AP on an ERROR..!! \n\r");
             }
+
+            if (wifiMode == ROLE_STA)
+            {
+                memset(g_ConnectionSSID, 0, sizeof(g_ConnectionSSID));
+                memset(g_ConnectionBSSID, 0, sizeof(g_ConnectionBSSID));
+            }
         }
         break;
 
         case SL_WLAN_STA_CONNECTED_EVENT:
         {
-            PRINT(" [WLAN EVENT] Station connected.\r\n");
+            PRINT(" [WLAN EVENT] Station connected.\n\r");
         }
         break;
 
         case SL_WLAN_STA_DISCONNECTED_EVENT:
         {
-            PRINT(" [WLAN EVENT] Station disconnected.\r\n");
+            PRINT(" [WLAN EVENT] Station disconnected.\n\r");
         }
         break;
 
@@ -299,6 +451,31 @@ void SimpleLinkWlanEventHandler(SlWlanEvent_t *pWlanEvent)
         }
         break;
     }
+}
+
+void SimpleLinkSockEventHandler(SlSockEvent_t *pSock)
+{
+    switch( pSock->Event )
+    {
+        case SL_SOCKET_TX_FAILED_EVENT:
+            switch( pSock->socketAsyncEvent.SockTxFailData.status)
+            {
+                case SL_ECLOSE:
+                    PRINT(" [SOCK ERROR] - close socket (%d) operation failed to transmit all queued packets\n\r",
+                                    pSock->socketAsyncEvent.SockTxFailData.sd);
+                    break;
+                default:
+                    PRINT(" [SOCK ERROR] - TX FAILED  :  socket %d , reason (%d) \n\r",
+                                pSock->socketAsyncEvent.SockTxFailData.sd, pSock->socketAsyncEvent.SockTxFailData.status);
+                  break;
+            }
+            break;
+
+        default:
+            PRINT(" [SOCK EVENT] - Unexpected Event [%x0x]\n\r",pSock->Event);
+          break;
+    }
+
 }
 
 void SimpleLinkGeneralEventHandler(SlDeviceEvent_t *pDevEvent)

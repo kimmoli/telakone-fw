@@ -29,6 +29,34 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
         chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_SCAN);
     }
 
+    else if (strncmp(argv[0], "connect", 4) == 0)
+    {
+        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_CONNECT);
+    }
+
+    else if (strncmp(argv[0], "disconnect", 4) == 0)
+    {
+        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_DISCONNECT);
+    }
+
+    else if (strcmp(argv[0], "ping") == 0)
+    {
+        if (hostToPing)
+        {
+            chHeapFree(hostToPing);
+            hostToPing = NULL;
+        }
+
+        if (argc == 2)
+        {
+            int len = strlen(argv[1]) +1;
+            hostToPing = chHeapAlloc(NULL, sizeof(char) * len);
+            memcpy(hostToPing, argv[1], len);
+        }
+
+        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_PING);
+    }
+
     else if (strcmp(argv[0], "prog") == 0)
     {
 #ifdef TK_CC3100_PROGRAMMING
@@ -43,12 +71,17 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
         chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_VERSION);
     }
 
-    else if (strcmp(argv[0], "conf") == 0)
+    else if (strcmp(argv[0], "show") == 0)
     {
         chprintf(chp, "Mode   = %s\n\r", getenv("wifimode"));
-        chprintf(chp, "SSID   = %s\n\r", getenv("ssid"));
+        chprintf(chp, "AP config:\n\r");
+        chprintf(chp, "SSID   = %s\n\r", getenv("myssid"));
         chprintf(chp, "IP     = %s\n\r", getenv("ip"));
         chprintf(chp, "Domain = %s\n\r", getenv("domain"));
+        chprintf(chp, "Station config:\n\r");
+        chprintf(chp, "SSID   = %s\n\r", getenv("ssid"));
+        chprintf(chp, "Key    = %s\n\r", getenv("key"));
+        chprintf(chp, "Sec    = %s\n\r", secNames[strtol(getenv("sec"), NULL, 10)]);
     }
 
     else
@@ -59,5 +92,5 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
 
 void usage(BaseSequentialStream *chp)
 {
-    chprintf(chp, "wifi commands: start stop prog ver conf\n\r");
+    chprintf(chp, "wifi commands: start stop prog ver show connect disconnect\n\r");
 }
