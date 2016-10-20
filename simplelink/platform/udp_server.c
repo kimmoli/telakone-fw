@@ -61,8 +61,7 @@ static THD_FUNCTION(udpServer, arg)
 
     while (!chThdShouldTerminateX())
     {
-        res = sl_RecvFrom(sockID, rxBuf, BUF_SIZE, 0,
-                            (SlSockAddr_t *)&addr, (SlSocklen_t*)&addrSize );
+        res = sl_RecvFrom(sockID, rxBuf, BUF_SIZE, 0, (SlSockAddr_t *)&addr, (SlSocklen_t*)&addrSize );
 
         if (res == SL_EAGAIN)
             continue;
@@ -76,13 +75,17 @@ static THD_FUNCTION(udpServer, arg)
         }
         else
         {
+            PRINT("[UDP] from %d.%d.%d.%d\n\r",
+                    SL_IPV4_BYTE(addr.sin_addr.s_addr, 0), SL_IPV4_BYTE(addr.sin_addr.s_addr, 1),
+                    SL_IPV4_BYTE(addr.sin_addr.s_addr, 2), SL_IPV4_BYTE(addr.sin_addr.s_addr, 3));
+
             int n = 0;
             do
             {
                 int i = MIN(res-n, 16);
                 int j = 0;
 
-                PRINT("UDP %04x ", n);
+                PRINT("[UDP] %04x ", n);
 
                 for(j=n;j<(n+i);j++)
                     PRINT(" %02X", rxBuf[j]);
