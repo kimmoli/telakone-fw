@@ -3,6 +3,7 @@
 #include "udp_server.h"
 #include "hal.h"
 #include "wifi.h"
+#include "messaging.h"
 #include "helpers.h"
 
 UdpServerConfig udpserverconf =
@@ -84,6 +85,12 @@ static THD_FUNCTION(udpServer, arg)
                 n += i;
             }
             while (n < res);
+
+            chBSemWait(&messagingReceiceSem);
+            memcpy(messagingReceiveBuffer, rxBuf, res);
+            chBSemSignal(&messagingReceiceSem);
+
+            chEvtBroadcastFlagsI(&messagingEvent, MESSAGING_EVENT_SEND | (MIN(res, 0x3FF)));
         }
     }
 
