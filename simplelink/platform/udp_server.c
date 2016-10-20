@@ -42,7 +42,7 @@ static THD_FUNCTION(udpServer, arg)
 
     /* make socket non-blocking by setting 1 sec timeout */
     struct SlTimeval_t timeVal;
-    timeVal.tv_sec = 1;
+    timeVal.tv_sec = 5;
     timeVal.tv_usec = 0;
     sl_SetSockOpt(sockID, SL_SOL_SOCKET, SL_SO_RCVTIMEO, (uint8_t *)&timeVal, sizeof(timeVal));
 
