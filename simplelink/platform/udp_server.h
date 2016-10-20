@@ -10,6 +10,6 @@ typedef struct
     uint16_t port;
 } UdpServerConfig;
 
-extern void startUdpServer(uint16_t port);
+extern void startUdpServer(int port);
 
 #endif

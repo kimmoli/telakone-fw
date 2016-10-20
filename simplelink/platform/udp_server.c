@@ -11,6 +11,8 @@ UdpServerConfig udpserverconf =
     4554
 };
 
+static thread_t *udpServerTp = NULL;
+
 static THD_FUNCTION(udpServer, arg)
 {
     UdpServerConfig *config = arg;
@@ -38,6 +40,12 @@ static THD_FUNCTION(udpServer, arg)
         chThdExit(MSG_RESET);
     }
 
+    /* make socket non-blocking by setting 1 sec timeout */
+    struct SlTimeval_t timeVal;
+    timeVal.tv_sec = 1;
+    timeVal.tv_usec = 0;
+    sl_SetSockOpt(sockID, SL_SOL_SOCKET, SL_SO_RCVTIMEO, (uint8_t *)&timeVal, sizeof(timeVal));
+
     addrSize = sizeof(SlSockAddrIn_t);
 
     res = sl_Bind(sockID, (SlSockAddr_t *)&localAddr, addrSize);
@@ -55,12 +63,16 @@ static THD_FUNCTION(udpServer, arg)
     {
         res = sl_RecvFrom(sockID, rxBuf, BUF_SIZE, 0,
                             (SlSockAddr_t *)&addr, (SlSocklen_t*)&addrSize );
+
+        if (res == SL_EAGAIN)
+            continue;
+
         if (res < 0)
         {
             sl_Close(sockID);
             PRINT("[UDP] receive error %d\n\r", res);
             chHeapFree(rxBuf);
-            chThdExit(MSG_RESET);
+            chThdTerminate(chThdGetSelfX());
         }
         else
         {
@@ -99,10 +111,34 @@ static THD_FUNCTION(udpServer, arg)
     chThdExit(MSG_OK);
 }
 
-void startUdpServer(uint16_t port)
+void startUdpServer(int port)
 {
-    if (port > 0)
-        udpserverconf.port = port;
+    if (port == -1)
+    {
+        if (udpServerTp)
+        {
+            chThdTerminate(udpServerTp);
+            chThdWait(udpServerTp);
+            udpServerTp = NULL;
 
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "udpserver", NORMALPRIO+1, udpServer, (void *) &udpserverconf);
+            PRINT("[UDP] server stopped\n\r");
+            return;
+        }
+        else
+        {
+            PRINT("[UDP] server not running\n\r");
+            return;
+        }
+    }
+    else if (!udpServerTp)
+    {
+        if (port > 0)
+            udpserverconf.port = port;
+
+        udpServerTp = chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "udpserver", NORMALPRIO+1, udpServer, (void *) &udpserverconf);
+    }
+    else
+    {
+        PRINT("[UDP] server already running\n\r");
+    }
 }
