@@ -130,7 +130,7 @@ CSRC = $(STARTUPSRC) \
        shell/cmd_dm.c shell/cmd_blink.c \
        shell/shellcommands.c \
        threads/blinker.c threads/joystick.c threads/auxdevice.c threads/auxmotor.c \
-       threads/messaging.c \
+       threads/messaging.c threads/drive.c \
        main.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global

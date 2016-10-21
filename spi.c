@@ -1,5 +1,6 @@
 #include "hal.h"
 #include "spi.h"
+#include "drive.h"
 #include "helpers.h"
 
 const SPIConfig spiconfigDrive1 =
@@ -20,14 +21,18 @@ const SPIConfig spiconfigDrive2 =
     0
 };
 
-int spiOK;
-
 float driveAfeHandle(int drive, float value)
 {
     SPIDriver *spipc;
 
     uint8_t rxBuf[2];
     uint8_t txBuf[2];
+
+    if (drive == DRIVER_LEFT)
+        spipc = &SPID2;
+    else if (drive == DRIVER_RIGHT)
+        spipc = &SPID3;
+    else return (float)0.0;
 
     /*
      * Write goes to MPC4921 DAC
@@ -38,11 +43,6 @@ float driveAfeHandle(int drive, float value)
     uint16_t voutD = MIN((uint16_t)((value*4096)/(2*EXT_VREF)), 0xFFF);
     txBuf[0] = 0x50 | ((voutD & 0x0F00) >> 8);
     txBuf[1] = voutD & 0xFF;
-
-    if (drive == 1)
-        spipc = &SPID2;
-    else
-        spipc = &SPID3;
 
     spiSelect(spipc);
     spiExchange(spipc, 2, txBuf, rxBuf);
@@ -55,20 +55,16 @@ float driveAfeHandle(int drive, float value)
 
     if ((rxBuf[0] & 0xe0) == 0x00)
     {
-        spiOK |= drive;
         return ADC_MEAS48V_SCALE * (float)(((rxBuf[0]<<11) | ((rxBuf[1] & 0xFE) << 3)) / 16);
     }
     else
     {
-        spiOK &= ~drive;
         return (float)0.0;
     }
 }
 
 void spiTKInit(void)
 {
-    spiOK = 0;
-
     spiStart(&SPID2, &spiconfigDrive1);
     spiStart(&SPID3, &spiconfigDrive2);
 }

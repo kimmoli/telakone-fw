@@ -22,6 +22,7 @@
 #include "joystick.h"
 #include "auxdevice.h"
 #include "auxmotor.h"
+#include "drive.h"
 #include "messaging.h"
 
 #include "wifi.h"
@@ -66,9 +67,11 @@ int main(void)
     /* Start threads */
     startMessagingThread(); /* Parses messages from network */
     startBlinkerThread(); /* Controls the external warning lamps on OUT1 */
-    startJoystickThread(); /* Processes joystick input values and drive motors */
     startAuxDeviceThread(); /* Auxiliary device handling */
     startAuxmotorThread(); /* Auxiliary motor control */
+    startDriveThread(DRIVER_LEFT); /* Left motor driver */
+    startDriveThread(DRIVER_RIGHT); /* Right motor driver */
+    startJoystickThread(); /* Processes joystick input values and drive motors */
     startWifiThread(); /* Wifi */
 
     PRINT(" - Threads started\n\r");

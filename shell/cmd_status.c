@@ -11,6 +11,7 @@
 #include "spi.h"
 #include "exti.h"
 #include "pwm.h"
+#include "drive.h"
 
 void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
 {
@@ -45,7 +46,7 @@ void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
         chprintf(chp, "Joystick           LR %d BF %d    \n\r", joystickLR, joystickBF);
         chprintf(chp, "Motor drive:       L %d R %d    \n\r", leftMotor, rightMotor );
         chprintf(chp, "Speed:             L %d R %d    \n\r", leftSpeed, rightSpeed );
-        chprintf(chp, "Battery voltages:  L %.2f V R %.2f V %s    \n\r", leftBatteryVoltage, rightBatteryVoltage, (spiOK ? "" : "Error"));
+        chprintf(chp, "Battery voltages:  L %.2f V R %.2f V    \n\r", batteryVoltage[0], batteryVoltage[1]);
         chprintf(chp, "Acceleration:      X %.2f g Y %.2f g Z %.2f g %s  \n\r", accelX, accelY, accelZ, (accelOK ? "" : "Error"));
         chprintf(chp, "Buttons:           1 %s (%d) 2 %s (%d)    \n\r", (palReadLine(LINE_BUTTON1) ? "up" : "down"), button1count,
                                                                         (palReadLine(LINE_BUTTON2) ? "up" : "down"), button2count);

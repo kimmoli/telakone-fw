@@ -5,20 +5,24 @@
 
 #include "adc.h"
 #include "spi.h"
+#include "drive.h"
 
 int joystickLR;
 int joystickBF;
 int leftMotor;
 int rightMotor;
-float leftBatteryVoltage;
-float rightBatteryVoltage;
 
 static THD_FUNCTION(joystickThread, arg)
 {
     (void)arg;
 
+    int prevLeftMotor = 0;
+    int prevRightMotor = 0;
+
     while (true)
     {
+        chThdSleepMilliseconds(50);
+
         // Scale potentiometers to -500..+500
         joystickLR = ( 1000 * adcAvgJoystickLeftRight / 4096 ) - 500;
         joystickBF = ( 1000 * adcAvgJoystickBackwardForward / 4096 ) - 500;
@@ -42,19 +46,14 @@ static THD_FUNCTION(joystickThread, arg)
         leftMotor = MAX(MIN(joystickBF + joystickLR, 500), -500);
         rightMotor = MAX(MIN(joystickBF - joystickLR, 500), -500);
 
-        leftBatteryVoltage = driveAfeHandle(1, (float)abs(leftMotor)/100);
-        if (leftMotor < 0)
-            palSetLine(LINE_D1REVERSE);
-        else
-            palClearLine(LINE_D1REVERSE);
+        if (leftMotor != prevLeftMotor)
+            chEvtBroadcastFlagsI(&driveEvent[0], DRIVEEVENT_SET | (uint16_t)(leftMotor & 0xFFF));
 
-        rightBatteryVoltage = driveAfeHandle(2, (float)abs(rightMotor)/100);
-        if (rightMotor < 0)
-            palSetLine(LINE_D2REVERSE);
-        else
-            palClearLine(LINE_D2REVERSE);
+        if (rightMotor != prevRightMotor)
+            chEvtBroadcastFlagsI(&driveEvent[1], DRIVEEVENT_SET | (uint16_t)(rightMotor & 0xFFF));
 
-        chThdSleepMilliseconds(50);
+        prevLeftMotor = leftMotor;
+        prevRightMotor = rightMotor;
     }
 }
 
