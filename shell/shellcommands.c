@@ -8,6 +8,7 @@ const ShellCommand commands[] =
 {
     { "status", cmd_status },
     { "out", cmd_out },
+    { "blink", cmd_blink },
     { "am", cmd_auxmotor },
     { "ping", cmd_ping },
     { "diic", cmd_diic },
