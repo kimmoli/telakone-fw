@@ -6,6 +6,7 @@
 #include "helpers.h"
 
 static virtual_timer_t linearaccel_vt;
+event_source_t auxMotorEvent;
 
 static volatile int newValue = 0;
 static volatile int prevValue = 0;
@@ -17,30 +18,29 @@ const int linearacceldelay = 50;
 static THD_FUNCTION(auxmotorThread, arg)
 {
     (void)arg;
-    event_listener_t elButton;
+    event_listener_t elAuxMotor;
     eventflags_t  flags;
 
-    chEvtRegister(&buttonEvent, &elButton, 0);
+    chEvtRegister(&auxMotorEvent, &elAuxMotor, 0);
 
     while (true)
     {
         chEvtWaitAny(EVENT_MASK(0));
 
         chSysLock();
-        flags = chEvtGetAndClearFlagsI(&elButton);
+        flags = chEvtGetAndClearFlagsI(&elAuxMotor);
         chSysUnlock();
 
-        if (flags & BUTTON1DOWN)
-            auxmotorControl(100);
-        else if (flags & BUTTON2DOWN)
-            auxmotorControl(-100);
-        else
+        if (flags & AUXMOTOR_EVENT_STOP)
             auxmotorControl(0);
+        else if (flags & AUXMOTOR_EVENT_SET)
+            auxmotorControl((int)MIN(-100, (MAX((int8_t)(flags & 0xff), 100))));
     }
 }
 
 void startAuxmotorThread(void)
 {
+    chEvtObjectInit(&auxMotorEvent);
     chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "auxmotor", NORMALPRIO+1, auxmotorThread, NULL);
 }
 

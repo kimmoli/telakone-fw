@@ -74,7 +74,7 @@ static THD_FUNCTION(messagingThread, arg)
                             break;
 
                         case DEST_AUXMOTOR:
-                            auxmotorControl((int)event);
+                            chEvtBroadcastFlagsI(&auxMotorEvent, event);
                             break;
 
                         default:
