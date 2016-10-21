@@ -21,7 +21,7 @@ void cmd_auxmotor(BaseSequentialStream *chp, int argc, char *argv[])
         else if (newValue >= -100 && newValue <= 100)
         {
             chprintf(chp, "Aux motor direction %s at %d %% speed\n\r", ((newValue<0) ? "in" : "out"), abs(newValue));
-            chEvtBroadcastFlagsI(&auxMotorEvent, AUXMOTOR_EVENT_SET | (int8_t)newValue);
+            chEvtBroadcastFlagsI(&auxMotorEvent, AUXMOTOR_EVENT_SET | (uint8_t)(newValue & 0xff));
             return;
         }
     }

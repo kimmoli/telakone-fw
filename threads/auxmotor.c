@@ -34,7 +34,7 @@ static THD_FUNCTION(auxmotorThread, arg)
         if (flags & AUXMOTOR_EVENT_STOP)
             auxmotorControl(0);
         else if (flags & AUXMOTOR_EVENT_SET)
-            auxmotorControl((int)MIN(-100, (MAX((int8_t)(flags & 0xff), 100))));
+            auxmotorControl((int8_t)(flags & 0xff));
     }
 }
 
