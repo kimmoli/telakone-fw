@@ -3,8 +3,6 @@
 
 #include "hal.h"
 
-#define BUF_SIZE 1400
-
 typedef struct
 {
     uint16_t port;

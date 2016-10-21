@@ -50,5 +50,5 @@ static THD_FUNCTION(auxDeviceThread, arg)
 
 void startAuxDeviceThread(void)
 {
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "auxdevice", NORMALPRIO+1, auxDeviceThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), "auxdevice", NORMALPRIO+1, auxDeviceThread, NULL);
 }

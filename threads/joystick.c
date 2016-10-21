@@ -59,5 +59,5 @@ static THD_FUNCTION(joystickThread, arg)
 
 void startJoystickThread(void)
 {
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "joystick", NORMALPRIO+1, joystickThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), "joystick", NORMALPRIO+1, joystickThread, NULL);
 }

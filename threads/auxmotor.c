@@ -41,7 +41,7 @@ static THD_FUNCTION(auxmotorThread, arg)
 void startAuxmotorThread(void)
 {
     chEvtObjectInit(&auxMotorEvent);
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "auxmotor", NORMALPRIO+1, auxmotorThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), "auxmotor", NORMALPRIO+1, auxmotorThread, NULL);
 }
 
 void linearaccelcb(void *arg)

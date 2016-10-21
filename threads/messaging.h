@@ -3,6 +3,8 @@
 
 #include "hal.h"
 
+#define MSGBUFSIZE 64
+
 #define MESSAGING_EVENT_SEND  0x1000
 #define MESSAGING_EVENT_REPLY 0x2000
 

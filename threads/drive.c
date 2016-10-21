@@ -64,6 +64,6 @@ void startDriveThread(int channel)
     }
 
     chEvtObjectInit(&driveEvent[channel]);
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), (channel ? "drive1" : "drive0"), NORMALPRIO+1, driveThread, (void*) &driveconf[channel]);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), (channel ? "drive1" : "drive0"), NORMALPRIO+1, driveThread, (void*) &driveconf[channel]);
 }
 

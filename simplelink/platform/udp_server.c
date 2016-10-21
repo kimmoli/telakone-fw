@@ -25,7 +25,7 @@ static THD_FUNCTION(udpServer, arg)
 
     char *rxBuf;
 
-    rxBuf = chHeapAlloc(NULL, BUF_SIZE * sizeof(char));
+    rxBuf = chHeapAlloc(NULL, MSGBUFSIZE * sizeof(char));
 
     localAddr.sin_family = SL_AF_INET;
     localAddr.sin_port = sl_Htons((uint16_t)config->port);
@@ -61,7 +61,7 @@ static THD_FUNCTION(udpServer, arg)
 
     while (!chThdShouldTerminateX())
     {
-        res = sl_RecvFrom(sockID, rxBuf, BUF_SIZE, 0, (SlSockAddr_t *)&addr, (SlSocklen_t*)&addrSize );
+        res = sl_RecvFrom(sockID, rxBuf, MSGBUFSIZE, 0, (SlSockAddr_t *)&addr, (SlSocklen_t*)&addrSize );
 
         if (res == SL_EAGAIN)
             continue;
@@ -138,7 +138,7 @@ void startUdpServer(int port)
         if (port > 0)
             udpserverconf.port = port;
 
-        udpServerTp = chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "udpserver", NORMALPRIO+1, udpServer, (void *) &udpserverconf);
+        udpServerTp = chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(256), "udpserver", NORMALPRIO+1, udpServer, (void *) &udpserverconf);
     }
     else
     {

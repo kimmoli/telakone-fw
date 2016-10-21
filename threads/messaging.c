@@ -8,6 +8,7 @@
 #include "pwm.h"
 #include "auxmotor.h"
 #include "helpers.h"
+#include "udp_client.h"
 
 event_source_t messagingEvent;
 binary_semaphore_t messagingReceiceSem;
@@ -24,7 +25,7 @@ static THD_FUNCTION(messagingThread, arg)
     uint8_t eventDestination;
     uint16_t event;
 
-    buffer = chHeapAlloc(NULL, 1024);
+    buffer = chHeapAlloc(NULL, MSGBUFSIZE);
 
     chEvtRegister(&messagingEvent, &elMessaging, 0);
 
@@ -90,9 +91,9 @@ static THD_FUNCTION(messagingThread, arg)
 
 void startMessagingThread(void)
 {
-    messagingReceiveBuffer = chHeapAlloc(NULL, 1024);
+    messagingReceiveBuffer = chHeapAlloc(NULL, MSGBUFSIZE);
     chEvtObjectInit(&messagingEvent);
     chBSemObjectInit(&messagingReceiceSem, false);
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "messaging", NORMALPRIO+1, messagingThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), "messaging", NORMALPRIO+1, messagingThread, NULL);
 }
 
