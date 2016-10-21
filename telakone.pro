@@ -47,7 +47,8 @@ SOURCES += \
     simplelink/platform/wifi_prog.c \
     simplelink/platform/wifi_ping.c \
     simplelink/platform/udp_server.c \
-    threads/messaging.c
+    threads/messaging.c \
+    shell/cmd_blink.c
 
 HEADERS += \
     adc.h \

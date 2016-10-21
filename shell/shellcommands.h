@@ -8,6 +8,7 @@
 
 extern void cmd_status(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_out(BaseSequentialStream *chp, int argc, char *argv[]);
+extern void cmd_blink(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_auxmotor(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_ping(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_diic(BaseSequentialStream *chp, int argc, char *argv[]);
