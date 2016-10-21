@@ -49,7 +49,8 @@ SOURCES += \
     simplelink/platform/udp_server.c \
     threads/messaging.c \
     shell/cmd_blink.c \
-    threads/drive.c
+    threads/drive.c \
+    simplelink/platform/udp_client.c
 
 HEADERS += \
     adc.h \
@@ -102,7 +103,8 @@ HEADERS += \
     simplelink/platform/wifi_ping.h \
     simplelink/platform/udp_server.h \
     threads/messaging.h \
-    threads/drive.h
+    threads/drive.h \
+    simplelink/platform/udp_client.h
 
 OTHER_FILES += \
     Makefile \
