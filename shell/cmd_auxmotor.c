@@ -8,25 +8,24 @@ void cmd_auxmotor(BaseSequentialStream *chp, int argc, char *argv[])
 {
     int newValue;
 
-    if (argc != 1)
+    if (argc == 1)
     {
-        chprintf(chp, "am speed(in -100..0..100 out)\n\r");
-        return;
+        newValue = strtol(argv[0], NULL, 0);
+
+        if (newValue == 0)
+        {
+            chprintf(chp, "Aux motor stop\n\r");
+            chEvtBroadcastFlagsI(&auxMotorEvent, AUXMOTOR_EVENT_STOP);
+            return;
+        }
+        else if (newValue >= -100 && newValue <= 100)
+        {
+            chprintf(chp, "Aux motor direction %s at %d %% speed\n\r", ((newValue<0) ? "in" : "out"), abs(newValue));
+            chEvtBroadcastFlagsI(&auxMotorEvent, AUXMOTOR_EVENT_SET | (int8_t)newValue);
+            return;
+        }
     }
 
-    newValue = strtol(argv[0], NULL, 0);
-
-    if (newValue < -100 || newValue > 100)
-    {
-        chprintf(chp, "am speed(in -100..0..100 out)\n\r");
-        return;
-    }
-
-    if (newValue == 0)
-        chprintf(chp, "Aux motor stop\n\r");
-    else
-        chprintf(chp, "Aux motor direction %s at %d %% speed\n\r", ((newValue<0) ? "in" : "out"), abs(newValue));
-
-    auxmotorControl(newValue);
+    chprintf(chp, "am speed(in -100..0..100 out)\n\r");
 }
 
