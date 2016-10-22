@@ -50,7 +50,8 @@ SOURCES += \
     threads/messaging.c \
     shell/cmd_blink.c \
     threads/drive.c \
-    simplelink/platform/udp_client.c
+    simplelink/platform/udp_client.c \
+    simplelink/platform/tcp_server.c
 
 HEADERS += \
     adc.h \
@@ -104,7 +105,8 @@ HEADERS += \
     simplelink/platform/udp_server.h \
     threads/messaging.h \
     threads/drive.h \
-    simplelink/platform/udp_client.h
+    simplelink/platform/udp_client.h \
+    simplelink/platform/tcp_server.h
 
 OTHER_FILES += \
     Makefile \
