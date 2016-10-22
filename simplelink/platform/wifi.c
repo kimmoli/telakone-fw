@@ -75,7 +75,7 @@ static THD_FUNCTION(wifiThread, arg)
             if (startWifi() == MSG_OK)
                 PRINT("ok\n\r");
             else
-                PRINT("failed\n\r");
+                PRINT("failed. Please reboot\n\r");
         }
 
         else if (flags & WIFIEVENT_STOP && wifiRunning)
@@ -219,10 +219,13 @@ msg_t startWifi(void)
 
     sl_Stop(SL_STOP_TIMEOUT);
 
+    chThdSleepMilliseconds(100);
+
     res = sl_Start(0, 0, 0);
 
     if (res != wifiMode)
     {
+        sl_Stop(SL_STOP_TIMEOUT);
         return MSG_RESET;
     }
 
