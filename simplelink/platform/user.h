@@ -1015,9 +1015,8 @@ typedef P_EVENT_HANDLER  SL_P_EVENT_HANDLER;
 
     \warning
 */
-/*
-#define sl_SockEvtHdlr
-*/
+
+#define sl_SockEvtHdlr  SimpleLinkSockEventHandler
 
 /*!
     \brief
