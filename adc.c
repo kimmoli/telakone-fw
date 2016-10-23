@@ -8,7 +8,7 @@ const ADCConversionGroup adcgrpcfg1 =
     /* conversion end callback*/ adccb1,
     /* conversion error callback */ NULL,
     /* ADC CR1 */ 0,
-    /* ADC CR2 */ ADC_CR2_SWSTART,
+    /* ADC CR2 */ ADC_CR2_SWSTART | ADC_CR2_CONT,
     /* ADC SMPR1 */ ADC_SMPR1_SMP_SENSOR(ADC_SAMPLE_144),
     /* ADC SMPR2 */ 0,
     /* ADC SQR1 */ ADC_SQR1_NUM_CH(ADC_GRP1_NUM_CHANNELS),
@@ -23,7 +23,7 @@ const ADCConversionGroup adcgrpcfg3 =
     /* conversion end callback*/ adccb3,
     /* conversion error callback */ NULL,
     /* ADC CR1 */ 0,
-    /* ADC CR2 */ ADC_CR2_SWSTART,
+    /* ADC CR2 */ ADC_CR2_SWSTART | ADC_CR2_CONT,
     /* ADC SMPR1 */ ADC_SMPR1_SMP_AN14(ADC_SAMPLE_56) | ADC_SMPR1_SMP_AN15(ADC_SAMPLE_56),
     /* ADC SMPR2 */ ADC_SMPR2_SMP_AN9(ADC_SAMPLE_56) | ADC_SMPR2_SMP_AN0(ADC_SAMPLE_56),
     /* ADC SQR1 */ ADC_SQR1_NUM_CH(ADC_GRP3_NUM_CHANNELS),
@@ -64,8 +64,6 @@ void adccb1(ADCDriver *adcp, adcsample_t *buffer, size_t n)
         }
 
         adcAvgTempSensor /= ADC_GRP1_BUF_DEPTH;
-
-        adcStartConversionI(&ADCD1, &adcgrpcfg1, adcSamples1, ADC_GRP1_BUF_DEPTH);
     }
 }
 
@@ -101,8 +99,6 @@ void adccb3(ADCDriver *adcp, adcsample_t *buffer, size_t n)
         adcAvgMotorCurrent /= ADC_GRP3_BUF_DEPTH;
         adcAvgJoystickLeftRight /= ADC_GRP3_BUF_DEPTH;
         adcAvgJoystickBackwardForward /= ADC_GRP3_BUF_DEPTH;
-
-        adcStartConversionI(&ADCD3, &adcgrpcfg3, adcSamples3, ADC_GRP3_BUF_DEPTH);
     }
 }
 
@@ -117,7 +113,7 @@ void adcTKInit(void)
 
 void adcTKStartConv(void)
 {
-    adcStartConversionI(&ADCD1, &adcgrpcfg1, adcSamples1, ADC_GRP1_BUF_DEPTH);
-    adcStartConversionI(&ADCD3, &adcgrpcfg3, adcSamples3, ADC_GRP3_BUF_DEPTH);
+    adcStartConversion(&ADCD1, &adcgrpcfg1, adcSamples1, ADC_GRP1_BUF_DEPTH);
+    adcStartConversion(&ADCD3, &adcgrpcfg3, adcSamples3, ADC_GRP3_BUF_DEPTH);
 }
 

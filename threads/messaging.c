@@ -33,9 +33,7 @@ static THD_FUNCTION(messagingThread, arg)
     {
         chEvtWaitAny(EVENT_MASK(0));
 
-        chSysLock();
-        flags = chEvtGetAndClearFlagsI(&elMessaging);
-        chSysUnlock();
+        flags = chEvtGetAndClearFlags(&elMessaging);
 
         if (flags & MESSAGING_EVENT_SEND)
         {
@@ -63,7 +61,7 @@ static THD_FUNCTION(messagingThread, arg)
                             break;
 
                         case DEST_BLINKER:
-                            chEvtBroadcastFlagsI(&blinkEvent, event);
+                            chEvtBroadcastFlags(&blinkEvent, event);
                             break;
 
                         case DEST_PWM:
@@ -71,11 +69,11 @@ static THD_FUNCTION(messagingThread, arg)
                             break;
 
                         case DEST_WIFI:
-                            chEvtBroadcastFlagsI(&wifiEvent, event);
+                            chEvtBroadcastFlags(&wifiEvent, event);
                             break;
 
                         case DEST_AUXMOTOR:
-                            chEvtBroadcastFlagsI(&auxMotorEvent, event);
+                            chEvtBroadcastFlags(&auxMotorEvent, event);
                             break;
 
                         default:
@@ -94,6 +92,6 @@ void startMessagingThread(void)
     messagingReceiveBuffer = chHeapAlloc(NULL, MSGBUFSIZE);
     chEvtObjectInit(&messagingEvent);
     chBSemObjectInit(&messagingReceiceSem, false);
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), "messaging", NORMALPRIO+1, messagingThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), "messaging", NORMALPRIO+3, messagingThread, NULL);
 }
 

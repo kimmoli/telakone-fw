@@ -47,10 +47,10 @@ static THD_FUNCTION(joystickThread, arg)
         rightMotor = MAX(MIN(joystickBF - joystickLR, 500), -500);
 
         if (leftMotor != prevLeftMotor)
-            chEvtBroadcastFlagsI(&driveEvent[0], DRIVEEVENT_SET | (uint16_t)(leftMotor & 0xFFF));
+            chEvtBroadcastFlags(&driveEvent[0], DRIVEEVENT_SET | (uint16_t)(leftMotor & 0xFFF));
 
         if (rightMotor != prevRightMotor)
-            chEvtBroadcastFlagsI(&driveEvent[1], DRIVEEVENT_SET | (uint16_t)(rightMotor & 0xFFF));
+            chEvtBroadcastFlags(&driveEvent[1], DRIVEEVENT_SET | (uint16_t)(rightMotor & 0xFFF));
 
         prevLeftMotor = leftMotor;
         prevRightMotor = rightMotor;

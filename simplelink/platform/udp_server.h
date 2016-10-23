@@ -9,5 +9,6 @@ typedef struct
 } UdpServerConfig;
 
 extern void startUdpServer(int port);
+extern uint32_t getUdpMessageCount(void);
 
 #endif

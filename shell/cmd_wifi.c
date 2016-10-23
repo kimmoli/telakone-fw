@@ -19,27 +19,27 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
 
     else if (strcmp(argv[0], "start") == 0)
     {
-        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_START);
+        chEvtBroadcastFlags(&wifiEvent, WIFIEVENT_START);
     }
 
     else if (strcmp(argv[0], "stop") == 0)
     {
-        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_STOP);
+        chEvtBroadcastFlags(&wifiEvent, WIFIEVENT_STOP);
     }
 
     else if (strcmp(argv[0], "scan") == 0)
     {
-        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_SCAN);
+        chEvtBroadcastFlags(&wifiEvent, WIFIEVENT_SCAN);
     }
 
     else if (strncmp(argv[0], "connect", 4) == 0)
     {
-        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_CONNECT);
+        chEvtBroadcastFlags(&wifiEvent, WIFIEVENT_CONNECT);
     }
 
     else if (strncmp(argv[0], "disconnect", 4) == 0)
     {
-        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_DISCONNECT);
+        chEvtBroadcastFlags(&wifiEvent, WIFIEVENT_DISCONNECT);
     }
 
     else if (strcmp(argv[0], "ping") == 0)
@@ -57,7 +57,7 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
             memcpy(hostToPing, argv[1], len);
         }
 
-        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_PING);
+        chEvtBroadcastFlags(&wifiEvent, WIFIEVENT_PING);
     }
 
     else if (strcmp(argv[0], "udpserver") == 0)
@@ -92,10 +92,19 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
         startTcpTermServer();
     }
 
+    else if (strcmp(argv[0], "stat") == 0)
+    {
+        uint32_t u, t;
+        u = getUdpMessageCount();
+        t = getTcpMessageCount();
+
+        PRINT("udp %d tcp %d\n\r", u, t);
+    }
+
     else if (strcmp(argv[0], "prog") == 0)
     {
 #ifdef TK_CC3100_PROGRAMMING
-        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_PROG);
+        chEvtBroadcastFlags(&wifiEvent, WIFIEVENT_PROG);
 #else
         chprintf(chp, "Programming disabled. Please build with TK_CC3100_PROGRAMMING defined\n\r");
 #endif
@@ -103,7 +112,7 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
 
     else if (strcmp(argv[0], "ver") == 0)
     {
-        chEvtBroadcastFlagsI(&wifiEvent, WIFIEVENT_VERSION);
+        chEvtBroadcastFlags(&wifiEvent, WIFIEVENT_VERSION);
     }
 
     else if (strcmp(argv[0], "show") == 0)

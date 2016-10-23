@@ -57,9 +57,7 @@ static THD_FUNCTION(blinkerThread, arg)
     {
         chEvtWaitAny(EVENT_MASK(0));
 
-        chSysLock();
-        flags = chEvtGetAndClearFlagsI(&elBlink);
-        chSysUnlock();
+        flags = chEvtGetAndClearFlags(&elBlink);
 
         if (flags & BLINKEVENT_BLINK_OFF)
         {

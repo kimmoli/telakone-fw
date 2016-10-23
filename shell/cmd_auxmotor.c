@@ -15,13 +15,13 @@ void cmd_auxmotor(BaseSequentialStream *chp, int argc, char *argv[])
         if (newValue == 0)
         {
             chprintf(chp, "Aux motor stop\n\r");
-            chEvtBroadcastFlagsI(&auxMotorEvent, AUXMOTOR_EVENT_STOP);
+            chEvtBroadcastFlags(&auxMotorEvent, AUXMOTOR_EVENT_STOP);
             return;
         }
         else if (newValue >= -100 && newValue <= 100)
         {
             chprintf(chp, "Aux motor direction %s at %d %% speed\n\r", ((newValue<0) ? "in" : "out"), abs(newValue));
-            chEvtBroadcastFlagsI(&auxMotorEvent, AUXMOTOR_EVENT_SET | (uint8_t)(newValue & 0xff));
+            chEvtBroadcastFlags(&auxMotorEvent, AUXMOTOR_EVENT_SET | (uint8_t)(newValue & 0xff));
             return;
         }
     }

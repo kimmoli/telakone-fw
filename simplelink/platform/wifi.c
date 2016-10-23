@@ -47,9 +47,7 @@ static THD_FUNCTION(wifiThread, arg)
     {
         chEvtWaitAny(EVENT_MASK(0));
 
-        chSysLock();
-        flags = chEvtGetAndClearFlagsI(&elWifi);
-        chSysUnlock();
+        flags = chEvtGetAndClearFlags(&elWifi);
 
         chThdSleepMilliseconds(50);
 
@@ -136,7 +134,7 @@ static THD_FUNCTION(wifiThread, arg)
 void startWifiThread(void)
 {
     chEvtObjectInit(&wifiEvent);
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "wifi", HIGHPRIO-1, wifiThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "wifi", NORMALPRIO+2, wifiThread, NULL);
 }
 
 /*

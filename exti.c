@@ -42,11 +42,11 @@ static void button1debouncecb(void *arg)
     if (palReadLine(LINE_BUTTON1) == PAL_LOW)
     {
         button1count++;
-        chEvtBroadcastFlagsI(&buttonEvent, BUTTON1DOWN);
+        chEvtBroadcastFlags(&buttonEvent, BUTTON1DOWN);
     }
     else
     {
-        chEvtBroadcastFlagsI(&buttonEvent, BUTTON1UP);
+        chEvtBroadcastFlags(&buttonEvent, BUTTON1UP);
     }
 
     extChannelEnable(&EXTD1, GPIOF_PF1_BUTTON1);
@@ -59,11 +59,11 @@ static void button2debouncecb(void *arg)
     if (palReadLine(LINE_BUTTON2) == PAL_LOW)
     {
         button2count++;
-        chEvtBroadcastFlagsI(&buttonEvent, BUTTON2DOWN);
+        chEvtBroadcastFlags(&buttonEvent, BUTTON2DOWN);
     }
     else
     {
-        chEvtBroadcastFlagsI(&buttonEvent, BUTTON2UP);
+        chEvtBroadcastFlags(&buttonEvent, BUTTON2UP);
     }
 
     extChannelEnable(&EXTD1, GPIOF_PF2_BUTTON2);

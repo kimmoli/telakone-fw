@@ -13,6 +13,8 @@ UdpServerConfig udpserverconf =
 
 static thread_t *udpServerTp = NULL;
 
+static uint32_t messageCount;
+
 static THD_FUNCTION(udpServer, arg)
 {
     UdpServerConfig *config = arg;
@@ -25,17 +27,18 @@ static THD_FUNCTION(udpServer, arg)
 
     char *rxBuf;
 
+    messageCount = 0;
+
     rxBuf = chHeapAlloc(NULL, MSGBUFSIZE * sizeof(char));
 
     localAddr.sin_family = SL_AF_INET;
     localAddr.sin_port = sl_Htons((uint16_t)config->port);
     localAddr.sin_addr.s_addr = 0;
 
-
     sockID = sl_Socket(SL_AF_INET,SL_SOCK_DGRAM, 0);
     if( sockID < 0 )
     {
-        PRINT("[UDP] socket error %d\n\r", sockID);
+        DEBUG("error %d\n\r", sockID);
         chHeapFree(rxBuf);
         chThdExit(MSG_RESET);
     }
@@ -51,13 +54,13 @@ static THD_FUNCTION(udpServer, arg)
     res = sl_Bind(sockID, (SlSockAddr_t *)&localAddr, addrSize);
     if( res < 0 )
     {
-        PRINT("[UDP] bind error %d\n\r", res);
+        DEBUG("error %d\n\r", res);
         sl_Close(sockID);
         chHeapFree(rxBuf);
         chThdExit(MSG_RESET);
     }
 
-    PRINT("[UDP] server listening port %d\n\r", config->port);
+    PRINT("UDP Server listening on port %d\n\r", config->port);
 
     while (!chThdShouldTerminateX())
     {
@@ -69,17 +72,19 @@ static THD_FUNCTION(udpServer, arg)
         if (res < 0)
         {
             sl_Close(sockID);
-            PRINT("[UDP] receive error %d\n\r", res);
+            DEBUG("receive error %d\n\r", res);
             chHeapFree(rxBuf);
             chThdTerminate(chThdGetSelfX());
         }
         else
         {
-            PRINT("[UDP] from %d.%d.%d.%d\n\r",
+/*            DEBUG("Message from %d.%d.%d.%d\n\r",
                     SL_IPV4_BYTE(addr.sin_addr.s_addr, 0), SL_IPV4_BYTE(addr.sin_addr.s_addr, 1),
                     SL_IPV4_BYTE(addr.sin_addr.s_addr, 2), SL_IPV4_BYTE(addr.sin_addr.s_addr, 3));
+*/
+//            dump(rxBuf, res);
 
-            dump(rxBuf, res);
+            messageCount++;
 
             chBSemWait(&messagingReceiceSem);
             memcpy(messagingReceiveBuffer, rxBuf, res);
@@ -104,12 +109,12 @@ void startUdpServer(int port)
             chThdWait(udpServerTp);
             udpServerTp = NULL;
 
-            PRINT("[UDP] server stopped\n\r");
+            PRINT("Server stopped\n\r");
             return;
         }
         else
         {
-            PRINT("[UDP] server not running\n\r");
+            PRINT("Server not running\n\r");
             return;
         }
     }
@@ -118,10 +123,15 @@ void startUdpServer(int port)
         if (port > 0)
             udpserverconf.port = port;
 
-        udpServerTp = chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(256), "udpserver", NORMALPRIO+1, udpServer, (void *) &udpserverconf);
+        udpServerTp = chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(256), "udpserver", NORMALPRIO+2, udpServer, (void *) &udpserverconf);
     }
     else
     {
-        PRINT("[UDP] server already running\n\r");
+        PRINT("Server already running\n\r");
     }
+}
+
+uint32_t getUdpMessageCount(void)
+{
+    return messageCount;
 }

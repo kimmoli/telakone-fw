@@ -21,7 +21,7 @@ static int waitForConnection(void);
 static int sendToSocket(void *data, int16_t Len);
 static int receiveFromSocket(void *buff, _i16 Maxlen, _i16 *rxLen);
 
-
+static uint32_t messageCount;
 
 int setReceiveTimeout(int ms)
 {
@@ -158,6 +158,8 @@ static THD_FUNCTION(tcpTermServer, arg)
     (void) arg;
     int res;
 
+    messageCount++;
+
     res = createSocket(23);
     if (res == MSG_RESET)
     {
@@ -196,7 +198,10 @@ static THD_FUNCTION(tcpTermServer, arg)
                 if (res == MSG_OK)
                 {
                     /* Just dump the data out */
-                    dump(rxBuff, (int)rxLen);
+                    // dump(rxBuff, (int)rxLen);
+
+                    messageCount++;
+
                     if (strncmp(rxBuff, "exit", 4) == 0)
                     {
                         sendToSocket((char *) goodbyeMessage, strlen(goodbyeMessage));
@@ -224,5 +229,10 @@ static THD_FUNCTION(tcpTermServer, arg)
 void startTcpTermServer(void)
 {
     rxBuff = chHeapAlloc(NULL, BUFSIZE);
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "tcpterm", NORMALPRIO+1, tcpTermServer, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(512), "tcpterm", NORMALPRIO+2, tcpTermServer, NULL);
+}
+
+uint32_t getTcpMessageCount(void)
+{
+    return messageCount;
 }

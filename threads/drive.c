@@ -30,9 +30,7 @@ static THD_FUNCTION(driveThread, arg)
     {
         chEvtWaitAny(EVENT_MASK(0));
 
-        chSysLock();
-        flags = chEvtGetAndClearFlagsI(&elDrive);
-        chSysUnlock();
+        flags = chEvtGetAndClearFlags(&elDrive);
 
         chThdSleepMilliseconds(10);
 

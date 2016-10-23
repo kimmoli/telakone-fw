@@ -34,7 +34,7 @@ int main(void)
 {
     halInit();
     chSysInit();
-    wdogTKInit(WDG_TIMEOUT_NORMAL);
+    //wdogTKInit(WDG_TIMEOUT_NORMAL);
 
     sdStart(&SD3, NULL);  /* Serial console in USART3, 38400 */
 

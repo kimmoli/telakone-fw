@@ -27,9 +27,7 @@ static THD_FUNCTION(auxmotorThread, arg)
     {
         chEvtWaitAny(EVENT_MASK(0));
 
-        chSysLock();
-        flags = chEvtGetAndClearFlagsI(&elAuxMotor);
-        chSysUnlock();
+        flags = chEvtGetAndClearFlags(&elAuxMotor);
 
         if (flags & AUXMOTOR_EVENT_STOP)
             auxmotorControl(0);
