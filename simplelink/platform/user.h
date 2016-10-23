@@ -66,7 +66,7 @@ extern "C" {
 #include "platform.h"
 #include "platform_spi.h"
 
-typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
+typedef P_EVENT_HANDLER  SL_P_EVENT_HANDLER;
 
 /*!
     \def        MAX_CONCURRENT_ACTIONS
@@ -87,7 +87,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \warning    In case of setting to one, recommend to use non-blocking
                 recv\recvfrom to allow multiple socket recv
 */
-#define MAX_CONCURRENT_ACTIONS 10
+#define MAX_CONCURRENT_ACTIONS  10
 
 /*!
  ******************************************************************************
@@ -360,7 +360,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
                 in higher power consumption and inability to start and stop the
                 driver correctly.
 */
-#define sl_DeviceEnable       CC3100_enable
+#define sl_DeviceEnable  CC3100_enable
 
 /*!
     \brief      Disable the device by setting the appropriate GPIO to Low
@@ -375,7 +375,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
                 driver correctly.
 */
 
-#define sl_DeviceDisable      CC3100_disable
+#define sl_DeviceDisable  CC3100_disable
 
 /*!
 
@@ -408,7 +408,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
  ******************************************************************************
 */
 
-#define _SlFd_t                 int
+#define _SlFd_t  int
 
 /*!
     \brief      Opens an interface communication port to be used for communicating
@@ -443,7 +443,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
 
     \warning
 */
-#define sl_IfOpen                           spi_Open
+#define sl_IfOpen  spi_Open
 
 /*!
     \brief      Closes an opened interface communication port
@@ -462,7 +462,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
 
     \warning
 */
-#define sl_IfClose                          spi_Close
+#define sl_IfClose  spi_Close
 
 /*!
     \brief      Attempts to read up to len bytes from an opened communication channel
@@ -488,7 +488,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
 
     \warning
 */
-#define sl_IfRead                           spi_Read
+#define sl_IfRead  spi_Read
 
 /*!
     \brief attempts to write up to len bytes to the SPI channel
@@ -518,7 +518,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
 
     \warning
 */
-#define sl_IfWrite                          spi_Write
+#define sl_IfWrite  spi_Write
 
 /*!
     \brief      register an interrupt handler routine for the host IRQ
@@ -543,8 +543,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
 
     \warning
 */
-#define sl_IfRegIntHdlr(InterruptHdl , pValue) \
-                                registerInterruptHandler(InterruptHdl , pValue)
+#define sl_IfRegIntHdlr(InterruptHdl, pValue)  registerInterruptHandler(InterruptHdl, pValue)
 /*!
     \brief      Masks the Host IRQ
 
@@ -594,8 +593,8 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
 */
 
 #ifdef SL_START_WRITE_STAT
-#define sl_IfStartWriteSequence                       SlStudio_SpiStartWriteSeq
-#define sl_IfEndWriteSequence                         SlStudio_SpiEndWriteSeq
+#define sl_IfStartWriteSequence  SlStudio_SpiStartWriteSeq
+#define sl_IfEndWriteSequence  SlStudio_SpiEndWriteSeq
 #endif
 /*!
 
@@ -755,7 +754,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
 
     \note       belongs to \ref proting_sec
 */
-#define _SlSyncObj_t binary_semaphore_t
+#define _SlSyncObj_t  binary_semaphore_t
 
 
 /*!
@@ -772,7 +771,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note       belongs to \ref proting_sec
     \warning
 */
-#define sl_SyncObjCreate(pSyncObj,pName) chBSemObjectInitTK(pSyncObj)
+#define sl_SyncObjCreate(pSyncObj, pName)  chBSemObjectInitTK(pSyncObj)
 
 
 /*!
@@ -846,7 +845,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note       belongs to \ref proting_sec
     \warning
 */
-#define sl_LockObjCreate(pLockObj,pName)  chMtxObjectInitTK(pLockObj)
+#define sl_LockObjCreate(pLockObj, pName)  chMtxObjectInitTK(pLockObj)
 
 /*!
     \brief  This function deletes a locking object.
@@ -879,7 +878,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \note       belongs to \ref proting_sec
     \warning
 */
-#define sl_LockObjLock(pLockObj,Timeout)  chMtxLockTK(pLockObj, Timeout)
+#define sl_LockObjLock(pLockObj, Timeout)  chMtxLockTK(pLockObj, Timeout)
 
 /*!
     \brief  This function unlock a locking object.
@@ -916,7 +915,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
 
 
 #ifdef SL_PLATFORM_EXTERNAL_SPAWN
-#define sl_Spawn(pEntry,pValue,flags)  spawnTK(pEntry, pValue, flags)
+#define sl_Spawn(pEntry, pValue, flags)  spawnTK(pEntry, pValue, flags)
 #endif
 
 /*!
@@ -953,7 +952,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \warning
 */
 
-#define sl_GeneralEvtHdlr                 SimpleLinkGeneralEventHandler
+#define sl_GeneralEvtHdlr  SimpleLinkGeneralEventHandler
 
 
 /*!
@@ -968,7 +967,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
 
     \warning
 */
-#define sl_WlanEvtHdlr                              SimpleLinkWlanEventHandler
+#define sl_WlanEvtHdlr  SimpleLinkWlanEventHandler
 
 /*!
     \brief          An event handler for IP address asynchronous event. Usually accepted after new WLAN connection.
@@ -983,7 +982,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \warning
 */
 
-#define sl_NetAppEvtHdlr   SimpleLinkNetAppEventHandler
+#define sl_NetAppEvtHdlr  SimpleLinkNetAppEventHandler
 
 /*!
     \brief      A callback for HTTP server events.
@@ -1006,7 +1005,7 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \warning
 */
 
-#define sl_HttpServerCallback        SimpleLinkHttpServerCallback
+#define sl_HttpServerCallback  SimpleLinkHttpServerCallback
 /*!
     \brief
 
@@ -1030,12 +1029,12 @@ typedef P_EVENT_HANDLER                         SL_P_EVENT_HANDLER;
     \warning
 */
 
-#define sl_AsyncCmdHdlr   SimpleLinkCmdHandler
+#define sl_AsyncCmdHdlr  SimpleLinkCmdHandler
 
 #define  SL_STORE_RESTORE_CONTEXT
 #ifdef   SL_STORE_RESTORE_CONTEXT
-#define  sl_SuspenedStoreContext   SimpleLinkSuspenedStoreContextHandler
-#define  sl_ResumeRestoreContext   SimpleLinkResumeRestoreContextHandler
+#define  sl_SuspenedStoreContext  SimpleLinkSuspenedStoreContextHandler
+#define  sl_ResumeRestoreContext  SimpleLinkResumeRestoreContextHandler
 #endif
 
 /*!
