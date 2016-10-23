@@ -58,7 +58,7 @@ int main(void)
     i2cTKInit();
     spiTKInit();
     extiTKInit();
-    auxlinkTKInit(0x01);
+    // auxlinkTKInit(0x01);
 
     wdogTKKick();
 
@@ -67,7 +67,7 @@ int main(void)
     /* Start threads */
     startMessagingThread(); /* Parses messages from network */
     startBlinkerThread(); /* Controls the external warning lamps on OUT1 */
-    startAuxDeviceThread(); /* Auxiliary device handling */
+    // startAuxDeviceThread(); /* Auxiliary device handling */
     startAuxmotorThread(); /* Auxiliary motor control */
     startDriveThread(DRIVER_LEFT); /* Left motor driver */
     startDriveThread(DRIVER_RIGHT); /* Right motor driver */
