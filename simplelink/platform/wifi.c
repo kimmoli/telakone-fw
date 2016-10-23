@@ -5,6 +5,7 @@
 #include "wifi_scan.h"
 #include "wifi_version.h"
 #include "wifi_ping.h"
+#include "threadkiller.h"
 #include "helpers.h"
 
 #ifdef TK_CC3100_PROGRAMMING
@@ -85,6 +86,8 @@ static THD_FUNCTION(wifiThread, arg)
             if (sl_Stop(0) == MSG_OK)
             {
                 wifiRunning = false;
+                stopSpawnedThreadKiller();
+
                 PRINT("ok\n\r");
             }
             else
@@ -230,6 +233,8 @@ msg_t startWifi(void)
     }
 
     wifiRunning = true;
+    startSpawnedThreadKiller();
+
     return MSG_OK;
 }
 

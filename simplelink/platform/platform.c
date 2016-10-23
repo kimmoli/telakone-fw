@@ -41,8 +41,6 @@
 
 /**/
 P_EVENT_HANDLER     pIrqEventHandler = 0;
-static virtual_timer_t spawnedThreadKiller_vt;
-static void spawnedThreadKillervtcb(void *arg);
 
 void HAL_GPIO_EXTI_Callback(EXTDriver *extp, expchannel_t channel);
 
@@ -138,32 +136,5 @@ msg_t spawnTK(void *pEntry, void *pValue, uint32_t flags)
 
     chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(1024), "spawn", HIGHPRIO, (tfunc_t)pEntry, pValue);
 
-    /* Wait one second, and check is spawned thread ready to remove from memory */
-    chVTSet(&spawnedThreadKiller_vt, MS2ST(1000), spawnedThreadKillervtcb, NULL);
-
     return MSG_OK;
-}
-
-void spawnedThreadKillervtcb(void *arg)
-{
-    (void) arg;
-
-    thread_t *tp = chRegFirstThread();
-
-    do
-    {
-        if (strcmp(tp->name, "spawn") == 0)
-        {
-            /* Spawned thread found, check is it in final state
-             * if it is, call Wait to free memory
-             * if not, wait another sec for it to finish.
-             */
-            if (tp->state == CH_STATE_FINAL)
-                chThdWait(tp);
-            else
-                chVTSet(&spawnedThreadKiller_vt, MS2ST(1000), spawnedThreadKillervtcb, NULL);
-        }
-        tp = chRegNextThread(tp);
-    }
-    while (tp != NULL);
 }
