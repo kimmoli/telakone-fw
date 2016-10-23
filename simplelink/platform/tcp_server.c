@@ -14,20 +14,16 @@ static int16_t connSockId = 0;
 static const char *welcomeMessage = "Welcome to " BOARD_NAME "\n\n\r";
 static const char *goodbyeMessage = "Bye!\n\r";
 
-#if 0
-static int setNonBlockingMode(int mode)
-{
-    int res;
-    SlSockNonblocking_t nonBlockingOption;
 
-    nonBlockingOption.NonblockingEnabled = mode;
-    res = sl_SetSockOpt(sockId, SOL_SOCKET, SL_SO_NONBLOCKING, &nonBlockingOption, sizeof(nonBlockingOption));
+static int setReceiveTimeout(int ms);
+static int createSocket(uint16_t port);
+static int waitForConnection(void);
+static int sendToSocket(void *data, int16_t Len);
+static int receiveFromSocket(void *buff, _i16 Maxlen, _i16 *rxLen);
 
-    return res;
-}
-#endif
 
-static int setReceiveTimeout(int ms)
+
+int setReceiveTimeout(int ms)
 {
     int res;
     struct SlTimeval_t timeVal;
@@ -39,7 +35,7 @@ static int setReceiveTimeout(int ms)
     return res;
 }
 
-static int createSocket(uint16_t port)
+int createSocket(uint16_t port)
 {
     SlSockAddrIn_t sServerAddress;
     int res = 0;
@@ -72,10 +68,30 @@ static int createSocket(uint16_t port)
     return MSG_RESET;
 }
 
-static int waitForConnection(void)
+int waitForConnection(void)
 {
+    int res;
+    fd_set rfds;
+    struct timeval tv;
     SlSocklen_t in_addrSize;
     SlSockAddrIn_t sClientAddress;
+
+    FD_ZERO(&rfds);
+    FD_SET(sockId, &rfds);
+
+    tv.tv_sec = 1;
+    tv.tv_usec = 0;
+
+    res = select(sockId, &rfds, (fd_set *) 0, (fd_set *) 0, &tv);
+    if(res == 0)
+    {
+        return SL_EAGAIN;
+    }
+    else if (res < 0)
+    {
+        DEBUG("error %d\n\r", res);
+        return MSG_RESET;
+    }
 
     in_addrSize = sizeof(sClientAddress);
     connSockId = sl_Accept(sockId, (SlSockAddr_t *)&sClientAddress, (SlSocklen_t *)&in_addrSize);
@@ -102,7 +118,7 @@ static int waitForConnection(void)
     return MSG_OK;
 }
 
-static int sendToSocket(void *data, int16_t Len)
+int sendToSocket(void *data, int16_t Len)
 {
     volatile int8_t retries;
 
@@ -125,7 +141,7 @@ static int sendToSocket(void *data, int16_t Len)
     }
 }
 
-static int receiveFromSocket(void *buff, _i16 Maxlen, _i16 *rxLen)
+int receiveFromSocket(void *buff, _i16 Maxlen, _i16 *rxLen)
 {
     *rxLen = sl_Recv(connSockId, buff, Maxlen, 0);
 
@@ -152,8 +168,6 @@ static THD_FUNCTION(tcpTermServer, arg)
 
     while (true)
     {
-        //setNonBlockingMode(true);
-
         do
         {
             chThdSleepMilliseconds(100);
@@ -169,8 +183,6 @@ static THD_FUNCTION(tcpTermServer, arg)
 
         if (res == MSG_OK)
         {
-            //setNonBlockingMode(false);
-
             sendToSocket((char *) welcomeMessage, strlen(welcomeMessage));
 
             while (res != MSG_RESET)
@@ -199,6 +211,7 @@ static THD_FUNCTION(tcpTermServer, arg)
 
             PRINT("Connection closed\n\r");
         }
+
         sl_Close(connSockId);
         chThdSleepMilliseconds(100);
     }
