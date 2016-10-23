@@ -48,6 +48,7 @@ void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
         chprintf(chp, "Speed:             L %d R %d    \n\r", leftSpeed, rightSpeed );
         chprintf(chp, "Battery voltages:  L %.2f V R %.2f V    \n\r", batteryVoltage[0], batteryVoltage[1]);
         chprintf(chp, "Acceleration:      X %.2f g Y %.2f g Z %.2f g %s  \n\r", accelX, accelY, accelZ, (accelOK ? "" : "Error"));
+        chprintf(chp, "                   Pitch %.2f Roll %.2f    \n\r", accelPitch, accelRoll);
         chprintf(chp, "Buttons:           1 %s (%d) 2 %s (%d)    \n\r", (palReadLine(LINE_BUTTON1) ? "up" : "down"), button1count,
                                                                         (palReadLine(LINE_BUTTON2) ? "up" : "down"), button2count);
         chprintf(chp, "Outputs:           1 %d%% 2 %d%% 3 %d%% 4 %d%%    \n\r", pwmGetChannel(TK_PWM_OUT1, 100),

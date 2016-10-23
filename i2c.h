@@ -16,6 +16,8 @@
 extern float accelX;
 extern float accelY;
 extern float accelZ;
+extern float accelPitch;
+extern float accelRoll;
 extern int accelOK;
 extern int extTempOK;
 

@@ -1,9 +1,12 @@
 #include "hal.h"
 #include "i2c.h"
+#include <math.h>
 
 float accelX;
 float accelY;
 float accelZ;
+float accelPitch;
+float accelRoll;
 
 int accelOK;
 int extTempOK;
@@ -53,6 +56,8 @@ void getAcceleration(void)
         accelX = (float)(((int16_t)( (rxBuf[0]<<8) | rxBuf[1]))/16) * IIS328_8G_SCALE;
         accelY = (float)(((int16_t)( (rxBuf[2]<<8) | rxBuf[3]))/16) * IIS328_8G_SCALE;
         accelZ = (float)(((int16_t)( (rxBuf[4]<<8) | rxBuf[5]))/16) * IIS328_8G_SCALE;
+        accelRoll = (atan2f(-accelY, accelZ)*180.0)/M_PI;
+        accelPitch = (atan2f(accelX, sqrtf(accelY*accelY + accelZ*accelZ))*180.0)/M_PI;
     }
     else
     {
@@ -60,6 +65,8 @@ void getAcceleration(void)
         accelX = (float)0.0;
         accelY = (float)0.0;
         accelZ = (float)0.0;
+        accelPitch = (float)0.0;
+        accelRoll = (float)0.0;
     }
 }
 
