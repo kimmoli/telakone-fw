@@ -101,5 +101,5 @@ void blinkvtcb(void *arg)
 void startBlinkerThread(void)
 {
     chEvtObjectInit(&blinkEvent);
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), "auxmotor", NORMALPRIO+1, blinkerThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), "blinker", NORMALPRIO+1, blinkerThread, NULL);
 }
