@@ -1,6 +1,10 @@
 #include "hal.h"
 #include "adc.h"
 
+static void adccb1(ADCDriver *adcp, adcsample_t *buffer, size_t n);
+static void adccb3(ADCDriver *adcp, adcsample_t *buffer, size_t n);
+static void gptadccb(GPTDriver *gpt_ptr);
+
 const ADCConversionGroup adcgrpcfg1 =
 {
     /* Circular */ FALSE,
@@ -8,7 +12,7 @@ const ADCConversionGroup adcgrpcfg1 =
     /* conversion end callback*/ adccb1,
     /* conversion error callback */ NULL,
     /* ADC CR1 */ 0,
-    /* ADC CR2 */ ADC_CR2_SWSTART | ADC_CR2_CONT,
+    /* ADC CR2 */ ADC_CR2_SWSTART,
     /* ADC SMPR1 */ ADC_SMPR1_SMP_SENSOR(ADC_SAMPLE_144),
     /* ADC SMPR2 */ 0,
     /* ADC SQR1 */ ADC_SQR1_NUM_CH(ADC_GRP1_NUM_CHANNELS),
@@ -23,13 +27,21 @@ const ADCConversionGroup adcgrpcfg3 =
     /* conversion end callback*/ adccb3,
     /* conversion error callback */ NULL,
     /* ADC CR1 */ 0,
-    /* ADC CR2 */ ADC_CR2_SWSTART | ADC_CR2_CONT,
+    /* ADC CR2 */ ADC_CR2_SWSTART,
     /* ADC SMPR1 */ ADC_SMPR1_SMP_AN14(ADC_SAMPLE_56) | ADC_SMPR1_SMP_AN15(ADC_SAMPLE_56),
     /* ADC SMPR2 */ ADC_SMPR2_SMP_AN9(ADC_SAMPLE_56) | ADC_SMPR2_SMP_AN0(ADC_SAMPLE_56),
     /* ADC SQR1 */ ADC_SQR1_NUM_CH(ADC_GRP3_NUM_CHANNELS),
     /* ADC SQR2 */ 0,
     /* ADC SQR3 */ ADC_SQR3_SQ4_N(ADC_CHANNEL_IN15) | ADC_SQR3_SQ3_N(ADC_CHANNEL_IN14) |
                     ADC_SQR3_SQ2_N(ADC_CHANNEL_IN9) | ADC_SQR3_SQ1_N(ADC_CHANNEL_IN0)
+};
+
+const GPTConfig gptadccfg =
+{
+    1000000,  // timer clock: 1Mhz
+    gptadccb,  // Timer callback function
+    0,
+    0
 };
 
 adcsample_t adcAvgTempSensor;
@@ -102,6 +114,14 @@ void adccb3(ADCDriver *adcp, adcsample_t *buffer, size_t n)
     }
 }
 
+void gptadccb(GPTDriver *gpt_ptr)
+{
+    (void) gpt_ptr;
+
+    adcStartConversion(&ADCD1, &adcgrpcfg1, adcSamples1, ADC_GRP1_BUF_DEPTH);
+    adcStartConversion(&ADCD3, &adcgrpcfg3, adcSamples3, ADC_GRP3_BUF_DEPTH);
+}
+
 void adcTKInit(void)
 {
     adcCount = 0;
@@ -113,7 +133,7 @@ void adcTKInit(void)
 
 void adcTKStartConv(void)
 {
-    adcStartConversion(&ADCD1, &adcgrpcfg1, adcSamples1, ADC_GRP1_BUF_DEPTH);
-    adcStartConversion(&ADCD3, &adcgrpcfg3, adcSamples3, ADC_GRP3_BUF_DEPTH);
+    gptStart(&GPTD3, &gptadccfg);
+    gptStartContinuous(&GPTD3, 1000); /* 1 ms */
 }
 

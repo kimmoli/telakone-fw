@@ -17,9 +17,6 @@ extern adcsample_t adcAvgJoystickBackwardForward;
 
 extern long adcCount;
 
-void adccb1(ADCDriver *adcp, adcsample_t *buffer, size_t n);
-void adccb3(ADCDriver *adcp, adcsample_t *buffer, size_t n);
-
 void adcTKInit(void);
 void adcTKStartConv(void);
 
