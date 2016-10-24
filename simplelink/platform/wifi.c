@@ -141,7 +141,7 @@ void startWifiThread(void)
 {
     startWifiSpawnerThread();
     chEvtObjectInit(&wifiEvent);
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "wifi", NORMALPRIO+20, wifiThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "wifi", HIGHPRIO, wifiThread, NULL);
 }
 
 /*

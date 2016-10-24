@@ -41,7 +41,7 @@ static THD_FUNCTION(wifiSpawnerThread, arg)
 
 void startWifiSpawnerThread(void)
 {
-    (void)chThdCreateStatic(wifiSpawnerThreadWA, sizeof(wifiSpawnerThreadWA), NORMALPRIO-10, wifiSpawnerThread, NULL);
+    (void)chThdCreateStatic(wifiSpawnerThreadWA, sizeof(wifiSpawnerThreadWA), HIGHPRIO, wifiSpawnerThread, NULL);
 }
 
 void wsptesti(void *pValue, uint32_t flags)

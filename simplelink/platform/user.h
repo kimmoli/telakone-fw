@@ -802,7 +802,7 @@ typedef P_EVENT_HANDLER  SL_P_EVENT_HANDLER;
 */
 #define sl_SyncObjSignal(pSyncObj)  chBSemSignalTK(pSyncObj)
 
-#define sl_SyncObjSignalFromIRQ(pSyncObj)  chBSemSignalTK(pSyncObj)
+#define sl_SyncObjSignalFromIRQ(pSyncObj)  chBSemSignalITK(pSyncObj)
 
 /*!
     \brief  This function waits for a sync signal of the specific sync object

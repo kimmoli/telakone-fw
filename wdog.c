@@ -24,13 +24,19 @@ static const WDGConfig wdoglongcfg =
 
 void wdogTKInit(uint8_t timeout)
 {
+#ifdef USE_WDOG
     if (timeout == WDG_TIMEOUT_LONG)
         wdgStart(&WDGD1, &wdoglongcfg);
     else
         wdgStart(&WDGD1, &wdognormalcfg);
+#else
+    (void) timeout;
+#endif
 }
 
 void wdogTKKick(void)
 {
+#ifdef USE_WDOG
     wdgReset(&WDGD1);
+#endif
 }

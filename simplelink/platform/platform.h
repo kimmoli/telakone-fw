@@ -127,7 +127,19 @@ static inline msg_t chBSemSignalTK(binary_semaphore_t *bsp)
     if (bsp == NULL)
         return MSG_RESET;
 
+    chBSemSignal(bsp);
+
+    return MSG_OK;
+}
+
+static inline msg_t chBSemSignalITK(binary_semaphore_t *bsp)
+{
+    if (bsp == NULL)
+        return MSG_RESET;
+
+    osalSysLockFromISR();
     chBSemSignalI(bsp);
+    osalSysUnlockFromISR();
 
     return MSG_OK;
 }

@@ -118,8 +118,10 @@ void gptadccb(GPTDriver *gpt_ptr)
 {
     (void) gpt_ptr;
 
-    adcStartConversion(&ADCD1, &adcgrpcfg1, adcSamples1, ADC_GRP1_BUF_DEPTH);
-    adcStartConversion(&ADCD3, &adcgrpcfg3, adcSamples3, ADC_GRP3_BUF_DEPTH);
+    osalSysLockFromISR();
+    adcStartConversionI(&ADCD1, &adcgrpcfg1, adcSamples1, ADC_GRP1_BUF_DEPTH);
+    adcStartConversionI(&ADCD3, &adcgrpcfg3, adcSamples3, ADC_GRP3_BUF_DEPTH);
+    osalSysUnlockFromISR();
 }
 
 void adcTKInit(void)
