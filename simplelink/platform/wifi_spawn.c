@@ -3,9 +3,9 @@
 #include "wifi_spawn.h"
 #include "helpers.h"
 
-
-static thread_t *wifiSpawnerTp;
 static wifiSpawn_t wifiSpawnerBuff[10];
+
+static THD_WORKING_AREA(wifiSpawnerThreadWA, 4096);
 
 MEMORYPOOL_DECL(wifiSpawnerMpool, sizeof(wifiSpawn_t), NULL);
 MAILBOX_DECL(wifiSpawnerMbox, wifiSpawnerBuff, sizeof(wifiSpawnerBuff));
@@ -16,13 +16,15 @@ static THD_FUNCTION(wifiSpawnerThread, arg)
     msg_t res;
     msg_t wsst;
 
+    chRegSetThreadName("spawner");
+
     uint16_t i;
     for (i=0 ; i < sizeof(wifiSpawnerBuff); i++)
     {
         chPoolFree(&wifiSpawnerMpool, &wifiSpawnerBuff[i]);
     }
 
-    while (!chThdShouldTerminateX())
+    while (true)
     {
         /* Wait function pointer as message or something, and run it in this context */
         res = chMBFetch(&wifiSpawnerMbox, &wsst, TIME_INFINITE);
@@ -35,24 +37,11 @@ static THD_FUNCTION(wifiSpawnerThread, arg)
             chPoolFree(&wifiSpawnerMpool, (void*) wsst);
         }
     }
-
-    chThdExit(MSG_OK);
 }
 
 void startWifiSpawnerThread(void)
 {
-    if (!wifiSpawnerTp)
-        wifiSpawnerTp = chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(256), "spawn", NORMALPRIO+3, wifiSpawnerThread, NULL);
-}
-
-void stopWifiSpawnerThread(void)
-{
-    if (wifiSpawnerTp)
-    {
-        chThdTerminate(wifiSpawnerTp);
-        chThdWait(wifiSpawnerTp);
-        wifiSpawnerTp = NULL;
-    }
+    (void)chThdCreateStatic(wifiSpawnerThreadWA, sizeof(wifiSpawnerThreadWA), NORMALPRIO-10, wifiSpawnerThread, NULL);
 }
 
 void wsptesti(void *pValue, uint32_t flags)

@@ -11,7 +11,6 @@ typedef struct
 } wifiSpawn_t;
 
 extern void startWifiSpawnerThread(void);
-extern void stopWifiSpawnerThread(void);
 extern msg_t wifiSpawnI(void *pEntry, void *pValue, uint32_t flags);
 extern msg_t wifiSpawn(void *pEntry, void *pValue, uint32_t flags);
 

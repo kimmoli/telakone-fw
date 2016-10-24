@@ -43,7 +43,7 @@
 P_EVENT_HANDLER     pIrqEventHandler = 0;
 
 
-void HAL_GPIO_EXTI_Callback(EXTDriver *extp, expchannel_t channel);
+void CC3100_IRQ_Callback(EXTDriver *extp, expchannel_t channel);
 
 /*!
     \brief              This function disables CC3100 device
@@ -99,7 +99,7 @@ void CC3100_InterruptDisable(void)
   * @param GPIO_Pin: Specifies the pins connected EXTI line
   * @retval None
   */
-void HAL_GPIO_EXTI_Callback(EXTDriver *extp, expchannel_t channel)
+void CC3100_IRQ_Callback(EXTDriver *extp, expchannel_t channel)
 {
     (void) extp;
 

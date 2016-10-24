@@ -127,7 +127,8 @@ static inline msg_t chBSemSignalTK(binary_semaphore_t *bsp)
     if (bsp == NULL)
         return MSG_RESET;
 
-    chBSemSignal(bsp);
+    chBSemSignalI(bsp);
+
     return MSG_OK;
 }
 

@@ -139,8 +139,9 @@ static THD_FUNCTION(wifiThread, arg)
 
 void startWifiThread(void)
 {
+    startWifiSpawnerThread();
     chEvtObjectInit(&wifiEvent);
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "wifi", NORMALPRIO+2, wifiThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(2048), "wifi", NORMALPRIO+20, wifiThread, NULL);
 }
 
 /*
@@ -153,9 +154,6 @@ msg_t startWifi(void)
     uint16_t setStringLength;
     uint32_t res;
     _WlanRxFilterOperationCommandBuff_t  RxFilterIdMask = {0};
-
-    startWifiSpawnerThread();
-    chThdSleepMilliseconds(50);
 
     res = sl_Start(0, 0, 0);
 

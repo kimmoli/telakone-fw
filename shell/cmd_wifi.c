@@ -131,7 +131,6 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
 
     else if (strcmp(argv[0], "test") == 0)
     {
-        startWifiSpawnerThread();
         wifiSpawn((void *)wsptesti, NULL, 0);
     }
 

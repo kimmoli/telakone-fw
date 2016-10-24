@@ -9,7 +9,7 @@ static virtual_timer_t button2debounce_vt;
 
 static void buttonExtIrqHandler(EXTDriver *extp, expchannel_t channel);
 
-extern void HAL_GPIO_EXTI_Callback(EXTDriver *extp, expchannel_t channel);
+extern void CC3100_IRQ_Callback(EXTDriver *extp, expchannel_t channel);
 
 event_source_t buttonEvent;
 
@@ -20,7 +20,7 @@ static const EXTConfig extcfg =
     {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOF, buttonExtIrqHandler},
     {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOF, buttonExtIrqHandler},
     {EXT_CH_MODE_DISABLED, NULL},
-    {EXT_CH_MODE_RISING_EDGE | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOA, HAL_GPIO_EXTI_Callback},
+    {EXT_CH_MODE_RISING_EDGE | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOA, CC3100_IRQ_Callback},
     {EXT_CH_MODE_DISABLED, NULL},
     {EXT_CH_MODE_DISABLED, NULL},
     {EXT_CH_MODE_DISABLED, NULL},

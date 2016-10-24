@@ -198,7 +198,7 @@ static THD_FUNCTION(tcpTermServer, arg)
                 if (res == MSG_OK)
                 {
                     /* Just dump the data out */
-                    // dump(rxBuff, (int)rxLen);
+                    dump(rxBuff, (int)rxLen);
 
                     messageCount++;
 
@@ -228,8 +228,19 @@ static THD_FUNCTION(tcpTermServer, arg)
 
 void startTcpTermServer(void)
 {
-    rxBuff = chHeapAlloc(NULL, BUFSIZE);
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(512), "tcpterm", NORMALPRIO+2, tcpTermServer, NULL);
+    thread_t *tp;
+
+    tp = chRegFindThreadByName("tcpterm");
+
+    if (tp && tp->state == CH_STATE_READY)
+    {
+        chThdResume(&tp, MSG_OK);
+    }
+    else
+    {
+        rxBuff = chHeapAlloc(NULL, BUFSIZE);
+        chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(512), "tcpterm", NORMALPRIO+2, tcpTermServer, NULL);
+    }
 }
 
 uint32_t getTcpMessageCount(void)
