@@ -42,6 +42,7 @@
 /**/
 P_EVENT_HANDLER     pIrqEventHandler = 0;
 
+
 void HAL_GPIO_EXTI_Callback(EXTDriver *extp, expchannel_t channel);
 
 /*!
@@ -102,7 +103,6 @@ void HAL_GPIO_EXTI_Callback(EXTDriver *extp, expchannel_t channel)
 {
     (void) extp;
 
-
     if ( (channel == GPIOA_PA4_CCIRQ) && (NULL != pIrqEventHandler) )
     {
         pIrqEventHandler(0);
@@ -130,11 +130,3 @@ void Delay(unsigned long delay)
     chThdSleepMilliseconds(delay);
 }
 
-msg_t spawnTK(void *pEntry, void *pValue, uint32_t flags)
-{
-    (void) flags;
-
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(1024), "spawn", HIGHPRIO, (tfunc_t)pEntry, pValue);
-
-    return MSG_OK;
-}

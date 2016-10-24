@@ -17,6 +17,7 @@
 #include "exti.h"
 #include "wdog.h"
 #include "env.h"
+#include "threadkiller.h"
 
 #include "blinker.h"
 #include "joystick.h"
@@ -75,6 +76,8 @@ int main(void)
     startWifiThread(); /* Wifi */
 
     PRINT(" - Threads started\n\r");
+
+    startThreadKiller();
 
     PRINT("\n\r");
     cmd_status((BaseSequentialStream *)&SD3, 0, NULL);

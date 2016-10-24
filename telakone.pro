@@ -52,7 +52,8 @@ SOURCES += \
     threads/drive.c \
     simplelink/platform/udp_client.c \
     simplelink/platform/tcp_server.c \
-    simplelink/platform/threadkiller.c
+    threads/threadkiller.c \
+    simplelink/platform/wifi_spawn.c
 
 HEADERS += \
     adc.h \
@@ -108,7 +109,8 @@ HEADERS += \
     threads/drive.h \
     simplelink/platform/udp_client.h \
     simplelink/platform/tcp_server.h \
-    simplelink/platform/threadkiller.h
+    threads/threadkiller.h \
+    simplelink/platform/wifi_spawn.h
 
 OTHER_FILES += \
     Makefile \

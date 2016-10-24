@@ -185,8 +185,6 @@ static inline msg_t chMtxDeleteTK(mutex_t *mp)
     return MSG_OK;
 }
 
-msg_t spawnTK(void *pEntry, void *pValue, uint32_t flags);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -7,6 +7,7 @@
 #include "udp_server.h"
 #include "udp_client.h"
 #include "tcp_server.h"
+#include "wifi_spawn.h"
 
 static void usage(BaseSequentialStream *chp);
 
@@ -126,6 +127,12 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
         chprintf(chp, "SSID   = %s\n\r", getenv("ssid"));
         chprintf(chp, "Key    = %s\n\r", getenv("key"));
         chprintf(chp, "Sec    = %s\n\r", secNames[strtol(getenv("sec"), NULL, 10)]);
+    }
+
+    else if (strcmp(argv[0], "test") == 0)
+    {
+        startWifiSpawnerThread();
+        wifiSpawn((void *)wsptesti, NULL, 0);
     }
 
     else

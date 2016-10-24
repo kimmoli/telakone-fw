@@ -38,6 +38,7 @@
 #ifndef __USER_H__
 #define __USER_H__
 
+#include "wifi_spawn.h"
 
 #ifdef  __cplusplus
 extern "C" {
@@ -915,7 +916,7 @@ typedef P_EVENT_HANDLER  SL_P_EVENT_HANDLER;
 
 
 #ifdef SL_PLATFORM_EXTERNAL_SPAWN
-#define sl_Spawn(pEntry, pValue, flags)  spawnTK(pEntry, pValue, flags)
+#define sl_Spawn(pEntry, pValue, flags)  wifiSpawnI(pEntry, pValue, flags)
 #endif
 
 /*!

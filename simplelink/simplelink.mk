@@ -18,7 +18,7 @@ SIMPLELINKSRC := ${SIMPLELINK}/source/device.c \
                  ${SIMPLELINK}/platform/udp_server.c \
                  ${SIMPLELINK}/platform/udp_client.c \
                  ${SIMPLELINK}/platform/tcp_server.c \
-                 ${SIMPLELINK}/platform/threadkiller.c
+                 ${SIMPLELINK}/platform/wifi_spawn.c
 
 SIMPLELINKINC := ${SIMPLELINK}/include \
                  ${SIMPLELINK}/source \

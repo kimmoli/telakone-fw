@@ -5,7 +5,7 @@
 #include "wifi_scan.h"
 #include "wifi_version.h"
 #include "wifi_ping.h"
-#include "threadkiller.h"
+#include "wifi_spawn.h"
 #include "helpers.h"
 
 #ifdef TK_CC3100_PROGRAMMING
@@ -72,9 +72,16 @@ static THD_FUNCTION(wifiThread, arg)
             }
 
             if (startWifi() == MSG_OK)
+            {
+                wifiRunning = true;
+
                 PRINT("ok\n\r");
+            }
             else
+            {
+                wifiRunning = false;
                 PRINT("failed. Please reboot\n\r");
+            }
         }
 
         else if (flags & WIFIEVENT_STOP && wifiRunning)
@@ -84,7 +91,6 @@ static THD_FUNCTION(wifiThread, arg)
             if (sl_Stop(0) == MSG_OK)
             {
                 wifiRunning = false;
-                stopSpawnedThreadKiller();
 
                 PRINT("ok\n\r");
             }
@@ -147,6 +153,9 @@ msg_t startWifi(void)
     uint16_t setStringLength;
     uint32_t res;
     _WlanRxFilterOperationCommandBuff_t  RxFilterIdMask = {0};
+
+    startWifiSpawnerThread();
+    chThdSleepMilliseconds(50);
 
     res = sl_Start(0, 0, 0);
 
@@ -229,9 +238,6 @@ msg_t startWifi(void)
         sl_Stop(SL_STOP_TIMEOUT);
         return MSG_RESET;
     }
-
-    wifiRunning = true;
-    startSpawnedThreadKiller();
 
     return MSG_OK;
 }
