@@ -1,30 +1,21 @@
 #include <stdlib.h>
+#include <string.h>
 #include "hal.h"
 #include "chprintf.h"
 #include "shellcommands.h"
-#include "pwm.h"
+#include "blinker.h"
 
-void cmd_out(BaseSequentialStream *chp, int argc, char *argv[])
+void cmd_blink(BaseSequentialStream *chp, int argc, char *argv[])
 {
-    int channel;
-    int newValue;
-
-    if (argc != 2)
-    {
-        chprintf(chp, "out channel dutycycle\n\r");
-        return;
-    }
-
-  	channel = strtol(argv[0], NULL, 0);
-    newValue = strtol(argv[1], NULL, 0);
-
-    if (channel < 1 || channel > 4 || newValue < 0 || newValue > 100)
-    {
-        chprintf(chp, "out channel dutycycle\n\r");
-        return;
-    }
-
-    chprintf(chp, "Setting output %d to %d %%\n\r", channel, newValue);
-    pwmSetChannel(channel, 100, newValue);
+    if (argc == 1 && strncmp(argv[0], "off", 2) == 0)
+        chEvtBroadcastFlagsI(&blinkEvent, BLINKEVENT_BLINK_OFF);
+    else if (argc == 1 && strncmp(argv[0], "slow", 2) == 0)
+        chEvtBroadcastFlagsI(&blinkEvent, BLINKEVENT_SLOW_BLINK_ON);
+    else if (argc == 1 && strncmp(argv[0], "fast", 2) == 0)
+        chEvtBroadcastFlagsI(&blinkEvent, BLINKEVENT_FAST_BLINK_ON);
+    else if (argc == 1 && strncmp(argv[0], "breathe", 2) == 0)
+        chEvtBroadcastFlagsI(&blinkEvent, BLINKEVENT_BREATHE_BLINK_ON);
+    else
+        chprintf(chp, "blink style (off, slow, fast, breathe\n\r");
 }
 
