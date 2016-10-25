@@ -111,11 +111,6 @@ void Delay(unsigned long delay);
  * Simplelink assumes they return 0 when succes.
  */
 
-static inline msg_t dummyOsiFunc(void)
-{
-    return MSG_OK;
-}
-
 static inline msg_t chBSemObjectInitTK(binary_semaphore_t *bsp)
 {
     chBSemObjectInit(bsp, FALSE);
@@ -124,9 +119,6 @@ static inline msg_t chBSemObjectInitTK(binary_semaphore_t *bsp)
 
 static inline msg_t chBSemSignalTK(binary_semaphore_t *bsp)
 {
-    if (bsp == NULL)
-        return MSG_RESET;
-
     chBSemSignal(bsp);
 
     return MSG_OK;
@@ -134,9 +126,6 @@ static inline msg_t chBSemSignalTK(binary_semaphore_t *bsp)
 
 static inline msg_t chBSemSignalITK(binary_semaphore_t *bsp)
 {
-    if (bsp == NULL)
-        return MSG_RESET;
-
     osalSysLockFromISR();
     chBSemSignalI(bsp);
     osalSysUnlockFromISR();
@@ -151,50 +140,42 @@ static inline msg_t chBSemWaitTimeoutTK(binary_semaphore_t *bsp, systime_t time)
 
 static inline msg_t chBSemDeleteTK(binary_semaphore_t *bsp)
 {
-    if (bsp == NULL)
-        return MSG_RESET;
+    (void) bsp;
 
-    bsp = NULL;
     return MSG_OK;
 }
 
 static inline msg_t chMtxObjectInitTK(mutex_t *mp)
 {
-    if (mp == NULL)
-        return MSG_RESET;
-
     chMtxObjectInit(mp);
     return MSG_OK;
 }
 
 static inline msg_t chMtxLockTK(mutex_t *mp, systime_t timeout)
 {
-    if (mp == NULL)
-        return MSG_RESET;
+    msg_t res = MSG_OK;
 
     if (timeout == TIME_IMMEDIATE)
-        return (chMtxTryLock(mp) ? MSG_OK : MSG_RESET);
-    else
+        res = (chMtxTryLock(mp) ? MSG_OK : MSG_RESET);
+    else if (timeout == TIME_INFINITE)
         chMtxLock(mp);
+    else
+        res = MSG_RESET;
 
-    return MSG_OK;
+    return res;
 }
 
 static inline msg_t chMtxUnlockTK(mutex_t *mp)
 {
-    if (mp == NULL)
-        return MSG_RESET;
-
     chMtxUnlock(mp);
+
     return MSG_OK;
 }
 
 static inline msg_t chMtxDeleteTK(mutex_t *mp)
 {
-    if (mp == NULL)
-        return MSG_RESET;
+    (void) mp;
 
-    mp = NULL;
     return MSG_OK;
 }
 
