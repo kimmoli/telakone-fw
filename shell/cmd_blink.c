@@ -8,13 +8,13 @@
 void cmd_blink(BaseSequentialStream *chp, int argc, char *argv[])
 {
     if (argc == 1 && strncmp(argv[0], "off", 2) == 0)
-        chEvtBroadcastFlagsI(&blinkEvent, BLINKEVENT_BLINK_OFF);
+        chEvtBroadcastFlags(&blinkEvent, BLINKEVENT_BLINK_OFF);
     else if (argc == 1 && strncmp(argv[0], "slow", 2) == 0)
-        chEvtBroadcastFlagsI(&blinkEvent, BLINKEVENT_SLOW_BLINK_ON);
+        chEvtBroadcastFlags(&blinkEvent, BLINKEVENT_SLOW_BLINK_ON);
     else if (argc == 1 && strncmp(argv[0], "fast", 2) == 0)
-        chEvtBroadcastFlagsI(&blinkEvent, BLINKEVENT_FAST_BLINK_ON);
+        chEvtBroadcastFlags(&blinkEvent, BLINKEVENT_FAST_BLINK_ON);
     else if (argc == 1 && strncmp(argv[0], "breathe", 2) == 0)
-        chEvtBroadcastFlagsI(&blinkEvent, BLINKEVENT_BREATHE_BLINK_ON);
+        chEvtBroadcastFlags(&blinkEvent, BLINKEVENT_BREATHE_BLINK_ON);
     else
         chprintf(chp, "blink style (off, slow, fast, breathe\n\r");
 }

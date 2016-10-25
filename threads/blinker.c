@@ -88,7 +88,9 @@ void blinkvtcb(void *arg)
 
     pwmSetChannel(TK_PWM_OUT1, 100, pattern[blinkstep].value);
 
-    chVTSet(&blink_vt, MS2ST(pattern[blinkstep].delay), blinkvtcb, (void *) arg);
+    chSysLockFromISR();
+    chVTSetI(&blink_vt, MS2ST(pattern[blinkstep].delay), blinkvtcb, (void *) arg);
+    chSysUnlockFromISR();
 
     if (pattern[blinkstep+1].delay == 0)
         blinkstep = 0;
