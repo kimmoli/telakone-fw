@@ -90,7 +90,7 @@ static THD_FUNCTION(udpServer, arg)
             memcpy(messagingReceiveBuffer, rxBuf, res);
             chBSemSignal(&messagingReceiceSem);
 
-            chEvtBroadcastFlagsI(&messagingEvent, MESSAGING_EVENT_SEND | (MIN(res, 0x3FF)));
+            chEvtBroadcastFlags(&messagingEvent, MESSAGING_EVENT_SEND | (MIN(res, 0x3FF)));
         }
     }
 
@@ -123,7 +123,7 @@ void startUdpServer(int port)
         if (port > 0)
             udpserverconf.port = port;
 
-        udpServerTp = chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(256), "udpserver", NORMALPRIO+2, udpServer, (void *) &udpserverconf);
+        udpServerTp = chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(512), "udpserver", NORMALPRIO+2, udpServer, (void *) &udpserverconf);
     }
     else
     {
