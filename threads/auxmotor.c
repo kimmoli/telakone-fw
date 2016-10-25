@@ -83,7 +83,11 @@ void linearaccelcb(void *arg)
     prevValue = currentValue;
 
     if (newValue != currentValue)
-        chVTSet(&linearaccel_vt, MS2ST(linearacceldelay), linearaccelcb, NULL);
+    {
+        chSysLockFromISR();
+        chVTSetI(&linearaccel_vt, MS2ST(linearacceldelay), linearaccelcb, NULL);
+        chSysUnlockFromISR();
+    }
 }
 
 void auxmotorControl(int value)
@@ -93,5 +97,5 @@ void auxmotorControl(int value)
 
     newValue = value;
 
-    linearaccelcb(0);
+    chVTSet(&linearaccel_vt, MS2ST(linearacceldelay), linearaccelcb, NULL);
 }
