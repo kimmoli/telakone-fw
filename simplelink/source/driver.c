@@ -741,6 +741,7 @@ _SlReturnVal_t _SlDrvDataReadOp(
 	if (TRUE == g_bDeviceRestartIsRequired)
 	{
         SL_DRV_LOCK_GLOBAL_UNLOCK();
+        SL_DRV_OBJ_UNLOCK(&g_pCB->FlowContCB.TxLockObj);
         return SL_API_ABORTED;
 	}
 #endif
@@ -748,13 +749,11 @@ _SlReturnVal_t _SlDrvDataReadOp(
     VERIFY_PROTOCOL(g_pCB->FlowContCB.TxPoolCnt > FLOW_CONT_MIN);
     g_pCB->FlowContCB.TxPoolCnt--;
 
-    SL_DRV_OBJ_UNLOCK(&g_pCB->FlowContCB.TxLockObj);
-
     /* send the message */
     RetVal =  _SlDrvMsgWrite(pCmdCtrl, pCmdExt, (_u8 *)pTxRxDescBuff);
 
     SL_DRV_LOCK_GLOBAL_UNLOCK();
-    
+    SL_DRV_OBJ_UNLOCK(&g_pCB->FlowContCB.TxLockObj);
 
     if(SL_OS_RET_CODE_OK == RetVal)
     {
@@ -840,6 +839,7 @@ _SlReturnVal_t _SlDrvDataWriteOp(
 	if (TRUE == g_bDeviceRestartIsRequired)
 	{
         SL_DRV_LOCK_GLOBAL_UNLOCK();
+        SL_DRV_OBJ_UNLOCK(&g_pCB->FlowContCB.TxLockObj);
 		return SL_API_ABORTED;
 	}
 #endif
@@ -848,12 +848,11 @@ _SlReturnVal_t _SlDrvDataWriteOp(
     VERIFY_PROTOCOL(g_pCB->FlowContCB.TxPoolCnt > FLOW_CONT_MIN + 1 );
     g_pCB->FlowContCB.TxPoolCnt--;
 
-    SL_DRV_OBJ_UNLOCK(&g_pCB->FlowContCB.TxLockObj);
-    
     /* send the message */
     RetVal =  _SlDrvMsgWrite(pCmdCtrl, pCmdExt, pTxRxDescBuff);
 
     SL_DRV_LOCK_GLOBAL_UNLOCK();
+    SL_DRV_OBJ_UNLOCK(&g_pCB->FlowContCB.TxLockObj);
 
     return RetVal;
 }
