@@ -44,140 +44,23 @@ extern "C" {
 #include "hal.h"
 #include "helpers.h"
 
-/**/
 typedef void (*P_EVENT_HANDLER)(void* pValue);
-
-/*!
-    \brief              This function enables CC3100 device
-    \param              None
-    \return             None
-    \note
-    \warning
-*/
 void CC3100_enable(void);
-
-/*!
-    \brief              This function disables CC3100 device
-    \param              None
-    \return             None
-    \note
-    \warning
-*/
 void CC3100_disable(void);
-
-/*!
-    \brief              This function enables waln IrQ pin
-    \param              None
-    \return             None
-    \note
-    \warning
-*/
 void CC3100_InterruptEnable(void);
-
-/*!
-    \brief              This function disables waln IrQ pin
-    \param              None
-    \return             None
-    \note
-    \warning
-*/
 void CC3100_InterruptDisable(void);
-
-/*!
-    \brief register an interrupt handler for the host IRQ
-    \param[in]      InterruptHdl    -    pointer to interrupt handler function
-    \param[in]      pValue          -    pointer to a memory strcuture that is
-                    passed to the interrupt handler.
-    \return         upon successful registration, the function shall return 0.
-                    Otherwise, -1 shall be returned
-    \sa
-    \note           If there is already registered interrupt handler, the
-                    function should overwrite the old handler with the new one
-    \warning
-*/
 int registerInterruptHandler(P_EVENT_HANDLER InterruptHdl , void* pValue);
-
-/*!
-    \brief              Induce delay in ms
-    \param              delay: specifies the delay time length, in milliseconds.
-    \return             None
-    \note
-    \warning
-*/
 void Delay(unsigned long delay);
 
-/*
- * Wrapper functions for semaphore and mutex calls which return void,
- * Simplelink assumes they return 0 when succes.
- */
-
-static inline msg_t chBSemObjectInitTK(binary_semaphore_t *bsp)
-{
-    chBSemObjectInit(bsp, FALSE);
-    return MSG_OK;
-}
-
-static inline msg_t chBSemSignalTK(binary_semaphore_t *bsp)
-{
-    chBSemSignal(bsp);
-
-    return MSG_OK;
-}
-
-static inline msg_t chBSemSignalITK(binary_semaphore_t *bsp)
-{
-    osalSysLockFromISR();
-    chBSemSignalI(bsp);
-    osalSysUnlockFromISR();
-
-    return MSG_OK;
-}
-
-static inline msg_t chBSemWaitTimeoutTK(binary_semaphore_t *bsp, systime_t time)
-{
-    return chBSemWaitTimeout(bsp, MS2ST(time));
-}
-
-static inline msg_t chBSemDeleteTK(binary_semaphore_t *bsp)
-{
-    (void) bsp;
-
-    return MSG_OK;
-}
-
-static inline msg_t chMtxObjectInitTK(mutex_t *mp)
-{
-    chMtxObjectInit(mp);
-    return MSG_OK;
-}
-
-static inline msg_t chMtxLockTK(mutex_t *mp, systime_t timeout)
-{
-    msg_t res = MSG_OK;
-
-    if (timeout == TIME_IMMEDIATE)
-        res = (chMtxTryLock(mp) ? MSG_OK : MSG_RESET);
-    else if (timeout == TIME_INFINITE)
-        chMtxLock(mp);
-    else
-        res = MSG_RESET;
-
-    return res;
-}
-
-static inline msg_t chMtxUnlockTK(mutex_t *mp)
-{
-    chMtxUnlock(mp);
-
-    return MSG_OK;
-}
-
-static inline msg_t chMtxDeleteTK(mutex_t *mp)
-{
-    (void) mp;
-
-    return MSG_OK;
-}
+msg_t chBSemObjectInitTK(binary_semaphore_t *bsp);
+msg_t chBSemSignalTK(binary_semaphore_t *bsp);
+msg_t chBSemSignalITK(binary_semaphore_t *bsp);
+msg_t chBSemWaitTimeoutTK(binary_semaphore_t *bsp, systime_t time);
+msg_t chBSemDeleteTK(binary_semaphore_t *bsp);
+msg_t chMtxObjectInitTK(mutex_t *mp);
+msg_t chMtxLockTK(mutex_t *mp, systime_t timeout);
+msg_t chMtxUnlockTK(mutex_t *mp);
+msg_t chMtxDeleteTK(mutex_t *mp);
 
 #ifdef __cplusplus
 }
