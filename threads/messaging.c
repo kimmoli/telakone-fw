@@ -92,6 +92,6 @@ void startMessagingThread(void)
     messagingReceiveBuffer = chHeapAlloc(NULL, MSGBUFSIZE);
     chEvtObjectInit(&messagingEvent);
     chBSemObjectInit(&messagingReceiceSem, false);
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), "messaging", NORMALPRIO+3, messagingThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(512), "messaging", NORMALPRIO+3, messagingThread, NULL);
 }
 
