@@ -62,6 +62,9 @@ int main(void)
     // auxlinkTKInit(0x01);
 
     wdogTKKick();
+#ifndef TK_USE_WDOG
+    PRINT(" - Watchdog is disabled\n\r");
+#endif
 
     PRINT(" - Initialisation complete\n\r");
 
