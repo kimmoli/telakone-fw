@@ -2,9 +2,15 @@
 #include "hal.h"
 #include "tcp_server.h"
 #include "simplelink.h"
+#include "messaging.h"
 #include "helpers.h"
 
 #define BUFSIZE               256
+
+TcpServerConfig tcpserverconf =
+{
+    23
+};
 
 static char *rxBuff;
 
@@ -22,6 +28,7 @@ static int sendToSocket(void *data, int16_t Len);
 static int receiveFromSocket(void *buff, _i16 Maxlen, _i16 *rxLen);
 
 static uint32_t messageCount;
+static uint32_t clientAddr;
 
 int setReceiveTimeout(int ms)
 {
@@ -109,7 +116,7 @@ int waitForConnection(void)
         }
     }
 
-    uint32_t clientAddr = sl_Htonl(sClientAddress.sin_addr.s_addr);
+    clientAddr = sl_Htonl(sClientAddress.sin_addr.s_addr);
 
     PRINT("TCP Terminal client connected from %d.%d.%d.%d\n\r",
         SL_IPV4_BYTE(clientAddr, 3), SL_IPV4_BYTE(clientAddr, 2),
@@ -155,12 +162,13 @@ int receiveFromSocket(void *buff, _i16 Maxlen, _i16 *rxLen)
 
 static THD_FUNCTION(tcpTermServer, arg)
 {
-    (void) arg;
+    TcpServerConfig *config = arg;
+
     int res;
 
-    messageCount++;
+    messageCount = 0;
 
-    res = createSocket(23);
+    res = createSocket(config->port);
     if (res == MSG_RESET)
     {
         PRINT("Failed to create socket\n\r");
@@ -197,8 +205,17 @@ static THD_FUNCTION(tcpTermServer, arg)
 
                 if (res == MSG_OK)
                 {
-                    /* Just dump the data out */
-                    dump(rxBuff, (int)rxLen);
+                    messagingReplyInfo_t replyInfo = {0};
+                    replyInfo.channel = MESSAGING_TCP;
+                    replyInfo.ipAddress = clientAddr;
+                    replyInfo.port = config->port;
+
+                    chBSemWait(&messagingReceiceSem);
+                    memcpy(messagingReceiveBuffer, rxBuff, rxLen);
+                    messagingReplyInfo = &replyInfo;
+                    chBSemSignal(&messagingReceiceSem);
+
+                    chEvtBroadcastFlags(&messagingEvent, MESSAGING_EVENT_SEND | (MIN(rxLen, 0x3FF)));
 
                     messageCount++;
 
@@ -226,7 +243,7 @@ static THD_FUNCTION(tcpTermServer, arg)
     chThdExit(MSG_OK);
 }
 
-void startTcpTermServer(void)
+void startTcpTermServer(int port)
 {
     thread_t *tp;
 
@@ -238,8 +255,11 @@ void startTcpTermServer(void)
     }
     else
     {
+        if (port > 0)
+            tcpserverconf.port = port;
+
         rxBuff = chHeapAlloc(NULL, BUFSIZE);
-        chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(512), "tcpterm", NORMALPRIO+2, tcpTermServer, NULL);
+        chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(512), "tcpterm", NORMALPRIO+2, tcpTermServer, (void *) &tcpserverconf);
     }
 }
 

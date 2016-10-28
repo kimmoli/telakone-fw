@@ -78,19 +78,19 @@ static THD_FUNCTION(udpServer, arg)
         }
         else
         {
-/*            DEBUG("Message from %d.%d.%d.%d\n\r",
-                    SL_IPV4_BYTE(addr.sin_addr.s_addr, 0), SL_IPV4_BYTE(addr.sin_addr.s_addr, 1),
-                    SL_IPV4_BYTE(addr.sin_addr.s_addr, 2), SL_IPV4_BYTE(addr.sin_addr.s_addr, 3));
-*/
-//            dump(rxBuf, res);
-
-            messageCount++;
+            messagingReplyInfo_t replyInfo = {0};
+            replyInfo.channel = MESSAGING_UDP;
+            replyInfo.ipAddress = sl_Htonl(addr.sin_addr.s_addr);;
+            replyInfo.port = config->port;
 
             chBSemWait(&messagingReceiceSem);
             memcpy(messagingReceiveBuffer, rxBuf, res);
+            messagingReplyInfo = &replyInfo;
             chBSemSignal(&messagingReceiceSem);
 
             chEvtBroadcastFlags(&messagingEvent, MESSAGING_EVENT_SEND | (MIN(res, 0x3FF)));
+
+            messageCount++;
         }
     }
 

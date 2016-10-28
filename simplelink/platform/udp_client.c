@@ -23,7 +23,7 @@ int udpSend(uint32_t destinationIP, char *hostName, uint16_t port, char *data, i
         hostIpAddr = destinationIP;
     }
 
-    PRINT("Sending to %d.%d.%d.%d port %d\n\r",
+    PRINT("[UDP] Sending %d bytes to %d.%d.%d.%d port %d\n\r", len,
         SL_IPV4_BYTE(hostIpAddr, 3), SL_IPV4_BYTE(hostIpAddr, 2),
         SL_IPV4_BYTE(hostIpAddr, 1), SL_IPV4_BYTE(hostIpAddr, 0),
         port);

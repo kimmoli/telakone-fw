@@ -90,7 +90,7 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
 
     else if (strcmp(argv[0], "term") == 0)
     {
-        startTcpTermServer();
+        startTcpTermServer(0);
     }
 
     else if (strcmp(argv[0], "stat") == 0)

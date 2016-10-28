@@ -13,6 +13,7 @@
 event_source_t messagingEvent;
 binary_semaphore_t messagingReceiceSem;
 char *messagingReceiveBuffer;
+messagingReplyInfo_t *messagingReplyInfo;
 
 static THD_FUNCTION(messagingThread, arg)
 {
@@ -20,12 +21,13 @@ static THD_FUNCTION(messagingThread, arg)
     event_listener_t elMessaging;
     eventflags_t flags;
     char *buffer;
+    messagingReplyInfo_t *replyInfo;
     int rxLen;
-    uint8_t sourceAddr;
-    uint8_t eventDestination;
-    uint16_t event;
+    tk_message_t *message;
+    tk_message_t replyMessage;
 
     buffer = chHeapAlloc(NULL, MSGBUFSIZE);
+    replyInfo = chHeapAlloc(NULL, sizeof(messagingReplyInfo_t));
 
     chEvtRegister(&messagingEvent, &elMessaging, 0);
 
@@ -41,39 +43,48 @@ static THD_FUNCTION(messagingThread, arg)
 
             chBSemWait(&messagingReceiceSem);
             memcpy(buffer, messagingReceiveBuffer, rxLen);
+            memcpy(replyInfo, messagingReplyInfo, sizeof(messagingReplyInfo_t));
             chBSemSignal(&messagingReceiceSem);
 
-            /* TK destinationAddr sourceAddr destinationEvent eventData check */
-
-            if (rxLen == 8)
+            if (rxLen == sizeof(tk_message_t))
             {
-                if (buffer[0] == 'T' && buffer[1] == 'K' && buffer[2] == 0x00)
-                {
-                    sourceAddr = buffer[3];
-                    eventDestination = buffer[4];
-                    event = ((buffer[5] << 8) | buffer[6]);
 
-                    PRINT("[MSG] Received %d bytes from %02x. to %02x data %04x\n\r", rxLen, sourceAddr, eventDestination, event);
-                    switch (eventDestination)
+                message = (tk_message_t *)buffer;
+
+                if (message->header == TK_MESSAGE_HEADER && message->toNode == 0x00)
+                {
+                    PRINT("[MSG] Received %d bytes from %x. to %x event data %08x\n\r", rxLen,
+                          message->fromNode, message->destination, message->event);
+
+                    switch (message->destination)
                     {
                         case DEST_PING:
-                            PRINT("PING\n\r");
+                            replyMessage.header = TK_MESSAGE_HEADER;
+                            replyMessage.toNode = message->fromNode;
+                            replyMessage.fromNode = 0x00;
+                            replyMessage.destination = DEST_PING;
+                            replyMessage.event = message->event;
+
+                            if (replyInfo->channel == MESSAGING_UDP)
+                            {
+                                udpSend(replyInfo->ipAddress, NULL, replyInfo->port, (char *) &replyMessage, sizeof(tk_message_t));
+                            }
                             break;
 
                         case DEST_BLINKER:
-                            chEvtBroadcastFlags(&blinkEvent, event);
+                            chEvtBroadcastFlags(&blinkEvent, message->event);
                             break;
 
                         case DEST_PWM:
-                            pwmSetChannel(buffer[5], 0xff, buffer[6]);
+                            pwmSetChannel((message->event & 0xff00) >> 8, 100, message->event & 0xff);
                             break;
 
                         case DEST_WIFI:
-                            chEvtBroadcastFlags(&wifiEvent, event);
+                            chEvtBroadcastFlags(&wifiEvent, message->event);
                             break;
 
                         case DEST_AUXMOTOR:
-                            chEvtBroadcastFlags(&auxMotorEvent, event);
+                            chEvtBroadcastFlags(&auxMotorEvent, message->event);
                             break;
 
                         default:
@@ -84,12 +95,15 @@ static THD_FUNCTION(messagingThread, arg)
         }
     }
 
+    chHeapFree(replyInfo);
     chHeapFree(buffer);
 }
 
 void startMessagingThread(void)
 {
     messagingReceiveBuffer = chHeapAlloc(NULL, MSGBUFSIZE);
+    messagingReplyInfo = chHeapAlloc(NULL, sizeof(messagingReplyInfo_t));
+
     chEvtObjectInit(&messagingEvent);
     chBSemObjectInit(&messagingReceiceSem, false);
     chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(512), "messaging", NORMALPRIO+3, messagingThread, NULL);
