@@ -10,6 +10,11 @@ static THD_WORKING_AREA(wifiSpawnerThreadWA, 4096);
 MEMORYPOOL_DECL(wifiSpawnerMpool, sizeof(wifiSpawn_t), NULL);
 MAILBOX_DECL(wifiSpawnerMbox, wifiSpawnerBuff, sizeof(wifiSpawnerBuff));
 
+static inline bool isInterrupt(void)
+{
+    return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0 ;
+}
+
 static THD_FUNCTION(wifiSpawnerThread, arg)
 {
     (void)arg;
@@ -59,48 +64,42 @@ msg_t wifiSpawnI(void *pEntry, void *pValue, uint32_t flags)
     msg_t res = MSG_OK;
     msg_t m;
 
-    chSysLockFromISR();
-
-    m = (msg_t) chPoolAllocI(&wifiSpawnerMpool);
-
-    if ((void *) m != NULL)
+    if (isInterrupt())
     {
-        ((wifiSpawn_t *) m)->pEntry = pEntry;
-        ((wifiSpawn_t *) m)->pValue = pValue;
-        ((wifiSpawn_t *) m)->flags = flags;
-        chMBPostI(&wifiSpawnerMbox, m);
+        chSysLockFromISR();
+
+        m = (msg_t) chPoolAllocI(&wifiSpawnerMpool);
+
+        if ((void *) m != NULL)
+        {
+            ((wifiSpawn_t *) m)->pEntry = pEntry;
+            ((wifiSpawn_t *) m)->pValue = pValue;
+            ((wifiSpawn_t *) m)->flags = flags;
+            chMBPostI(&wifiSpawnerMbox, m);
+        }
+        else
+        {
+            res = MSG_RESET;
+        }
+
+        chSysUnlockFromISR();
     }
     else
     {
-        res = MSG_RESET;
-    }
+        m = (msg_t) chPoolAlloc(&wifiSpawnerMpool);
 
-    chSysUnlockFromISR();
-
-    return res;
-}
-
-msg_t wifiSpawn(void *pEntry, void *pValue, uint32_t flags)
-{
-    (void) flags;
-
-    msg_t res = MSG_OK;
-    msg_t m;
-
-    m = (msg_t) chPoolAlloc(&wifiSpawnerMpool);
-
-    if ((void *) m != NULL)
-    {
-        ((wifiSpawn_t *) m)->pEntry = pEntry;
-        ((wifiSpawn_t *) m)->pValue = pValue;
-        ((wifiSpawn_t *) m)->flags = flags;
-        chMBPost(&wifiSpawnerMbox, m, TIME_IMMEDIATE);
-    }
-    else
-    {
-        res = MSG_RESET;
+        if ((void *) m != NULL)
+        {
+            ((wifiSpawn_t *) m)->pEntry = pEntry;
+            ((wifiSpawn_t *) m)->pValue = pValue;
+            ((wifiSpawn_t *) m)->flags = flags;
+            chMBPost(&wifiSpawnerMbox, m, TIME_IMMEDIATE);
+        }
+        else
+        {
+            res = MSG_RESET;
+        }
     }
 
     return res;
 }
-
