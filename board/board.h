@@ -28,6 +28,12 @@
 #define BOARD_NAME                  "Kimmoli's telakone STM32F407ZG"
 
 /*
+ * Use watchdog
+ */
+
+#define TK_USE_WDOG
+
+/*
  * Simplelink CC3100 Firmware update
  * Uncomment this and update simplelink/hostprog headers
  * build, and run wifi prog command
