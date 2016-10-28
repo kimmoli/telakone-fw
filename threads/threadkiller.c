@@ -36,7 +36,7 @@ static THD_FUNCTION(threadKillerThread, arg)
 
 void startThreadKiller(void)
 {
-    threadKillerTp = chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), "blinker", NORMALPRIO+1, threadKillerThread, NULL);
+    threadKillerTp = chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), "threadkiller", NORMALPRIO+1, threadKillerThread, NULL);
 }
 
 void stopThreadKiller(void)

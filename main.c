@@ -66,6 +66,7 @@ int main(void)
     PRINT(" - Initialisation complete\n\r");
 
     /* Start threads */
+    startThreadKiller();
     startMessagingThread(); /* Parses messages from network */
     startBlinkerThread(); /* Controls the external warning lamps on OUT1 */
     // startAuxDeviceThread(); /* Auxiliary device handling */
@@ -76,8 +77,6 @@ int main(void)
     startWifiThread(); /* Wifi */
 
     PRINT(" - Threads started\n\r");
-
-    startThreadKiller();
 
     PRINT("\n\r");
     cmd_status((BaseSequentialStream *)&SD3, 0, NULL);
