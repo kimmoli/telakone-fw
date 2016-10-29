@@ -4,6 +4,9 @@
 #include "simplelink.h"
 #include "messaging.h"
 #include "helpers.h"
+#include "tcp_stream.h"
+#include "shell.h"
+#include "shellcommands.h"
 
 #define BUFSIZE               256
 
@@ -12,23 +15,27 @@ TcpServerConfig tcpserverconf =
     23
 };
 
+char tcpShellHistoryBuffer[SHELL_MAX_HIST_BUFF];
+
+const ShellConfig shell_cfg_tcp =
+{
+    (BaseSequentialStream *)&TCPD1,
+    commands,
+    tcpShellHistoryBuffer,
+    SHELL_MAX_HIST_BUFF
+};
+
 static char *rxBuff;
 
 static int16_t sockId = 0;
 static int16_t connSockId = 0;
 
-static const char *welcomeMessage = "Welcome to " BOARD_NAME "\n\n\r";
-static const char *goodbyeMessage = "Bye!\n\r";
-
-
 static int setReceiveTimeout(int ms);
 static int createSocket(uint16_t port);
 static int waitForConnection(void);
-static int sendToSocket(void *data, int16_t Len);
-static int receiveFromSocket(void *buff, _i16 Maxlen, _i16 *rxLen);
 
 static uint32_t messageCount;
-static uint32_t clientAddr;
+uint32_t tcpClientAddr;
 
 int setReceiveTimeout(int ms)
 {
@@ -81,7 +88,7 @@ int waitForConnection(void)
     fd_set rfds;
     struct timeval tv;
     SlSocklen_t in_addrSize;
-    SlSockAddrIn_t sClientAddress;
+    SlSockAddrIn_t stcpClientAddress;
 
     FD_ZERO(&rfds);
     FD_SET(sockId, &rfds);
@@ -100,8 +107,8 @@ int waitForConnection(void)
         return MSG_RESET;
     }
 
-    in_addrSize = sizeof(sClientAddress);
-    connSockId = sl_Accept(sockId, (SlSockAddr_t *)&sClientAddress, (SlSocklen_t *)&in_addrSize);
+    in_addrSize = sizeof(stcpClientAddress);
+    connSockId = sl_Accept(sockId, (SlSockAddr_t *)&stcpClientAddress, (SlSocklen_t *)&in_addrSize);
 
     if (connSockId == SL_EAGAIN)
     {
@@ -116,11 +123,11 @@ int waitForConnection(void)
         }
     }
 
-    clientAddr = sl_Htonl(sClientAddress.sin_addr.s_addr);
+    tcpClientAddr = sl_Htonl(stcpClientAddress.sin_addr.s_addr);
 
     PRINT("TCP Terminal client connected from %d.%d.%d.%d\n\r",
-        SL_IPV4_BYTE(clientAddr, 3), SL_IPV4_BYTE(clientAddr, 2),
-        SL_IPV4_BYTE(clientAddr, 1), SL_IPV4_BYTE(clientAddr, 0));
+        SL_IPV4_BYTE(tcpClientAddr, 3), SL_IPV4_BYTE(tcpClientAddr, 2),
+        SL_IPV4_BYTE(tcpClientAddr, 1), SL_IPV4_BYTE(tcpClientAddr, 0));
 
     return MSG_OK;
 }
@@ -148,7 +155,7 @@ int sendToSocket(void *data, int16_t Len)
     }
 }
 
-int receiveFromSocket(void *buff, _i16 Maxlen, _i16 *rxLen)
+int receiveFromSocket(void *buff, int16_t Maxlen, int16_t *rxLen)
 {
     *rxLen = sl_Recv(connSockId, buff, Maxlen, 0);
 
@@ -193,44 +200,21 @@ static THD_FUNCTION(tcpTermServer, arg)
 
         if (res == MSG_OK)
         {
-            sendToSocket((char *) welcomeMessage, strlen(welcomeMessage));
+            tcpStreamInit(&TCPD1);
 
-            while (res != MSG_RESET)
+            chprintf((BaseSequentialStream *)&TCPD1, "Welcome to " BOARD_NAME "\n\n\r");
+
+            chThdCreateFromHeap(NULL, SHELL_WA_SIZE, "tcpshell", NORMALPRIO + 1,
+                                                    shellThread, (void *)&shell_cfg_tcp);
+
+            while (true)
             {
-                int16_t rxLen;
+                chThdSleepMilliseconds(200);
 
-                chThdSleepMilliseconds(20);
-
-                res = receiveFromSocket(rxBuff, BUFSIZE, &rxLen);
-
-                if (res == MSG_OK)
-                {
-                    messagingReplyInfo_t replyInfo = {0};
-                    replyInfo.channel = MESSAGING_TCP;
-                    replyInfo.ipAddress = clientAddr;
-                    replyInfo.port = config->port;
-
-                    chBSemWait(&messagingReceiceSem);
-                    memcpy(messagingReceiveBuffer, rxBuff, rxLen);
-                    messagingReplyInfo = &replyInfo;
-                    chBSemSignal(&messagingReceiceSem);
-
-                    chEvtBroadcastFlags(&messagingEvent, MESSAGING_EVENT_SEND | (MIN(rxLen, 0x3FF)));
-
-                    messageCount++;
-
-                    if (strncmp(rxBuff, "exit", 4) == 0)
-                    {
-                        sendToSocket((char *) goodbyeMessage, strlen(goodbyeMessage));
-                        break;
-                    }
-                }
-                else if (res == MSG_RESET)
-                {
-                    break;
-                }
+                // Here we should wait for our shellThread to exit
             }
 
+            tcpClientAddr = 0;
             PRINT("Connection closed\n\r");
         }
 
