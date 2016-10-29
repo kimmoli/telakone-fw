@@ -20,6 +20,7 @@ extern void cmd_dmb(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_reboot(BaseSequentialStream *chp, int argc, char *argv[]);
 
 extern const ShellCommand commands[];
-extern const ShellConfig shell_cfg1;
+extern const ShellConfig shell_cfg_uart;
+extern const ShellConfig shell_cfg_tcp;
 
 #endif // TK_SHELLCOMMANDS_H

@@ -15,16 +15,6 @@ TcpServerConfig tcpserverconf =
     23
 };
 
-char tcpShellHistoryBuffer[SHELL_MAX_HIST_BUFF];
-
-const ShellConfig shell_cfg_tcp =
-{
-    (BaseSequentialStream *)&TCPD1,
-    commands,
-    tcpShellHistoryBuffer,
-    SHELL_MAX_HIST_BUFF
-};
-
 static char *rxBuff;
 
 static int16_t sockId = 0;
@@ -172,6 +162,7 @@ static THD_FUNCTION(tcpTermServer, arg)
     TcpServerConfig *config = arg;
 
     int res;
+    thread_t *stp;
 
     messageCount = 0;
 
@@ -204,14 +195,14 @@ static THD_FUNCTION(tcpTermServer, arg)
 
             chprintf((BaseSequentialStream *)&TCPD1, "Welcome to " BOARD_NAME "\n\n\r");
 
-            chThdCreateFromHeap(NULL, SHELL_WA_SIZE, "tcpshell", NORMALPRIO + 1,
-                                                    shellThread, (void *)&shell_cfg_tcp);
+            stp = chThdCreateFromHeap(NULL, SHELL_WA_SIZE, "tcpshell", NORMALPRIO + 1, shellThread, (void *)&shell_cfg_tcp);
 
             while (true)
             {
                 chThdSleepMilliseconds(200);
 
-                // Here we should wait for our shellThread to exit
+                if (chThdTerminatedX(stp))
+                    break;
             }
 
             tcpClientAddr = 0;

@@ -91,8 +91,9 @@ int main(void)
     palClearLine(LINE_D1BRAKE);
     palClearLine(LINE_D2BRAKE);
 
-    chThdCreateFromHeap(NULL, SHELL_WA_SIZE, "shell", NORMALPRIO + 1,
-                                            shellThread, (void *)&shell_cfg1);
+    shellInit();
+
+    chThdCreateFromHeap(NULL, SHELL_WA_SIZE, "shell", NORMALPRIO + 1, shellThread, (void *)&shell_cfg_uart);
 
     while (true)
     {

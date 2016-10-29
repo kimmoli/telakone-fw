@@ -1,8 +1,10 @@
 #include "hal.h"
 #include "shell.h"
+#include "tcp_stream.h"
 #include "shellcommands.h"
 
-char shellHistoryBuffer[SHELL_MAX_HIST_BUFF];
+char uartShellHistoryBuffer[SHELL_MAX_HIST_BUFF];
+char tcpShellHistoryBuffer[SHELL_MAX_HIST_BUFF];
 
 const ShellCommand commands[] =
 {
@@ -22,12 +24,18 @@ const ShellCommand commands[] =
     {NULL, NULL}
 };
 
-const ShellConfig shell_cfg1 =
+const ShellConfig shell_cfg_tcp =
 {
-    (BaseSequentialStream *)&SD3,
+    (BaseSequentialStream *)&TCPD1,
     commands,
-    shellHistoryBuffer,
+    tcpShellHistoryBuffer,
     SHELL_MAX_HIST_BUFF
 };
 
-
+const ShellConfig shell_cfg_uart =
+{
+    (BaseSequentialStream *)&SD3,
+    commands,
+    uartShellHistoryBuffer,
+    SHELL_MAX_HIST_BUFF
+};

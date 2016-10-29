@@ -2,7 +2,6 @@
 #include "tcp_stream.h"
 #include "tcp_server.h"
 #include "simplelink.h"
-#include "helpers.h"
 
 TcpStream TCPD1;
 
@@ -37,8 +36,6 @@ static size_t reads(void *ip, uint8_t *bp, size_t n)
     }
     while (res == SL_EAGAIN);
 
-    DEBUG("got %d %d\n\r", res, rxLen);
-
     if (res == MSG_OK && rxLen > 0)
         return rxLen;
     else
@@ -62,8 +59,6 @@ static msg_t put(void *ip, uint8_t b)
 static msg_t get(void *ip)
 {
     (void)ip;
-
-    DEBUG("getting\n\r");
 
     return MSG_RESET;
 }
