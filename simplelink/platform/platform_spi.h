@@ -86,7 +86,7 @@ Fd_t spi_Open(char *ifName, unsigned long flags);
     \note
     \warning
 */
-int spi_Close(Fd_t fd);
+uint16_t spi_Close(Fd_t fd);
 
 /*!
     \brief attempts to write up to len bytes to the SPI channel
@@ -108,7 +108,7 @@ int spi_Close(Fd_t fd);
                     the entire buffer write would be completed
     \warning
 */
-int spi_Write (Fd_t fd, unsigned char *pBuff, int len);
+uint16_t spi_Write (Fd_t fd, unsigned char *pBuff, int len);
 
 /*!
     \brief attempts to read up to len bytes from SPI channel into a buffer starting at pBuff.
@@ -126,7 +126,7 @@ int spi_Write (Fd_t fd, unsigned char *pBuff, int len);
     \note
     \warning
 */
-int spi_Read(Fd_t fd, unsigned char *pBuff, int len);
+uint16_t spi_Read(Fd_t fd, unsigned char *pBuff, int len);
 
 #ifdef __cplusplus
 }

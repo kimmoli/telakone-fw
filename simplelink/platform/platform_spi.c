@@ -106,7 +106,7 @@ Fd_t spi_Open(char *ifName, unsigned long flags)
     \note
     \warning
 */
-int spi_Close(Fd_t fd)
+uint16_t spi_Close(Fd_t fd)
 {
     (void) fd;
 
@@ -136,7 +136,7 @@ int spi_Close(Fd_t fd)
                     the entire buffer write would be completed
     \warning
 */
-int spi_Write (Fd_t fd, unsigned char *pBuff, int len)
+uint16_t spi_Write (Fd_t fd, unsigned char *pBuff, int len)
 {
     (void) fd;
 
@@ -166,7 +166,7 @@ int spi_Write (Fd_t fd, unsigned char *pBuff, int len)
     \note
     \warning
 */
-int spi_Read(Fd_t fd, unsigned char *pBuff, int len)
+uint16_t spi_Read(Fd_t fd, unsigned char *pBuff, int len)
 {
     (void) fd;
 
