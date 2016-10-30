@@ -64,71 +64,55 @@ static THD_FUNCTION(udpStatusSendThread, arg)
         uint8_t c[sizeof(float)];
     } fu;
 
-    buffer = chHeapAlloc(NULL, 14 * sizeof(fu));
+    typedef struct
+    {
+        int type;
+        void *value;
+    } ValueData;
+
+    const ValueData values[] = /* 1 = long, 2 = float */
+    { { 2, (void *) &adcValues->adcCount },
+      { 2, (void *) &adcValues->tempCount },
+      { 1, (void *) &adcValues->tempSensor },
+      { 1, (void *) &adcValues->supplyVoltage },
+      { 1, (void *) &adcValues->auxmotorCurrent },
+      { 2, (void *) &adcValues->joystickLeftRight },
+      { 2, (void *) &adcValues->joystickBackForward },
+      { 2, (void *) &i2cValues->i2cCount },
+      { 1, (void *) &i2cValues->extTemp },
+      { 1, (void *) &i2cValues->X },
+      { 1, (void *) &i2cValues->Y },
+      { 1, (void *) &i2cValues->Z },
+      { 1, (void *) &i2cValues->Pitch },
+      { 1, (void *) &i2cValues->Roll },
+      { 0, NULL }
+    };
+
+    buffer = chHeapAlloc(NULL, sizeof(values)/2-sizeof(int));
 
     while (!chThdShouldTerminateX())
     {
         if (chBSemWaitTimeout(&i2cReadyReadSem, MS2ST(1000)) == MSG_OK && (--cyc == 0))
         {
             char *buf;
+            int i = 0;
+
             buf = buffer;
 
-            fu.i = adcValues->adcCount;
-            memcpy(buf, fu.c, sizeof(fu));
-            buf += sizeof(fu);
+            while (values[i].type != 0)
+            {
+                if (values[i].type == 1)
+                    fu.f = *(float *)values[i].value;
+                else if (values[i].type == 2)
+                    fu.i = *(long *)values[i].value;
 
-            fu.i = adcValues->tempCount;
-            memcpy(buf, fu.c, sizeof(fu));
-            buf += sizeof(fu);
+                memcpy(buf, fu.c, sizeof(fu));
+                buf += sizeof(fu);
 
-            fu.f = adcValues->tempSensor;
-            memcpy(buf, fu.c, sizeof(fu));
-            buf += sizeof(fu);
+                i++;
+            }
 
-            fu.f = adcValues->supplyVoltage;
-            memcpy(buf, fu.c, sizeof(fu));
-            buf += sizeof(fu);
-
-            fu.f = adcValues->auxmotorCurrent;
-            memcpy(buf, fu.c, sizeof(fu));
-            buf += sizeof(fu);
-
-            fu.i = adcValues->joystickLeftRight;
-            memcpy(buf, fu.c, sizeof(fu));
-            buf += sizeof(fu);
-
-            fu.i = adcValues->joystickBackForward;
-            memcpy(buf, fu.c, sizeof(fu));
-            buf += sizeof(fu);
-
-            fu.i = i2cValues->i2cCount;
-            memcpy(buf, fu.c, sizeof(fu));
-            buf += sizeof(fu);
-
-            fu.f = i2cValues->extTemp;
-            memcpy(buf, fu.c, sizeof(fu));
-            buf += sizeof(fu);
-
-            fu.f = i2cValues->X;
-            memcpy(buf, fu.c, sizeof(fu));
-            buf += sizeof(fu);
-
-            fu.f = i2cValues->Y;
-            memcpy(buf, fu.c, sizeof(fu));
-            buf += sizeof(fu);
-
-            fu.f = i2cValues->Z;
-            memcpy(buf, fu.c, sizeof(fu));
-            buf += sizeof(fu);
-
-            fu.f = i2cValues->Pitch;
-            memcpy(buf, fu.c, sizeof(fu));
-            buf += sizeof(fu);
-
-            fu.f = i2cValues->Roll;
-            memcpy(buf, fu.c, sizeof(fu));
-
-            udpSend(0, config->hostname, config->port, buffer, 14 * sizeof(fu));
+            udpSend(0, config->hostname, config->port, buffer, sizeof(values)/2-sizeof(int));
             cyc = 10;
         }
     }
