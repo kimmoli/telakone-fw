@@ -4,6 +4,7 @@
 #include "env.h"
 #include "chprintf.h"
 #include "shellcommands.h"
+#include "helpers.h"
 
 void cmd_date(BaseSequentialStream *chp, int argc, char *argv[])
 {

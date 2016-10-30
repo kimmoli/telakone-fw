@@ -56,7 +56,8 @@ SOURCES += \
     simplelink/platform/wifi_spawn.c \
     simplelink/platform/tcp_stream.c \
     simplelink/platform/wifi_gettime.c \
-    shell/cmd_date.c
+    shell/cmd_date.c \
+    helpers.c
 
 HEADERS += \
     adc.h \

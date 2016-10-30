@@ -119,6 +119,8 @@ int waitForConnection(void)
         SL_IPV4_BYTE(tcpClientAddr, 3), SL_IPV4_BYTE(tcpClientAddr, 2),
         SL_IPV4_BYTE(tcpClientAddr, 1), SL_IPV4_BYTE(tcpClientAddr, 0));
 
+    chThdSleepMilliseconds(10);
+
     return MSG_OK;
 }
 
@@ -192,8 +194,9 @@ static THD_FUNCTION(tcpTermServer, arg)
         if (res == MSG_OK)
         {
             tcpStreamInit(&TCPD1);
+            consoleStream = (BaseSequentialStream *) &TCPD1;
 
-            chprintf((BaseSequentialStream *)&TCPD1, "Welcome to " BOARD_NAME "\n\n\r");
+            PRINT("Welcome to " BOARD_NAME "\n\n\r");
 
             stp = chThdCreateFromHeap(NULL, SHELL_WA_SIZE, "tcpshell", NORMALPRIO + 1, shellThread, (void *)&shell_cfg_tcp);
 
@@ -205,6 +208,7 @@ static THD_FUNCTION(tcpTermServer, arg)
                     break;
             }
 
+            consoleStream = (BaseSequentialStream *) &SD3;
             tcpClientAddr = 0;
             PRINT("Connection closed\n\r");
         }

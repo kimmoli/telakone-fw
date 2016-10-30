@@ -39,6 +39,8 @@ int main(void)
 
     sdStart(&SD3, NULL);  /* Serial console in USART3, 38400 */
 
+    consoleStream = (BaseSequentialStream *) &SD3;
+
     PRINT("\n\r");
     PRINT("\n\rtelakone controller\n\r");
     PRINT("-------------------\n\r");
