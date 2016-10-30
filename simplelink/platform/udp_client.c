@@ -22,7 +22,7 @@ int udpSend(uint32_t destinationIP, char *hostName, uint16_t port, char *data, i
         res = sl_NetAppDnsGetHostByName((signed char*)hostName, strlen(hostName), &hostIpAddr, SL_AF_INET);
         if (res)
         {
-            PRINT("Host by name error %d\n\r", res);
+            PRINT("Failed to resolve host name %s. Error %d.\n\r", hostName, res);
             return MSG_RESET;
         }
     }
@@ -56,6 +56,16 @@ static THD_FUNCTION(udpStatusSendThread, arg)
 
     char *buffer;
     int cyc = 10;
+    uint32_t addr;
+
+    if (sl_NetAppDnsGetHostByName((signed char*)config->hostname, strlen(config->hostname), &addr, SL_AF_INET))
+    {
+        PRINT("Failed to resolve host name %s\n\r", config->hostname);
+        chThdExit(MSG_OK);
+        return;
+    }
+
+    PRINT("Sending status over UDP to %s port %d\n\r", config->hostname, config->port);
 
     union
     {
@@ -112,7 +122,7 @@ static THD_FUNCTION(udpStatusSendThread, arg)
                 i++;
             }
 
-            udpSend(0, config->hostname, config->port, buffer, sizeof(values)/2-sizeof(int));
+            udpSend(addr, NULL, config->port, buffer, sizeof(values)/2-sizeof(int));
             cyc = 10;
         }
     }
