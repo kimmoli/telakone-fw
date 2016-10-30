@@ -90,7 +90,17 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
 
     else if (strcmp(argv[0], "term") == 0)
     {
-        startTcpTermServer(0);
+        int port = 0;
+
+        if (argc == 2)
+        {
+            if (strncmp(argv[1], "stop", 4) == 0)
+                port = -1;
+            else
+                port = strtol(argv[1], NULL, 10);
+        }
+
+        startTcpTermServer(port);
     }
 
     else if (strcmp(argv[0], "stat") == 0)

@@ -20,5 +20,6 @@ typedef struct
 extern TcpStream TCPD1;
 
 extern void tcpStreamInit(TcpStream *tsp);
+extern void tcpStreamStop(TcpStream *tsp);
 
 #endif

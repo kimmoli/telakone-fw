@@ -11,8 +11,6 @@ UdpServerConfig udpserverconf =
     4554
 };
 
-static thread_t *udpServerTp = NULL;
-
 static uint32_t messageCount;
 
 static THD_FUNCTION(udpServer, arg)
@@ -101,33 +99,35 @@ static THD_FUNCTION(udpServer, arg)
 
 void startUdpServer(int port)
 {
+    thread_t *tp;
+    tp = chRegFindThreadByName("udpserver");
+
     if (port == -1)
     {
-        if (udpServerTp)
+        if (tp)
         {
-            chThdTerminate(udpServerTp);
-            chThdWait(udpServerTp);
-            udpServerTp = NULL;
+            chThdTerminate(tp);
+            chThdWait(tp);
 
-            PRINT("Server stopped\n\r");
+            PRINT("UDP Server stopped\n\r");
             return;
         }
         else
         {
-            PRINT("Server not running\n\r");
+            PRINT("UDP Server not running\n\r");
             return;
         }
     }
-    else if (!udpServerTp)
+    else if (!tp)
     {
         if (port > 0)
             udpserverconf.port = port;
 
-        udpServerTp = chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(512), "udpserver", NORMALPRIO+2, udpServer, (void *) &udpserverconf);
+        chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(512), "udpserver", NORMALPRIO+2, udpServer, (void *) &udpserverconf);
     }
     else
     {
-        PRINT("Server already running\n\r");
+        PRINT("UDP Server already running\n\r");
     }
 }
 

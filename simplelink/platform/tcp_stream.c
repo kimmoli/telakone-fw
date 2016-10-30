@@ -73,3 +73,7 @@ void tcpStreamInit(TcpStream *tsp)
     tsp->vmt = &vmt;
 }
 
+void tcpStreamStop(TcpStream *tsp)
+{
+    tsp->vmt = NULL;
+}

@@ -15,8 +15,6 @@ TcpServerConfig tcpserverconf =
     23
 };
 
-static char *rxBuff;
-
 static int16_t sockId = 0;
 static int16_t connSockId = 0;
 
@@ -172,11 +170,10 @@ static THD_FUNCTION(tcpTermServer, arg)
     if (res == MSG_RESET)
     {
         PRINT("Failed to create socket\n\r");
-        chHeapFree(rxBuff);
         chThdExit(MSG_OK);
     }
 
-    while (true)
+    while (!chThdShouldTerminateX())
     {
         do
         {
@@ -188,6 +185,9 @@ static THD_FUNCTION(tcpTermServer, arg)
             {
                 PRINT("Failed while waiting for connection\n\r");
             }
+
+            if (chThdShouldTerminateX())
+                res = MSG_RESET;
         }
         while (res == SL_EAGAIN);
 
@@ -200,14 +200,12 @@ static THD_FUNCTION(tcpTermServer, arg)
 
             stp = chThdCreateFromHeap(NULL, SHELL_WA_SIZE, "tcpshell", NORMALPRIO + 1, shellThread, (void *)&shell_cfg_tcp);
 
-            while (true)
+            while (!chThdTerminatedX(stp))
             {
                 chThdSleepMilliseconds(200);
-
-                if (chThdTerminatedX(stp))
-                    break;
             }
 
+            tcpStreamStop(&TCPD1);
             consoleStream = (BaseSequentialStream *) &SD3;
             tcpClientAddr = 0;
             PRINT("Connection closed\n\r");
@@ -218,27 +216,40 @@ static THD_FUNCTION(tcpTermServer, arg)
     }
 
     sl_Close(sockId);
-    chHeapFree(rxBuff);
     chThdExit(MSG_OK);
 }
 
 void startTcpTermServer(int port)
 {
     thread_t *tp;
-
     tp = chRegFindThreadByName("tcpterm");
 
-    if (tp && tp->state == CH_STATE_READY)
+    if (port == -1)
     {
-        chThdResume(&tp, MSG_OK);
+        if (tp)
+        {
+            chThdTerminate(tp);
+            chThdWait(tp);
+
+            PRINT("TCP Server stopped\n\r");
+            return;
+        }
+        else
+        {
+            PRINT("TCP Server not running\n\r");
+            return;
+        }
     }
-    else
+    else if (!tp)
     {
         if (port > 0)
             tcpserverconf.port = port;
 
-        rxBuff = chHeapAlloc(NULL, BUFSIZE);
         chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(512), "tcpterm", NORMALPRIO+2, tcpTermServer, (void *) &tcpserverconf);
+    }
+    else
+    {
+        PRINT("TCP Terminal already running.\n\r");
     }
 }
 
