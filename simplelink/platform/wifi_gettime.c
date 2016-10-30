@@ -13,7 +13,6 @@ msg_t slGetSNTPTime(uint32_t ipAddr, char *hostName, RTCDateTime *timespec, int 
     int sockId;
 
     time_t transmitTime;
-    time_t mSecs;
 
     if (hostName != NULL)
     {
@@ -88,9 +87,6 @@ msg_t slGetSNTPTime(uint32_t ipAddr, char *hostName, RTCDateTime *timespec, int 
         /* Adjust timezone */
         transmitTime += tz * 3600;
 
-        /* Milliseconds. Use only upper 16 bits, multiply by 1000 and divide by 2^16 */
-        mSecs = (((dataBuf[44] << 24) | (dataBuf[45] << 16)) * 1000) >> 16;
-
         struct tm tim;
         struct tm *canary;
 
@@ -98,7 +94,7 @@ msg_t slGetSNTPTime(uint32_t ipAddr, char *hostName, RTCDateTime *timespec, int 
         canary = localtime_r(&transmitTime, &tim);
         osalDbgCheck(&tim == canary);
 
-        rtcConvertStructTmToDateTime(&tim, mSecs, timespec);
+        rtcConvertStructTmToDateTime(&tim, 0, timespec);
         rtcSetTime(&RTCD1, timespec);
 
         PRINT("NTP time returned is %s\r", asctime(&tim));
