@@ -12,7 +12,10 @@ extern uint32_t tcpClientAddr;
 
 extern int sendToSocket(void *data, int16_t Len);
 extern int receiveFromSocket(void *buff, int16_t Maxlen, int16_t *rxLen);
+
 extern void startTcpTermServer(int port);
+extern void stopTcpTermServer(void);
+
 extern uint32_t getTcpMessageCount(void);
 
 #endif

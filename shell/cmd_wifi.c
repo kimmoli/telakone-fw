@@ -63,17 +63,12 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
 
     else if (strcmp(argv[0], "udpserver") == 0)
     {
-        int port = 0;
-
-        if (argc == 2)
-        {
-            if (strncmp(argv[1], "stop", 4) == 0)
-                port = -1;
-            else
-                port = strtol(argv[1], NULL, 10);
-        }
-
-        startUdpServer(port);
+        if (argc == 2 && strncmp(argv[1], "stop", 4) == 0)
+            stopUdpServer();
+        else if (argc == 2)
+            startUdpServer(strtol(argv[1], NULL, 10));
+        else
+            startUdpServer(0);
     }
 
     else if (strcmp(argv[0], "udpclient") == 0)
@@ -88,19 +83,24 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
         }
     }
 
+    else if (strcmp(argv[0], "udpstat") == 0)
+    {
+        if (argc == 2 && strncmp(argv[1], "stop", 4) == 0)
+            stopUdpStatusSend();
+        else if (argc == 2)
+            startUdpStatusSend(argv[1], 0);
+        else
+            PRINT("destination url?");
+    }
+
     else if (strcmp(argv[0], "term") == 0)
     {
-        int port = 0;
-
-        if (argc == 2)
-        {
-            if (strncmp(argv[1], "stop", 4) == 0)
-                port = -1;
-            else
-                port = strtol(argv[1], NULL, 10);
-        }
-
-        startTcpTermServer(port);
+        if (argc == 2 && strncmp(argv[1], "stop", 4) == 0)
+            stopTcpTermServer();
+        else if (argc == 2)
+            startTcpTermServer(strtol(argv[1], NULL, 10));
+        else
+            startTcpTermServer(0);
     }
 
     else if (strcmp(argv[0], "stat") == 0)

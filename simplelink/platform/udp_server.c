@@ -102,23 +102,7 @@ void startUdpServer(int port)
     thread_t *tp;
     tp = chRegFindThreadByName("udpserver");
 
-    if (port == -1)
-    {
-        if (tp)
-        {
-            chThdTerminate(tp);
-            chThdWait(tp);
-
-            PRINT("UDP Server stopped\n\r");
-            return;
-        }
-        else
-        {
-            PRINT("UDP Server not running\n\r");
-            return;
-        }
-    }
-    else if (!tp)
+    if (!tp)
     {
         if (port > 0)
             udpserverconf.port = port;
@@ -128,6 +112,26 @@ void startUdpServer(int port)
     else
     {
         PRINT("UDP Server already running\n\r");
+    }
+}
+
+void stopUdpServer(void)
+{
+    thread_t *tp;
+    tp = chRegFindThreadByName("udpserver");
+
+    if (tp)
+    {
+        chThdTerminate(tp);
+        chThdWait(tp);
+
+        PRINT("UDP Server stopped\n\r");
+        return;
+    }
+    else
+    {
+        PRINT("UDP Server not running\n\r");
+        return;
     }
 }
 

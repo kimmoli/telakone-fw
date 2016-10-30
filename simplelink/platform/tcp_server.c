@@ -224,23 +224,7 @@ void startTcpTermServer(int port)
     thread_t *tp;
     tp = chRegFindThreadByName("tcpterm");
 
-    if (port == -1)
-    {
-        if (tp)
-        {
-            chThdTerminate(tp);
-            chThdWait(tp);
-
-            PRINT("TCP Server stopped\n\r");
-            return;
-        }
-        else
-        {
-            PRINT("TCP Server not running\n\r");
-            return;
-        }
-    }
-    else if (!tp)
+    if (!tp)
     {
         if (port > 0)
             tcpserverconf.port = port;
@@ -250,6 +234,26 @@ void startTcpTermServer(int port)
     else
     {
         PRINT("TCP Terminal already running.\n\r");
+    }
+}
+
+void stopTcpTermServer(void)
+{
+    thread_t *tp;
+    tp = chRegFindThreadByName("tcpterm");
+
+    if (tp)
+    {
+        chThdTerminate(tp);
+        chThdWait(tp);
+
+        PRINT("TCP Server stopped\n\r");
+        return;
+    }
+    else
+    {
+        PRINT("TCP Server not running\n\r");
+        return;
     }
 }
 

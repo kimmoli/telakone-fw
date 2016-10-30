@@ -16,7 +16,6 @@ extern binary_semaphore_t adcTempReadyReadSem;
 typedef struct
 {
     float tempSensor;
-    float extTempSensor;
     float supplyVoltage;
     float auxmotorCurrent;
     int joystickLeftRight;
