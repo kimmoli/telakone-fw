@@ -56,12 +56,12 @@ int main(void)
 
     rtcSTM32SetPeriodicWakeup(&RTCD1, NULL);
 
+    i2cTKInit();
+    spiTKInit();
     adcTKInit();
     adcTKStartConv();
     pwmTKInit();
     eicuTKInit();
-    i2cTKInit();
-    spiTKInit();
     extiTKInit();
     // auxlinkTKInit(0x01);
 
@@ -74,6 +74,7 @@ int main(void)
 
     /* Start threads */
     startThreadKiller();
+    startI2cThread();
     startMessagingThread(); /* Parses messages from network */
     startBlinkerThread(); /* Controls the external warning lamps on OUT1 */
     // startAuxDeviceThread(); /* Auxiliary device handling */
@@ -86,7 +87,7 @@ int main(void)
     PRINT(" - Threads started\n\r");
 
     PRINT("\n\r");
-    cmd_status((BaseSequentialStream *)&SD3, 0, NULL);
+//    cmd_status((BaseSequentialStream *)&SD3, 0, NULL);
 
     /* Everything is initialised, turh red led off */
     palClearLine(LINE_REDLED);

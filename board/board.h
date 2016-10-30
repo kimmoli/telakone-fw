@@ -31,7 +31,7 @@
  * Use watchdog
  */
 
-#define TK_USE_WDOG
+// #define TK_USE_WDOG
 
 /*
  * Simplelink CC3100 Firmware update

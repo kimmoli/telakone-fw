@@ -6,6 +6,7 @@
 #define DRIVEEVENT_SET       0x8000
 
 extern float batteryVoltage[2];
+extern float motorControlVoltage[2];
 
 typedef struct
 {
@@ -13,7 +14,15 @@ typedef struct
     ioline_t reverseline;
 } DriveConfig;
 
+typedef struct
+{
+    float batteryVoltage;
+    float controlVoltage;
+} DriveStatus_t;
+
+extern DriveStatus_t *driveStatus[2];
 extern event_source_t driveEvent[2];
+
 extern void startDriveThread(int channel);
 
 #endif

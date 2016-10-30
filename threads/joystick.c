@@ -7,44 +7,42 @@
 #include "spi.h"
 #include "drive.h"
 
-int joystickLR;
-int joystickBF;
-int leftMotor;
-int rightMotor;
-
 static THD_FUNCTION(joystickThread, arg)
 {
     (void)arg;
 
+    int leftMotor = 0;
+    int rightMotor = 0;
     int prevLeftMotor = 0;
     int prevRightMotor = 0;
+    int tempJoyLR = 0;
+    int tempJoyBF = 0;
 
-    while (true)
+    while (!chThdShouldTerminateX())
     {
-        chThdSleepMilliseconds(50);
+        chBSemWait(&adcReadyReadSem);
 
-        // Scale potentiometers to -500..+500
-        joystickLR = ( 1000 * adcAvgJoystickLeftRight / 4096 ) - 500;
-        joystickBF = ( 1000 * adcAvgJoystickBackwardForward / 4096 ) - 500;
+        tempJoyLR = adcValues->joystickLeftRight;
+        tempJoyBF = adcValues->joystickBackForward;
 
         // Potentiometer deadzone in center position
-        if (joystickLR >= JOYSTICK_DEADZONE)
-            joystickLR = 500 * (joystickLR - JOYSTICK_DEADZONE) / (500 - JOYSTICK_DEADZONE);
-        else if (joystickLR <= -JOYSTICK_DEADZONE)
-            joystickLR = 500 * (joystickLR + JOYSTICK_DEADZONE) / (500 - JOYSTICK_DEADZONE);
+        if (tempJoyLR >= JOYSTICK_DEADZONE)
+            tempJoyLR = 500 * (tempJoyLR - JOYSTICK_DEADZONE) / (500 - JOYSTICK_DEADZONE);
+        else if (tempJoyLR <= -JOYSTICK_DEADZONE)
+            tempJoyLR = 500 * (tempJoyLR + JOYSTICK_DEADZONE) / (500 - JOYSTICK_DEADZONE);
         else
-            joystickLR = 0;
+            tempJoyLR = 0;
 
-        if (joystickBF >= JOYSTICK_DEADZONE)
-            joystickBF = 500 * (joystickBF - JOYSTICK_DEADZONE) / (500 - JOYSTICK_DEADZONE);
-        else if (joystickBF <= -JOYSTICK_DEADZONE)
-            joystickBF = 500 * (joystickBF + JOYSTICK_DEADZONE) / (500 - JOYSTICK_DEADZONE);
+        if (tempJoyBF >= JOYSTICK_DEADZONE)
+            tempJoyBF = 500 * (tempJoyBF - JOYSTICK_DEADZONE) / (500 - JOYSTICK_DEADZONE);
+        else if (tempJoyBF <= -JOYSTICK_DEADZONE)
+            tempJoyBF = 500 * (tempJoyBF + JOYSTICK_DEADZONE) / (500 - JOYSTICK_DEADZONE);
         else
-            joystickBF = 0;
+            tempJoyBF = 0;
 
         // Convert to differential motor control values Left and Right, -500..+500
-        leftMotor = MAX(MIN(joystickBF + joystickLR, 500), -500);
-        rightMotor = MAX(MIN(joystickBF - joystickLR, 500), -500);
+        leftMotor = MAX(MIN(tempJoyBF + tempJoyLR, 500), -500);
+        rightMotor = MAX(MIN(tempJoyBF - tempJoyLR, 500), -500);
 
         if (leftMotor != prevLeftMotor)
             chEvtBroadcastFlags(&driveEvent[0], DRIVEEVENT_SET | (uint16_t)(leftMotor & 0xFFF));

@@ -9,13 +9,23 @@
 #define ADC_GRP1_BUF_DEPTH      4
 #define ADC_GRP3_BUF_DEPTH      4
 
-extern adcsample_t adcAvgSupplyVoltage;
-extern adcsample_t adcAvgMotorCurrent;
-extern adcsample_t adcAvgTempSensor;
-extern adcsample_t adcAvgJoystickLeftRight;
-extern adcsample_t adcAvgJoystickBackwardForward;
+extern event_source_t adcConvStart;
+extern binary_semaphore_t adcReadyReadSem;
+extern binary_semaphore_t adcTempReadyReadSem;
 
-extern long adcCount;
+typedef struct
+{
+    float tempSensor;
+    float extTempSensor;
+    float supplyVoltage;
+    float auxmotorCurrent;
+    int joystickLeftRight;
+    int joystickBackForward;
+    long adcCount;
+    long tempCount;
+} AdcValues_t;
+
+extern AdcValues_t *adcValues;
 
 void adcTKInit(void);
 void adcTKStartConv(void);

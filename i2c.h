@@ -13,17 +13,22 @@
 #define IIS328_OUTREG 0x28
 #define IIS328_8G_SCALE (0.00391)
 
-extern float accelX;
-extern float accelY;
-extern float accelZ;
-extern float accelPitch;
-extern float accelRoll;
-extern int accelOK;
-extern int extTempOK;
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+    float Pitch;
+    float Roll;
+    float extTemp;
+    long i2cCount;
+} I2cValues_t;
 
-float getExtTemperature(void);
-void getAcceleration(void);
-void i2cTKInit(void);
+extern binary_semaphore_t i2cReadyReadSem;
+extern I2cValues_t *i2cValues;
+
+extern void i2cTKInit(void);
+extern void startI2cThread(void);
 
 #endif
 
