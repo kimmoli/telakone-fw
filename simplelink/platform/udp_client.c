@@ -32,7 +32,7 @@ int udpSend(uint32_t destinationIP, char *hostName, uint16_t port, char *data, i
     addr.sin_port = sl_Htons(port);
     addr.sin_addr.s_addr = sl_Htonl(hostIpAddr);
 
-    sockId = sl_Socket(SL_AF_INET, SL_SOCK_DGRAM, 0);
+    sockId = sl_Socket(SL_AF_INET, SL_SOCK_DGRAM, SL_IPPROTO_UDP);
 
     int addrSize = sizeof(SlSockAddrIn_t);
     res = sl_SendTo(sockId, data, len, 0, (SlSockAddr_t *)&addr, addrSize);

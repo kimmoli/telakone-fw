@@ -6,6 +6,7 @@
 #include "wifi_version.h"
 #include "wifi_ping.h"
 #include "wifi_spawn.h"
+#include "wifi_gettime.h"
 #include "helpers.h"
 
 #ifdef TK_CC3100_PROGRAMMING
@@ -128,6 +129,12 @@ static THD_FUNCTION(wifiThread, arg)
         else if (flags & WIFIEVENT_PING && wifiRunning)
         {
             slPing(g_GatewayIP, hostToPing);
+        }
+
+        else if (flags & WIFIEVENT_GETTIME && wifiRunning)
+        {
+            RTCDateTime timespec = {0};
+            slGetSNTPTime(0, getenv("ntp"), &timespec, strtol(getenv("tz"), NULL, 10));
         }
 
         else

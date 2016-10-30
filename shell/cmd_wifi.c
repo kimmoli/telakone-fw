@@ -118,20 +118,31 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
 
     else if (strcmp(argv[0], "show") == 0)
     {
-        chprintf(chp, "Mode   = %s\n\r", getenv("wifimode"));
+        chprintf(chp, "Mode       = %s\n\r", getenv("wifimode"));
         chprintf(chp, "AP config:\n\r");
-        chprintf(chp, "SSID   = %s\n\r", getenv("myssid"));
-        chprintf(chp, "IP     = %s\n\r", getenv("ip"));
-        chprintf(chp, "Domain = %s\n\r", getenv("domain"));
+        chprintf(chp, "SSID       = %s\n\r", getenv("myssid"));
+        chprintf(chp, "IP         = %s\n\r", getenv("ip"));
+        chprintf(chp, "Domain     = %s\n\r", getenv("domain"));
         chprintf(chp, "Station config:\n\r");
-        chprintf(chp, "SSID   = %s\n\r", getenv("ssid"));
-        chprintf(chp, "Key    = %s\n\r", getenv("key"));
-        chprintf(chp, "Sec    = %s\n\r", secNames[strtol(getenv("sec"), NULL, 10)]);
+        chprintf(chp, "SSID       = %s\n\r", getenv("ssid"));
+        chprintf(chp, "Key        = %s\n\r", getenv("key"));
+        chprintf(chp, "Sec mode   = %s\n\r", secNames[strtol(getenv("sec"), NULL, 10)]);
+        chprintf(chp, "Other:\n\r");
+        chprintf(chp, "NTP server = %s\n\r", getenv("ntp"));
+        chprintf(chp, "Timezone   = %s\n\r", getenv("tz"));
     }
 
-    else if (strcmp(argv[0], "test") == 0)
+    else if (strcmp(argv[0], "ntp") == 0)
     {
-        wifiSpawnI((void *)wsptesti, NULL, 0);
+        if (getenv("ntp") == NULL || getenv("tz") == NULL)
+        {
+            chprintf(chp, "No NTP server or timezone set.\n\r");
+        }
+        else
+        {
+            chprintf(chp, "Requesting time from %s\n\r", getenv("ntp"));
+            chEvtBroadcastFlags(&wifiEvent, WIFIEVENT_GETTIME);
+        }
     }
 
     else

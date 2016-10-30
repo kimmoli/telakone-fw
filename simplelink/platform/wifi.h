@@ -11,6 +11,7 @@
 #define WIFIEVENT_CONNECT       0x0020
 #define WIFIEVENT_DISCONNECT    0x0040
 #define WIFIEVENT_PING          0x0080
+#define WIFIEVENT_GETTIME       0x0100
 
 extern event_source_t wifiEvent;
 

@@ -44,13 +44,13 @@ int createSocket(uint16_t port)
     SlSockAddrIn_t sServerAddress;
     int res = 0;
 
-    sockId = sl_Socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    sockId = sl_Socket(SL_AF_INET, SL_SOCK_STREAM, SL_IPPROTO_TCP);
     if (sockId > 0)
     {
         setReceiveTimeout(1000);
 
-        sServerAddress.sin_family = AF_INET;
-        sServerAddress.sin_addr.s_addr = INADDR_ANY;
+        sServerAddress.sin_family = SL_AF_INET;
+        sServerAddress.sin_addr.s_addr = SL_INADDR_ANY;
         sServerAddress.sin_port = sl_Htons(port);
 
         res = sl_Bind(sockId, (const SlSockAddr_t *)&sServerAddress, sizeof(sServerAddress));
@@ -75,18 +75,18 @@ int createSocket(uint16_t port)
 int waitForConnection(void)
 {
     int res;
-    fd_set rfds;
-    struct timeval tv;
+    SlFdSet_t rfds;
+    struct SlTimeval_t tv;
     SlSocklen_t in_addrSize;
     SlSockAddrIn_t stcpClientAddress;
 
-    FD_ZERO(&rfds);
-    FD_SET(sockId, &rfds);
+    SL_FD_ZERO(&rfds);
+    SL_FD_SET(sockId, &rfds);
 
     tv.tv_sec = 1;
     tv.tv_usec = 0;
 
-    res = select(sockId, &rfds, (fd_set *) 0, (fd_set *) 0, &tv);
+    res = sl_Select(sockId, &rfds, (SlFdSet_t *) 0, (SlFdSet_t *) 0, &tv);
     if(res == 0)
     {
         return SL_EAGAIN;

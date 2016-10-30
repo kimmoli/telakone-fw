@@ -33,7 +33,7 @@ static THD_FUNCTION(udpServer, arg)
 
     localAddr.sin_family = SL_AF_INET;
     localAddr.sin_port = sl_Htons((uint16_t)config->port);
-    localAddr.sin_addr.s_addr = 0;
+    localAddr.sin_addr.s_addr = SL_INADDR_ANY;
 
     sockID = sl_Socket(SL_AF_INET,SL_SOCK_DGRAM, 0);
     if( sockID < 0 )

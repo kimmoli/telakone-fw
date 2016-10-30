@@ -52,6 +52,8 @@ int main(void)
 
     PRINT(" - Loaded %d variables\n\r", envLoader());
 
+    rtcSTM32SetPeriodicWakeup(&RTCD1, NULL);
+
     adcTKInit();
     adcTKStartConv();
     pwmTKInit();

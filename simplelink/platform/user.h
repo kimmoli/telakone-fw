@@ -152,9 +152,9 @@ typedef P_EVENT_HANDLER  SL_P_EVENT_HANDLER;
 
     \warning
 */
-
+/*
 #define SL_INC_STD_BSD_API_NAMING
-
+*/
 
 /*!
     \brief      Defines whether to include extended API in SimpleLink driver
