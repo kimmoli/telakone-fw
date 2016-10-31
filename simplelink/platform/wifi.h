@@ -12,49 +12,41 @@
 #define WIFIEVENT_DISCONNECT    0x0040
 #define WIFIEVENT_PING          0x0080
 #define WIFIEVENT_GETTIME       0x0100
+#define WIFIEVENT_HTTPSERVER    0x0200
+
+#define SL_STOP_TIMEOUT         255
+#define SL_SCAN_TABLE_SIZE      20
+#define SL_SCAN_INTERVAL        10
+
+typedef struct
+{
+    uint32_t mode;
+    bool running;
+    bool connected;
+    bool ipAcquired;
+    bool ipLeased;
+    uint32_t ownIpAddress;
+    uint32_t gatewayIpAddress;
+    uint32_t leasedIpAddress;
+} WifiStatus_t;
 
 extern event_source_t wifiEvent;
-
 extern const char *secNames[];
+extern WifiStatus_t *wifistatus;
 extern char *hostToPing;
 
 void startWifiThread(void);
 
 /* Simplelink specific stuff */
-
-#define SL_STOP_TIMEOUT     255
-#define SL_SCAN_TABLE_SIZE  20
-#define SL_SCAN_INTERVAL    10
-
 #define SL_SEC_NAMES      \
     "OPEN", "WEP", "WPA", \
     "WPS-PBC", "WPS-PIN", \
     "WPA-ENT"
 
-extern void SimpleLinkHttpServerCallback(SlHttpServerEvent_t *pHttpEvent,
-                                  SlHttpServerResponse_t *pHttpResponse);
+extern void SimpleLinkHttpServerCallback(SlHttpServerEvent_t *pHttpEvent, SlHttpServerResponse_t *pHttpResponse);
 extern void SimpleLinkNetAppEventHandler(SlNetAppEvent_t *pNetAppEvent);
 extern void SimpleLinkWlanEventHandler(SlWlanEvent_t *pWlanEvent);
 extern void SimpleLinkGeneralEventHandler(SlDeviceEvent_t *pDevEvent);
-
-#define SET_STATUS_BIT(status_variable, bit)    status_variable |= ((unsigned long)1<<(bit))
-#define CLR_STATUS_BIT(status_variable, bit)    status_variable &= ~((unsigned long)1<<(bit))
-#define GET_STATUS_BIT(status_variable, bit)    (0 != (status_variable & ((unsigned long)1<<(bit))))
-
-/* Status bits - These are used to set/reset the corresponding bits in a 'status_variable' */
-typedef enum
-{
-    STATUS_BIT_CONNECTION =  0,     /* If this bit is set: the device is connected to the AP */
-    STATUS_BIT_STA_CONNECTED,       /* If this bit is set: client is connected to device */
-    STATUS_BIT_IP_ACQUIRED,         /* If this bit is set: the device has acquired an IP */
-    STATUS_BIT_IP_LEASED,           /* If this bit is set: the device has leased an IP */
-    STATUS_BIT_CONNECTION_FAILED,   /* If this bit is set: failed to connect to device */
-    STATUS_BIT_P2P_NEG_REQ_RECEIVED,/* If this bit is set: connection requested by remote wifi-direct device */
-    STATUS_BIT_SMARTCONFIG_DONE,    /* If this bit is set: smartconfig completed. Cleared: smartconfig event couldn't complete */
-    STATUS_BIT_SMARTCONFIG_STOPPED, /* If this bit is set: smartconfig process stopped. Cleared: smartconfig process running */
-    STATUS_BIT_PING_DONE            /* If this bit is set: the device has completed the ping operation */
-} e_StatusBits;
-
 
 #endif
 

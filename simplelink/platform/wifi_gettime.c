@@ -95,7 +95,6 @@ msg_t slGetSNTPTime(uint32_t ipAddr, char *hostName, RTCDateTime *timespec, int 
         osalDbgCheck(&tim == canary);
 
         rtcConvertStructTmToDateTime(&tim, 0, timespec);
-        rtcSetTime(&RTCD1, timespec);
 
         PRINT("NTP time returned is %s\r", asctime(&tim));
     }

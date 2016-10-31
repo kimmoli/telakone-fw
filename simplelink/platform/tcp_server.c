@@ -22,7 +22,6 @@ static int setReceiveTimeout(int ms);
 static int createSocket(uint16_t port);
 static int waitForConnection(void);
 
-static uint32_t messageCount;
 uint32_t tcpClientAddr;
 
 int setReceiveTimeout(int ms)
@@ -164,8 +163,6 @@ static THD_FUNCTION(tcpTermServer, arg)
     int res;
     thread_t *stp;
 
-    messageCount = 0;
-
     res = createSocket(config->port);
     if (res == MSG_RESET)
     {
@@ -255,9 +252,4 @@ void stopTcpTermServer(void)
         PRINT("TCP Server not running\n\r");
         return;
     }
-}
-
-uint32_t getTcpMessageCount(void)
-{
-    return messageCount;
 }

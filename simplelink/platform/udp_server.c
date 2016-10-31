@@ -11,8 +11,6 @@ UdpServerConfig udpserverconf =
     4554
 };
 
-static uint32_t messageCount;
-
 static THD_FUNCTION(udpServer, arg)
 {
     UdpServerConfig *config = arg;
@@ -24,8 +22,6 @@ static THD_FUNCTION(udpServer, arg)
     int16_t res = 0;
 
     char *rxBuf;
-
-    messageCount = 0;
 
     rxBuf = chHeapAlloc(NULL, MSGBUFSIZE * sizeof(char));
 
@@ -87,8 +83,6 @@ static THD_FUNCTION(udpServer, arg)
             chBSemSignal(&messagingReceiceSem);
 
             chEvtBroadcastFlags(&messagingEvent, MESSAGING_EVENT_SEND | (MIN(res, 0x3FF)));
-
-            messageCount++;
         }
     }
 
@@ -133,9 +127,4 @@ void stopUdpServer(void)
         PRINT("UDP Server not running\n\r");
         return;
     }
-}
-
-uint32_t getUdpMessageCount(void)
-{
-    return messageCount;
 }

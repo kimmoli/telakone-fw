@@ -103,15 +103,6 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
             startTcpTermServer(0);
     }
 
-    else if (strcmp(argv[0], "stat") == 0)
-    {
-        uint32_t u, t;
-        u = getUdpMessageCount();
-        t = getTcpMessageCount();
-
-        PRINT("udp %d tcp %d\n\r", u, t);
-    }
-
     else if (strcmp(argv[0], "prog") == 0)
     {
 #ifdef TK_CC3100_PROGRAMMING
@@ -126,20 +117,45 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
         chEvtBroadcastFlags(&wifiEvent, WIFIEVENT_VERSION);
     }
 
-    else if (strcmp(argv[0], "show") == 0)
+    else if (strcmp(argv[0], "stat") == 0)
     {
-        chprintf(chp, "Mode       = %s\n\r", getenv("wifimode"));
-        chprintf(chp, "AP config:\n\r");
-        chprintf(chp, "SSID       = %s\n\r", getenv("myssid"));
-        chprintf(chp, "IP         = %s\n\r", getenv("ip"));
-        chprintf(chp, "Domain     = %s\n\r", getenv("domain"));
-        chprintf(chp, "Station config:\n\r");
-        chprintf(chp, "SSID       = %s\n\r", getenv("ssid"));
-        chprintf(chp, "Key        = %s\n\r", getenv("key"));
-        chprintf(chp, "Sec mode   = %s\n\r", secNames[strtol(getenv("sec"), NULL, 10)]);
-        chprintf(chp, "Other:\n\r");
-        chprintf(chp, "NTP server = %s\n\r", getenv("ntp"));
-        chprintf(chp, "Timezone   = %s\n\r", getenv("tz"));
+
+        chprintf(chp, "-- Configration --\n\r");
+        chprintf(chp, "Mode:              %s\n\r", getenv("wifimode"));
+        chprintf(chp, "-- Access point --\n\r");
+        chprintf(chp, "SSID:              %s\n\r", getenv("myssid"));
+        chprintf(chp, "IP:                %s\n\r", getenv("ip"));
+        chprintf(chp, "Domain:            %s\n\r", getenv("domain"));
+        chprintf(chp, "-- Station --\n\r");
+        chprintf(chp, "Connect to SSID:   %s\n\r", getenv("ssid"));
+        chprintf(chp, "Key:               %s\n\r", getenv("key"));
+        chprintf(chp, "Sec mode:          %s\n\r", secNames[strtol(getenv("sec"), NULL, 10)]);
+        chprintf(chp, "-- Other --\n\r");
+        chprintf(chp, "NTP server:        %s\n\r", getenv("ntp"));
+        chprintf(chp, "Timezone:          %s\n\r", getenv("tz"));
+        chprintf(chp, "-- Current status --\n\r");
+        chprintf(chp, "Running:           %s\n\r", wifistatus->running ? "YES" : "NO");
+        chprintf(chp, "Connected:         %s\n\r", wifistatus->connected ? "YES" : "NO");
+        chprintf(chp, "IP Acquired:       %s\n\r", wifistatus->ipAcquired ? "YES" : "NO");
+        chprintf(chp, "IP Leased:         %s\n\r", wifistatus->ipLeased ? "YES" : "NO");
+        if (wifistatus->ipAcquired)
+            chprintf(chp, "Own IP:            %d.%d.%d.%d\n\r",
+                     SL_IPV4_BYTE(wifistatus->ownIpAddress, 3),
+                     SL_IPV4_BYTE(wifistatus->ownIpAddress, 2),
+                     SL_IPV4_BYTE(wifistatus->ownIpAddress, 1),
+                     SL_IPV4_BYTE(wifistatus->ownIpAddress, 0));
+        if (wifistatus->ipAcquired)
+            chprintf(chp, "Gateway IP:        %d.%d.%d.%d\n\r",
+                     SL_IPV4_BYTE(wifistatus->gatewayIpAddress, 3),
+                     SL_IPV4_BYTE(wifistatus->gatewayIpAddress, 2),
+                     SL_IPV4_BYTE(wifistatus->gatewayIpAddress, 1),
+                     SL_IPV4_BYTE(wifistatus->gatewayIpAddress, 0));
+        if (wifistatus->ipLeased)
+            chprintf(chp, "Leased IP:         %d.%d.%d.%d\n\r",
+                     SL_IPV4_BYTE(wifistatus->leasedIpAddress, 3),
+                     SL_IPV4_BYTE(wifistatus->leasedIpAddress, 2),
+                     SL_IPV4_BYTE(wifistatus->leasedIpAddress, 1),
+                     SL_IPV4_BYTE(wifistatus->leasedIpAddress, 0));
     }
 
     else if (strcmp(argv[0], "ntp") == 0)
@@ -153,6 +169,11 @@ void cmd_wifi(BaseSequentialStream *chp, int argc, char *argv[])
             chprintf(chp, "Requesting time from %s\n\r", getenv("ntp"));
             chEvtBroadcastFlags(&wifiEvent, WIFIEVENT_GETTIME);
         }
+    }
+
+    else if (strcmp(argv[0], "http") == 0)
+    {
+        chEvtBroadcastFlags(&wifiEvent, WIFIEVENT_HTTPSERVER);
     }
 
     else
