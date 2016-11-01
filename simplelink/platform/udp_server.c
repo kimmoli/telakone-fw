@@ -37,7 +37,7 @@ static THD_FUNCTION(udpServer, arg)
         chThdExit(MSG_RESET);
     }
 
-    /* make socket non-blocking by setting 1 sec timeout */
+    /* make socket non-blocking by setting 5 sec timeout */
     struct SlTimeval_t timeVal;
     timeVal.tv_sec = 5;
     timeVal.tv_usec = 0;
@@ -72,17 +72,18 @@ static THD_FUNCTION(udpServer, arg)
         }
         else
         {
+            /* tell messaging thread, we have event for it */
+            chEvtBroadcastFlags(&messagingEvent, MESSAGING_EVENT_SEND | (MIN(res, 0x3FF)));
+
             messagingReplyInfo_t replyInfo = {0};
             replyInfo.channel = MESSAGING_UDP;
             replyInfo.ipAddress = sl_Htonl(addr.sin_addr.s_addr);;
             replyInfo.port = config->port;
 
-            chBSemWait(&messagingReceiceSem);
             memcpy(messagingReceiveBuffer, rxBuf, res);
             messagingReplyInfo = &replyInfo;
+            /* messaging thread will wait for semaphore signal after it got an event */
             chBSemSignal(&messagingReceiceSem);
-
-            chEvtBroadcastFlags(&messagingEvent, MESSAGING_EVENT_SEND | (MIN(res, 0x3FF)));
         }
     }
 

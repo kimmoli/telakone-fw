@@ -33,6 +33,7 @@ static THD_FUNCTION(messagingThread, arg)
 
     while (true)
     {
+        /* Wait for event first */
         chEvtWaitAny(EVENT_MASK(0));
 
         flags = chEvtGetAndClearFlags(&elMessaging);
@@ -41,10 +42,10 @@ static THD_FUNCTION(messagingThread, arg)
         {
             rxLen = flags & 0x3FF;
 
+            /* We got an event, then wait for semaphore signal*/
             chBSemWait(&messagingReceiceSem);
             memcpy(buffer, messagingReceiveBuffer, rxLen);
             memcpy(replyInfo, messagingReplyInfo, sizeof(messagingReplyInfo_t));
-            chBSemSignal(&messagingReceiceSem);
 
             if (rxLen == sizeof(tk_message_t))
             {
