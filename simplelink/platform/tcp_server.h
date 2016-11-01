@@ -10,6 +10,7 @@ typedef struct
 
 extern uint32_t tcpClientAddr;
 
+extern int setReceiveTimeout(int sock, int ms);
 extern int sendToSocket(void *data, int16_t Len);
 extern int receiveFromSocket(void *buff, int16_t Maxlen, int16_t *rxLen);
 

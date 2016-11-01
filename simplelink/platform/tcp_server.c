@@ -18,20 +18,19 @@ TcpServerConfig tcpserverconf =
 static int16_t sockId = 0;
 static int16_t connSockId = 0;
 
-static int setReceiveTimeout(int ms);
 static int createSocket(uint16_t port);
 static int waitForConnection(void);
 
 uint32_t tcpClientAddr;
 
-int setReceiveTimeout(int ms)
+int setReceiveTimeout(int sock, int ms)
 {
     int res;
     struct SlTimeval_t timeVal;
 
     timeVal.tv_sec = ms / 1000;
     timeVal.tv_usec = (ms % 1000) * 1000;
-    res = sl_SetSockOpt(sockId, SL_SOL_SOCKET, SL_SO_RCVTIMEO, (uint8_t *)&timeVal, sizeof(timeVal));
+    res = sl_SetSockOpt(sock, SL_SOL_SOCKET, SL_SO_RCVTIMEO, (uint8_t *)&timeVal, sizeof(timeVal));
 
     return res;
 }
@@ -44,7 +43,7 @@ int createSocket(uint16_t port)
     sockId = sl_Socket(SL_AF_INET, SL_SOCK_STREAM, SL_IPPROTO_TCP);
     if (sockId > 0)
     {
-        setReceiveTimeout(1000);
+        setReceiveTimeout(sockId, 1000);
 
         sServerAddress.sin_family = SL_AF_INET;
         sServerAddress.sin_addr.s_addr = SL_INADDR_ANY;
