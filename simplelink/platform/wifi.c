@@ -220,7 +220,7 @@ msg_t startWifi(void)
         sl_NetAppMDNSUnRegisterService(0, 0);
 
         /* block access to ROM HTTP files (simplelink config pages) */
-        unsigned char val = 0;
+        val = 0;
         sl_NetAppSet(SL_NET_APP_HTTP_SERVER_ID, NETAPP_SET_GET_HTTP_OPT_ROM_PAGES_ACCESS, 1, &val);
 
         /* Remove filters */
@@ -409,8 +409,10 @@ void SimpleLinkWlanEventHandler(SlWlanEvent_t *pWlanEvent)
                 char connectionSSID[MAXIMAL_SSID_LENGTH + 1];
                 char connectionBSSID[SL_BSSID_LENGTH];
 
-                memcpy(connectionSSID, pWlanEvent->EventData.STAandP2PModeWlanConnected.ssid_name,
-                       pWlanEvent->EventData.STAandP2PModeWlanConnected.ssid_len);
+                memset(connectionSSID, 0, MAXIMAL_SSID_LENGTH + 1);
+                memset(connectionBSSID, 0, SL_BSSID_LENGTH);
+
+                memcpy(connectionSSID, pWlanEvent->EventData.STAandP2PModeWlanConnected.ssid_name, pWlanEvent->EventData.STAandP2PModeWlanConnected.ssid_len);
                 memcpy(connectionBSSID, pWlanEvent->EventData.STAandP2PModeWlanConnected.bssid, SL_BSSID_LENGTH);
 
                 PRINT("[WLAN EVENT] Station connected to the AP: %s, BSSID: %x:%x:%x:%x:%x:%x\n\r",
