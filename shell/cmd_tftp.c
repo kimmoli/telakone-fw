@@ -18,8 +18,10 @@ void cmd_tftp(BaseSequentialStream *chp, int argc, char *argv[])
     }
     else
     {
-        chprintf(chp, "TODO\n\r");
+        if (argc == 2)
+        {
+            tftpc(0, argv[0], argv[1]);
+        }
     }
-
 }
 
