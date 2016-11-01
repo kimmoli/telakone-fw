@@ -20,7 +20,9 @@ SIMPLELINKSRC := ${SIMPLELINK}/source/device.c \
                  ${SIMPLELINK}/platform/tcp_server.c \
                  ${SIMPLELINK}/platform/wifi_spawn.c \
                  ${SIMPLELINK}/platform/tcp_stream.c \
-                 ${SIMPLELINK}/platform/wifi_gettime.c
+                 ${SIMPLELINK}/platform/wifi_gettime.c \
+                 ${SIMPLELINK}/platform/filesystem.c \
+                 ${SIMPLELINK}/platform/tftp.c
 
 SIMPLELINKINC := ${SIMPLELINK}/include \
                  ${SIMPLELINK}/source \

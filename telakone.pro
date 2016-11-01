@@ -57,7 +57,10 @@ SOURCES += \
     simplelink/platform/tcp_stream.c \
     simplelink/platform/wifi_gettime.c \
     shell/cmd_date.c \
-    helpers.c
+    helpers.c \
+    simplelink/platform/filesystem.c \
+    simplelink/platform/tftp.c \
+    shell/cmd_tftp.c
 
 HEADERS += \
     adc.h \
@@ -116,7 +119,9 @@ HEADERS += \
     threads/threadkiller.h \
     simplelink/platform/wifi_spawn.h \
     simplelink/platform/tcp_stream.h \
-    simplelink/platform/wifi_gettime.h
+    simplelink/platform/wifi_gettime.h \
+    simplelink/platform/filesystem.h \
+    simplelink/platform/tftp.h
 
 OTHER_FILES += \
     Makefile \

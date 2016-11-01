@@ -22,6 +22,7 @@ const ShellCommand commands[] =
     { "dmw",     cmd_dmw },
     { "date",    cmd_date },
     { "reboot",  cmd_reboot },
+    { "tftp",    cmd_tftp },
     {NULL, NULL}
 };
 
