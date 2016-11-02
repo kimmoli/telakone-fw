@@ -20,6 +20,10 @@ extern void cmd_dmb(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_date(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_reboot(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_tftp(BaseSequentialStream *chp, int argc, char *argv[]);
+extern void cmd_fileinfo(BaseSequentialStream *chp, int argc, char *argv[]);
+extern void cmd_filedelete(BaseSequentialStream *chp, int argc, char *argv[]);
+extern void cmd_fileread(BaseSequentialStream *chp, int argc, char *argv[]);
+extern void cmd_filewrite(BaseSequentialStream *chp, int argc, char *argv[]);
 
 extern const ShellCommand commands[];
 extern const ShellConfig shell_cfg_uart;

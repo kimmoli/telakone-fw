@@ -109,11 +109,11 @@ void slFlashProgram(void)
 
     chThdSleepMilliseconds(50);
 
-    signed long retVal;
+    signed long res;
 
-    retVal = sl_Start(0, 0, 0);
+    res = sl_Start(0, 0, 0);
 
-    if (retVal < 0)
+    if (res < 0)
     {
         slFlashProgramAbort("Failed.\n\r");
         return;
@@ -128,10 +128,10 @@ void slFlashProgram(void)
     chThdSleepMilliseconds(50);
 
     /* create/open the servicepack file for 128KB with rollback, secured and public write */
-    retVal = sl_FsOpen((const unsigned char *)"/sys/servicepack.ucf", FS_MODE_OPEN_CREATE(131072,
+    res = sl_FsOpen((const unsigned char *)"/sys/servicepack.ucf", FS_MODE_OPEN_CREATE(131072,
         _FS_FILE_OPEN_FLAG_SECURE|_FS_FILE_OPEN_FLAG_COMMIT|_FS_FILE_PUBLIC_WRITE), &Token, &fileHandle);
 
-    if(retVal < 0)
+    if(res < 0)
     {
         slFlashProgramAbort("Error opening file. Aborting...\n\r");
         return;
@@ -139,13 +139,13 @@ void slFlashProgram(void)
     /* program the service pack */
     uint32_t remainingLen = sizeof(servicePackImage);
     uint32_t movingOffset = 0;
-    uint32_t chunkLen = (_u32)MIN(1024 /*CHUNK_LEN*/, remainingLen);
+    uint32_t chunkLen = (uint32_t) MIN(1024, remainingLen);
 
     /* Flashing is done in 1024 bytes chunks because of a bug resolved in later patches */
     do
     {
-        retVal = sl_FsWrite(fileHandle, movingOffset, (_u8 *)&servicePackImage[movingOffset], chunkLen);
-        if (retVal < 0)
+        res = sl_FsWrite(fileHandle, movingOffset, (uint8_t *)&servicePackImage[movingOffset], chunkLen);
+        if (res < 0)
         {
             slFlashProgramAbort("Error programming file. Aborting...\n\r");
             return;
@@ -153,7 +153,7 @@ void slFlashProgram(void)
 
         remainingLen -= chunkLen;
         movingOffset += chunkLen;
-        chunkLen = (_u32)MIN(1024 /*CHUNK_LEN*/, remainingLen);
+        chunkLen = (uint32_t) MIN(1024, remainingLen);
 
         PRINT(".");
         chThdSleepMilliseconds(50);
@@ -164,8 +164,8 @@ void slFlashProgram(void)
     chThdSleepMilliseconds(50);
 
     /* close the servicepack file */
-    retVal = sl_FsClose(fileHandle, 0, (_u8 *)servicePackImageSig, sizeof(servicePackImageSig));
-    if (retVal < 0)
+    res = sl_FsClose(fileHandle, 0, (uint8_t *)servicePackImageSig, sizeof(servicePackImageSig));
+    if (res < 0)
     {
         slFlashProgramAbort("Error closing file. Aborting...\n\r");
         return;

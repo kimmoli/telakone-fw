@@ -17,6 +17,8 @@ const I2CConfig i2cconfig =
 static void updateExtTemperature(void);
 static void updateAcceleration(void);
 
+static int i2cEnabled;
+
 static THD_FUNCTION(i2cThread, arg)
 {
     (void)arg;
@@ -29,13 +31,18 @@ static THD_FUNCTION(i2cThread, arg)
     {
         chEvtWaitOne(EVENT_MASK(9));
 
-        updateAcceleration();
-        updateExtTemperature();
+        if (i2cEnabled)
+        {
+            updateAcceleration();
+            updateExtTemperature();
+        }
 
         i2cValues->i2cCount++;
 
         chBSemSignal(&i2cReadyReadSem);
     }
+
+    chThdExit(MSG_OK);
 }
 
 
@@ -85,11 +92,15 @@ void updateAcceleration(void)
 
 void i2cTKInit(void)
 {
+    i2cEnabled = false;
+
     i2cStart(&I2CD1, &i2cconfig);
     chBSemObjectInit(&i2cReadyReadSem, true);
 
     i2cValues = chHeapAlloc(NULL, sizeof(I2cValues_t));
     i2cValues->i2cCount = 0;
+
+    return;
 
     uint8_t txBuf[2];
 
@@ -97,6 +108,7 @@ void i2cTKInit(void)
     txBuf[0] = IIS328_CTRL1REG;
     txBuf[1] = IIS328_CTRL1REG_VALUE;
     i2cMasterTransmit(&I2CD1, TK_I2C_IIS328_ADDR, txBuf, 2, NULL, 0);
+
     txBuf[0] = IIS328_CTRL4REG;
     txBuf[1] = IIS328_CTRL4REG_VALUE;
     i2cMasterTransmit(&I2CD1, TK_I2C_IIS328_ADDR, txBuf, 2, NULL, 0);

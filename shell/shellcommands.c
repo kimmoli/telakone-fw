@@ -23,6 +23,10 @@ const ShellCommand commands[] =
     { "date",    cmd_date },
     { "reboot",  cmd_reboot },
     { "tftp",    cmd_tftp },
+    { "finfo",   cmd_fileinfo },
+    { "fdel",    cmd_filedelete },
+    { "fread",   cmd_fileread },
+    { "fwrite",  cmd_filewrite },
     {NULL, NULL}
 };
 

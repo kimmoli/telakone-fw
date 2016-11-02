@@ -60,7 +60,8 @@ SOURCES += \
     helpers.c \
     simplelink/platform/filesystem.c \
     simplelink/platform/tftp.c \
-    shell/cmd_tftp.c
+    shell/cmd_tftp.c \
+    shell/cmd_filesystem.c
 
 HEADERS += \
     adc.h \
