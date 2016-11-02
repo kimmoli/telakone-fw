@@ -17,8 +17,6 @@
 
 #define ERROR_FILE_NOT_FOUND 1
 
-uint32_t tftp_received_len = 0;
-
 struct tftp_hdr
 {
     uint16_t opcode;
@@ -31,14 +29,23 @@ struct tftp_hdr
     char data[512];
 };
 
+static uint8_t* tftpExitFail(uint8_t *rebuf, int sockId)
+{
+    if (rebuf)
+        chHeapFree(rebuf);
 
-void tftpc(uint32_t hostIP, char *hostName, char *filename)
+    sl_Close(sockId);
+    return NULL;
+}
+
+uint8_t* tftpc(uint32_t hostIP, char *hostName, char *filename, uint32_t *rxLen)
 {
     int res, len, retrycount, blocksize, expectblock, progress;
-    static char buf[1500];
+    static uint8_t buf[1500];
     struct tftp_hdr *t;
     uint32_t received;
-    // uint32_t destbase;
+    uint8_t* rebuf = NULL;
+    uint32_t rebufSize = 10000;
 
     int sockId;
     uint32_t hostIpAddr = 0;
@@ -53,7 +60,7 @@ void tftpc(uint32_t hostIP, char *hostName, char *filename)
         if (res)
         {
             PRINT("Failed to resolve host name %s. Error %d.\n\r", hostName, res);
-            return;
+            return NULL;
         }
     }
     else
@@ -86,7 +93,7 @@ void tftpc(uint32_t hostIP, char *hostName, char *filename)
     if (res < 0)
     {
         DEBUG("Failed bind\n\r");
-        goto tftp_close_exit;
+        return tftpExitFail(rebuf, sockId);
     }
 
     t->opcode = sl_Htons(OPCODE_RRQ);
@@ -117,7 +124,7 @@ void tftpc(uint32_t hostIP, char *hostName, char *filename)
         if (res < 0)
         {
             DEBUG("Failed send RRQ %d %d %d\n\r", retrycount, res, len);
-            goto tftp_close_exit;
+            return tftpExitFail(rebuf, sockId);
         }
 
         setReceiveTimeout(sockId, 2000);
@@ -131,14 +138,14 @@ void tftpc(uint32_t hostIP, char *hostName, char *filename)
     if (retrycount == 0 && len < 0)
     {
         PRINT("No response from server %d\n\r", len);
-        goto tftp_close_exit;
+        return tftpExitFail(rebuf, sockId);
     }
 
     res = sl_Connect(sockId, (const SlSockAddr_t *)&addr, sizeof(SlSockAddr_t));
     if (res < 0)
     {
         DEBUG("Failed connect socket\n\r");
-        goto tftp_close_exit;
+        return tftpExitFail(rebuf, sockId);
     }
 
     expectblock = 1;
@@ -147,6 +154,8 @@ void tftpc(uint32_t hostIP, char *hostName, char *filename)
      * Receive DATA frames until the length of the data is less than the maximum
      * block size
      */
+
+    rebuf = chHeapAlloc(NULL, rebufSize);
 
     do  /* while (len == 512+4) */
     {
@@ -170,8 +179,17 @@ void tftpc(uint32_t hostIP, char *hostName, char *filename)
                         t->blockno = sl_Htons(expectblock);
                         sl_SendTo(sockId, buf, 4, 0, (SlSockAddr_t *)&inAddr, inaddrSize);
 
-                        /* TODO Actually store the received data somewhere */
-                        // memcpy((char *)destbase + (expectblock-1)*blocksize, t->data, len-4);
+                        if (received + len > rebufSize)
+                        {
+                            rebufSize += 10000;
+                            uint8_t *reabuf = chHeapAlloc(NULL, rebufSize);
+                            memcpy(reabuf, rebuf, received);
+                            rebuf = reabuf;
+                            chHeapFree(reabuf);
+                        }
+
+                        memcpy(rebuf + (expectblock-1)*blocksize, t->data, len-4);
+
                         expectblock++;
                         progress = 1;
                         received = received + len - 4;
@@ -182,7 +200,7 @@ void tftpc(uint32_t hostIP, char *hostName, char *filename)
                 if (t->opcode == sl_Htons(OPCODE_ERROR))
                 {
                     PRINT("Received error %d\n\r", sl_Htons(t->errorcode));
-                    goto tftp_close_exit;
+                    return tftpExitFail(rebuf, sockId);
                 }
             }
 
@@ -201,7 +219,7 @@ void tftpc(uint32_t hostIP, char *hostName, char *filename)
         if (retrycount == 0 && progress == 0)
         {
             PRINT("No response from server\n\r");
-            goto tftp_no_response;
+            return tftpExitFail(rebuf, sockId);
         }
 
         PRINT(".");
@@ -209,12 +227,11 @@ void tftpc(uint32_t hostIP, char *hostName, char *filename)
     }
     while (len == 512+4);
 
-tftp_no_response:
     PRINT("\n\rReceived %ld bytes.\n\r", received);
-    tftp_received_len = received;
 
-tftp_close_exit:
     sl_Close(sockId);
 
-    return;
+    *rxLen = received;
+
+    return rebuf;
 }
