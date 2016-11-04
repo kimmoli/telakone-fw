@@ -61,7 +61,8 @@ SOURCES += \
     simplelink/platform/filesystem.c \
     simplelink/platform/tftp.c \
     shell/cmd_tftp.c \
-    shell/cmd_filesystem.c
+    shell/cmd_filesystem.c \
+    analog_data.c
 
 HEADERS += \
     adc.h \
@@ -122,7 +123,8 @@ HEADERS += \
     simplelink/platform/tcp_stream.h \
     simplelink/platform/wifi_gettime.h \
     simplelink/platform/filesystem.h \
-    simplelink/platform/tftp.h
+    simplelink/platform/tftp.h \
+    analog_data.h
 
 OTHER_FILES += \
     Makefile \

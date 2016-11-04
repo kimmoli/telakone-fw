@@ -3,6 +3,7 @@
 #include "adc.h"
 #include "i2c.h"
 #include "simplelink.h"
+#include "analog_data.h"
 
 UdpStatusSendConfig udpssconf =
 {
@@ -74,31 +75,9 @@ static THD_FUNCTION(udpStatusSendThread, arg)
         uint8_t c[sizeof(float)];
     } fu;
 
-    typedef struct
-    {
-        int type;
-        void *value;
-    } ValueData;
+    initAnalogValueData();
 
-    const ValueData values[] = /* 1 = long, 2 = float */
-    { { 2, (void *) &adcValues->adcCount },
-      { 2, (void *) &adcValues->tempCount },
-      { 1, (void *) &adcValues->tempSensor },
-      { 1, (void *) &adcValues->supplyVoltage },
-      { 1, (void *) &adcValues->auxmotorCurrent },
-      { 2, (void *) &adcValues->joystickLeftRight },
-      { 2, (void *) &adcValues->joystickBackForward },
-      { 2, (void *) &i2cValues->i2cCount },
-      { 1, (void *) &i2cValues->extTemp },
-      { 1, (void *) &i2cValues->X },
-      { 1, (void *) &i2cValues->Y },
-      { 1, (void *) &i2cValues->Z },
-      { 1, (void *) &i2cValues->Pitch },
-      { 1, (void *) &i2cValues->Roll },
-      { 0, NULL }
-    };
-
-    buffer = chHeapAlloc(NULL, sizeof(values)/2-sizeof(int));
+    buffer = chHeapAlloc(NULL, ANALOG_VALUE_COUNT * sizeof(fu));
 
     while (!chThdShouldTerminateX())
     {
@@ -109,20 +88,20 @@ static THD_FUNCTION(udpStatusSendThread, arg)
 
             buf = buffer;
 
-            while (values[i].type != 0)
+            for (i=0 ; i<ANALOG_VALUE_COUNT ; i++)
             {
-                if (values[i].type == 1)
-                    fu.f = *(float *)values[i].value;
-                else if (values[i].type == 2)
-                    fu.i = *(long *)values[i].value;
+                if (analogValues[i].type == ANALOG_VALUE_FLOAT)
+                    fu.f = *(float *)analogValues[i].value;
+                else if (analogValues[i].type == ANALOG_VALUE_INT)
+                    fu.i = *(long *)analogValues[i].value;
+                else
+                    fu.i = 0;
 
                 memcpy(buf, fu.c, sizeof(fu));
                 buf += sizeof(fu);
-
-                i++;
             }
 
-            udpSend(addr, NULL, config->port, buffer, sizeof(values)/2-sizeof(int));
+            udpSend(addr, NULL, config->port, buffer, ANALOG_VALUE_COUNT * sizeof(fu));
             cyc = 10;
         }
     }

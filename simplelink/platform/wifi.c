@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "hal.h"
 #include "wifi.h"
 #include "wifi_scan.h"
@@ -7,6 +8,9 @@
 #include "wifi_ping.h"
 #include "wifi_spawn.h"
 #include "wifi_gettime.h"
+#include "adc.h"
+#include "i2c.h"
+#include "analog_data.h"
 #include "helpers.h"
 
 #ifdef TK_CC3100_PROGRAMMING
@@ -306,14 +310,42 @@ void slWifiDisconnect(void)
 void SimpleLinkHttpServerCallback(SlHttpServerEvent_t *pHttpEvent,
                                   SlHttpServerResponse_t *pHttpResponse)
 {
-    (void) pHttpEvent;
-    (void) pHttpResponse;
+    int i;
+    char tName[MAX_TOKEN_NAME_LEN] = { 0 };
 
-    /*
-     * This application doesn't work with HTTP server - Hence these
-     * events are not handled here
-     */
-    PRINT("[HTTP EVENT] Unexpected event \n\r");
+    snprintf(tName, MAX_TOKEN_NAME_LEN, "%s", pHttpEvent->EventData.httpTokenName.data);
+    tName[pHttpEvent->EventData.httpTokenName.len] = '\0';
+
+    initAnalogValueData();
+
+    switch (pHttpEvent->Event)
+    {
+    case SL_NETAPP_HTTPGETTOKENVALUE_EVENT:
+    {
+        for (i=0 ; i<ANALOG_VALUE_COUNT ; i++)
+        {
+            if (strncmp(analogValues[i].token, tName, pHttpEvent->EventData.httpTokenName.len) == 0)
+            {
+                if (analogValues[i].type == ANALOG_VALUE_INT)
+                    snprintf((char *)pHttpResponse->ResponseData.token_value.data, MAX_TOKEN_VALUE_LEN, "%d%s", *(int*)analogValues[i].value, analogValues[i].unit);
+                else if (analogValues[i].type == ANALOG_VALUE_FLOAT)
+                    snprintf((char *)pHttpResponse->ResponseData.token_value.data, MAX_TOKEN_VALUE_LEN, "%.2f%s", *(float*)analogValues[i].value, analogValues[i].unit);
+                else
+                    snprintf((char *)pHttpResponse->ResponseData.token_value.data, MAX_TOKEN_VALUE_LEN, "UNKNOWN" );
+                pHttpResponse->ResponseData.token_value.len = strlen((char *)pHttpResponse->ResponseData.token_value.data);
+                break;
+            }
+        }
+    }
+        break;
+
+    case SL_NETAPP_HTTPPOSTTOKENVALUE_EVENT:
+        DEBUG("POST %s\n\r", tName);
+        break;
+
+    default:
+        break;
+    }
 }
 
 void SimpleLinkNetAppEventHandler(SlNetAppEvent_t *pNetAppEvent)
