@@ -5,9 +5,6 @@
 #define DRIVER_RIGHT         1
 #define DRIVEEVENT_SET       0x8000
 
-extern float batteryVoltage[2];
-extern float motorControlVoltage[2];
-
 typedef struct
 {
     int channel;
