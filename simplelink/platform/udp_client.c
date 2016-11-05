@@ -1,5 +1,6 @@
 #include "udp_client.h"
 #include "hal.h"
+#include "hal_crc.h"
 #include "adc.h"
 #include "i2c.h"
 #include "simplelink.h"
@@ -77,7 +78,7 @@ static THD_FUNCTION(udpStatusSendThread, arg)
 
     initAnalogValueData();
 
-    buffer = chHeapAlloc(NULL, ANALOG_VALUE_COUNT * sizeof(fu));
+    buffer = chHeapAlloc(NULL, (2 + ANALOG_VALUE_COUNT) * sizeof(fu));
 
     while (!chThdShouldTerminateX())
     {
@@ -87,6 +88,9 @@ static THD_FUNCTION(udpStatusSendThread, arg)
             int i = 0;
 
             buf = buffer;
+
+            memcpy(buf, "STAT", sizeof(fu));
+            buf += sizeof(fu);
 
             for (i=0 ; i<ANALOG_VALUE_COUNT ; i++)
             {
@@ -101,7 +105,11 @@ static THD_FUNCTION(udpStatusSendThread, arg)
                 buf += sizeof(fu);
             }
 
-            udpSend(addr, NULL, config->port, buffer, ANALOG_VALUE_COUNT * sizeof(fu));
+            crcReset(&CRCD1);
+            fu.i = crcCalc(&CRCD1, (1 + ANALOG_VALUE_COUNT) * sizeof(fu), buffer);
+            memcpy(buf, fu.c, sizeof(fu));
+
+            udpSend(addr, NULL, config->port, buffer, (2 + ANALOG_VALUE_COUNT) * sizeof(fu));
             cyc = 10;
         }
     }

@@ -55,6 +55,7 @@ int main(void)
     PRINT(" - Loaded %d variables\n\r", envLoader());
 
     rtcSTM32SetPeriodicWakeup(&RTCD1, NULL);
+    crcStart(&CRCD1, NULL);
 
     i2cTKInit();
     spiTKInit();

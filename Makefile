@@ -164,6 +164,7 @@ ASMXSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 
 INCDIR = ./shell ./threads \
          $(CHIBIOS)/os/license \
+         $(CHIBIOS_CONTRIB)/os/various \
          $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) \
          $(STREAMSINC) $(SHELLINC) \
