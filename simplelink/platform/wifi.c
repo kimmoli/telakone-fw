@@ -322,6 +322,8 @@ void SimpleLinkHttpServerCallback(SlHttpServerEvent_t *pHttpEvent,
     {
     case SL_NETAPP_HTTPGETTOKENVALUE_EVENT:
     {
+        snprintf((char *)pHttpResponse->ResponseData.token_value.data, MAX_TOKEN_VALUE_LEN, "%s", tName );
+
         for (i=0 ; i<ANALOG_VALUE_COUNT ; i++)
         {
             if (strncmp(analogValues[i].token, tName, pHttpEvent->EventData.httpTokenName.len) == 0)
@@ -330,12 +332,12 @@ void SimpleLinkHttpServerCallback(SlHttpServerEvent_t *pHttpEvent,
                     snprintf((char *)pHttpResponse->ResponseData.token_value.data, MAX_TOKEN_VALUE_LEN, "%d%s", *(int*)analogValues[i].value, analogValues[i].unit);
                 else if (analogValues[i].type == ANALOG_VALUE_FLOAT)
                     snprintf((char *)pHttpResponse->ResponseData.token_value.data, MAX_TOKEN_VALUE_LEN, "%.2f%s", *(float*)analogValues[i].value, analogValues[i].unit);
-                else
-                    snprintf((char *)pHttpResponse->ResponseData.token_value.data, MAX_TOKEN_VALUE_LEN, "UNKNOWN" );
-                pHttpResponse->ResponseData.token_value.len = strlen((char *)pHttpResponse->ResponseData.token_value.data);
+
                 break;
             }
         }
+
+        pHttpResponse->ResponseData.token_value.len = strlen((char *)pHttpResponse->ResponseData.token_value.data);
     }
         break;
 
