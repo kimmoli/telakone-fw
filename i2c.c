@@ -14,8 +14,8 @@ const I2CConfig i2cconfig =
     /* fast dc */ STD_DUTY_CYCLE
 };
 
-static void updateExtTemperature(void);
-static void updateAcceleration(void);
+static msg_t updateExtTemperature(void);
+static msg_t updateAcceleration(void);
 static bool i2cBusReset(void);
 
 static int i2cEnabled;
@@ -24,6 +24,7 @@ static THD_FUNCTION(i2cThread, arg)
 {
     (void)arg;
 
+    msg_t ret = MSG_OK;
     event_listener_t elAdc;
 
     chEvtRegister(&adcConvStart, &elAdc, 9);
@@ -34,11 +35,12 @@ static THD_FUNCTION(i2cThread, arg)
 
         if (i2cEnabled)
         {
-            updateAcceleration();
-            updateExtTemperature();
+            ret |= updateAcceleration();
+            ret |= updateExtTemperature();
         }
 
-        i2cValues->i2cCount++;
+        if (ret == MSG_OK)
+            i2cValues->i2cCount++;
 
         chBSemSignal(&i2cReadyReadSem);
     }
@@ -47,7 +49,7 @@ static THD_FUNCTION(i2cThread, arg)
 }
 
 
-void updateExtTemperature(void)
+msg_t updateExtTemperature(void)
 {
     uint8_t rxBuf[2];
     msg_t ret;
@@ -63,9 +65,11 @@ void updateExtTemperature(void)
     {
         i2cValues->extTemp = (float)0.0;
     }
+
+    return ret;
 }
 
-void updateAcceleration(void)
+msg_t updateAcceleration(void)
 {
     uint8_t rxBuf[6];
     msg_t ret = MSG_OK;
@@ -89,6 +93,8 @@ void updateAcceleration(void)
         i2cValues->Pitch = (float)0.0;
         i2cValues->Roll = (float)0.0;
     }
+
+    return ret;
 }
 
 void i2cTKInit(void)

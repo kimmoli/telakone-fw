@@ -9,6 +9,8 @@
 #include "auxmotor.h"
 #include "helpers.h"
 #include "udp_client.h"
+#include "drive.h"
+#include "joystick.h"
 
 event_source_t messagingEvent;
 binary_semaphore_t messagingReceiceSem;
@@ -31,7 +33,7 @@ static THD_FUNCTION(messagingThread, arg)
 
     chEvtRegister(&messagingEvent, &elMessaging, 0);
 
-    while (true)
+    while (!chThdShouldTerminateX())
     {
         /* Wait for event first */
         chEvtWaitAny(EVENT_MASK(0));
@@ -88,6 +90,15 @@ static THD_FUNCTION(messagingThread, arg)
                             chEvtBroadcastFlags(&auxMotorEvent, message->event);
                             break;
 
+                        case DEST_JOYSTICK:
+                            chEvtBroadcastFlags(&joystickEvent, message->event);
+                            break;
+
+                        case DEST_DRIVE:
+                            chEvtBroadcastFlags(&driveEvent[0], DRIVEEVENT_SET | (uint16_t)((message->event >> 16) & 0xFFF));
+                            chEvtBroadcastFlags(&driveEvent[1], DRIVEEVENT_SET | (uint16_t)(message->event & 0xFFF));
+                            break;
+
                         default:
                             break;
                     }
@@ -98,6 +109,7 @@ static THD_FUNCTION(messagingThread, arg)
 
     chHeapFree(replyInfo);
     chHeapFree(buffer);
+    chThdExit(MSG_OK);
 }
 
 void startMessagingThread(void)

@@ -64,6 +64,8 @@ int main(void)
     pwmTKInit();
     eicuTKInit();
     extiTKInit();
+    driveInit(DRIVE_LEFT);
+    driveInit(DRIVE_RIGHT);
     // auxlinkTKInit(0x01);
 
     wdogTKKick();
@@ -80,8 +82,8 @@ int main(void)
     startBlinkerThread(); /* Controls the external warning lamps on OUT1 */
     // startAuxDeviceThread(); /* Auxiliary device handling */
     startAuxmotorThread(); /* Auxiliary motor control */
-    startDriveThread(DRIVER_LEFT); /* Left motor driver */
-    startDriveThread(DRIVER_RIGHT); /* Right motor driver */
+    startDriveThread(DRIVE_LEFT); /* Left motor drive */
+    startDriveThread(DRIVE_RIGHT); /* Right motor drive */
     startJoystickThread(); /* Processes joystick input values and drive motors */
     startWifiThread(); /* Wifi */
 

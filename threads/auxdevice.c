@@ -12,7 +12,7 @@ static THD_FUNCTION(auxDeviceThread, arg)
     int count = 0;
     int i;
 
-    while (true)
+    while (!chThdShouldTerminateX())
     {
         msg_t charbuf;
         do
@@ -46,6 +46,8 @@ static THD_FUNCTION(auxDeviceThread, arg)
 
         chThdSleepMilliseconds(50);
     }
+
+    chThdExit(MSG_OK);
 }
 
 void startAuxDeviceThread(void)

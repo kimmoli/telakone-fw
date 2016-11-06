@@ -15,6 +15,8 @@
 #define DEST_PWM      0x0003
 #define DEST_WIFI     0x0004
 #define DEST_AUXMOTOR 0x0005
+#define DEST_DRIVE    0x0006
+#define DEST_JOYSTICK 0x0007
 
 #define MESSAGING_TCP     0x01
 #define MESSAGING_UDP     0x02

@@ -53,7 +53,7 @@ static THD_FUNCTION(blinkerThread, arg)
 
     chEvtRegister(&blinkEvent, &elBlink, 0);
 
-    while (true)
+    while (!chThdShouldTerminateX())
     {
         chEvtWaitAny(EVENT_MASK(0));
 
@@ -80,6 +80,8 @@ static THD_FUNCTION(blinkerThread, arg)
             chVTSet(&blink_vt, MS2ST(1), blinkvtcb, (void *) blinkPatternBreathe);
         }
     }
+
+    chThdExit(MSG_OK);
 }
 
 void blinkvtcb(void *arg)

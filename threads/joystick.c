@@ -7,9 +7,13 @@
 #include "spi.h"
 #include "drive.h"
 
+event_source_t joystickEvent;
+
 static THD_FUNCTION(joystickThread, arg)
 {
     (void)arg;
+
+    event_listener_t elJoystick;
 
     int leftMotor = 0;
     int rightMotor = 0;
@@ -17,10 +21,28 @@ static THD_FUNCTION(joystickThread, arg)
     int prevRightMotor = 0;
     int tempJoyLR = 0;
     int tempJoyBF = 0;
+    bool enabled = true;
+
+    chEvtRegister(&joystickEvent, &elJoystick, 0);
 
     while (!chThdShouldTerminateX())
     {
         chBSemWait(&adcReadyReadSem);
+
+        if (chEvtWaitAnyTimeout(EVENT_MASK(0), TIME_IMMEDIATE) != 0)
+        {
+            eventflags_t flags;
+            flags = chEvtGetAndClearFlags(&elJoystick);
+
+            if (flags & JOYSTICKEVENT_ENABLE)
+                enabled = true;
+
+            else if (flags & JOYSTICKEVENT_DISABLE)
+                enabled = false;
+        }
+
+        if (!enabled)
+            continue;
 
         tempJoyLR = adcValues->joystickLeftRight;
         tempJoyBF = adcValues->joystickBackForward;
@@ -53,9 +75,12 @@ static THD_FUNCTION(joystickThread, arg)
         prevLeftMotor = leftMotor;
         prevRightMotor = rightMotor;
     }
+
+    chThdExit(MSG_OK);
 }
 
 void startJoystickThread(void)
 {
+    chEvtObjectInit(&joystickEvent);
     chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), "joystick", NORMALPRIO+1, joystickThread, NULL);
 }

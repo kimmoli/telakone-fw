@@ -36,10 +36,10 @@ void initAnalogValueData(void)
     addValue(&analogValues[11], ANALOG_VALUE_FLOAT, "__SL_G_UAZ", " g", (void *) &i2cValues->Z );
     addValue(&analogValues[12], ANALOG_VALUE_FLOAT, "__SL_G_UAP", "",   (void *) &i2cValues->Pitch );
     addValue(&analogValues[13], ANALOG_VALUE_FLOAT, "__SL_G_UAR", "",   (void *) &i2cValues->Roll );
-    addValue(&analogValues[14], ANALOG_VALUE_FLOAT, "__SL_G_UBL", " V", (void *) &driveStatus[DRIVER_LEFT]->batteryVoltage );
-    addValue(&analogValues[15], ANALOG_VALUE_FLOAT, "__SL_G_UML", " V", (void *) &driveStatus[DRIVER_LEFT]->controlVoltage );
-    addValue(&analogValues[16], ANALOG_VALUE_FLOAT, "__SL_G_UBR", " V", (void *) &driveStatus[DRIVER_RIGHT]->batteryVoltage );
-    addValue(&analogValues[17], ANALOG_VALUE_FLOAT, "__SL_G_UMR", " V", (void *) &driveStatus[DRIVER_RIGHT]->controlVoltage );
+    addValue(&analogValues[14], ANALOG_VALUE_FLOAT, "__SL_G_UBL", " V", (void *) &driveStatus[DRIVE_LEFT]->batteryVoltage );
+    addValue(&analogValues[15], ANALOG_VALUE_FLOAT, "__SL_G_UML", " V", (void *) &driveStatus[DRIVE_LEFT]->controlVoltage );
+    addValue(&analogValues[16], ANALOG_VALUE_FLOAT, "__SL_G_UBR", " V", (void *) &driveStatus[DRIVE_RIGHT]->batteryVoltage );
+    addValue(&analogValues[17], ANALOG_VALUE_FLOAT, "__SL_G_UMR", " V", (void *) &driveStatus[DRIVE_RIGHT]->controlVoltage );
 
     dataInitialized = 1;
 }

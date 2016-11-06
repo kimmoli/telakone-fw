@@ -45,11 +45,11 @@ void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
         chprintf(chp, "Aux motor current: %.2f A   \n\r", adcValues->auxmotorCurrent);
         chprintf(chp, "Joystick           LR %d BF %d    \n\r", adcValues->joystickLeftRight,
                                                                 adcValues->joystickBackForward);
-        chprintf(chp, "Motor drive:       L %.2f V R %.2f V    \n\r", driveStatus[DRIVER_LEFT]->controlVoltage,
-                                                              driveStatus[DRIVER_RIGHT]->controlVoltage);
+        chprintf(chp, "Motor drive:       L %.2f V R %.2f V    \n\r", driveStatus[DRIVE_LEFT]->controlVoltage,
+                                                              driveStatus[DRIVE_RIGHT]->controlVoltage);
         chprintf(chp, "Speed:             L %d R %d    \n\r", leftSpeed, rightSpeed );
-        chprintf(chp, "Battery voltages:  L %.2f V R %.2f V    \n\r", driveStatus[DRIVER_LEFT]->batteryVoltage,
-                                                                      driveStatus[DRIVER_RIGHT]->batteryVoltage);
+        chprintf(chp, "Battery voltages:  L %.2f V R %.2f V    \n\r", driveStatus[DRIVE_LEFT]->batteryVoltage,
+                                                                      driveStatus[DRIVE_RIGHT]->batteryVoltage);
         chprintf(chp, "Acceleration:      X %.2f g Y %.2f g Z %.2f g   \n\r", i2cValues->X,
                                                                               i2cValues->Y,
                                                                               i2cValues->Z);

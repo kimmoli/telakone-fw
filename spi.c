@@ -28,9 +28,9 @@ float driveAfeHandle(int drive, float value)
     uint8_t rxBuf[2];
     uint8_t txBuf[2];
 
-    if (drive == DRIVER_LEFT)
+    if (drive == DRIVE_LEFT)
         spipc = &SPID2;
-    else if (drive == DRIVER_RIGHT)
+    else if (drive == DRIVE_RIGHT)
         spipc = &SPID3;
     else return (float)0.0;
 

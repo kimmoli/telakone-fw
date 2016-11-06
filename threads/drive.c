@@ -11,8 +11,8 @@ static void setDirection(ioline_t line, bool reverse);
 
 static DriveConfig driveconf[] =
 {
-    { DRIVER_LEFT, LINE_D1REVERSE },
-    { DRIVER_RIGHT, LINE_D2REVERSE }
+    { DRIVE_LEFT, LINE_D1REVERSE },
+    { DRIVE_RIGHT, LINE_D2REVERSE }
 };
 
 static THD_FUNCTION(driveThread, arg)
@@ -24,7 +24,7 @@ static THD_FUNCTION(driveThread, arg)
 
     chEvtRegister(&driveEvent[dc->channel], &elDrive, 0);
 
-    while (true)
+    while (!chThdShouldTerminateX())
     {
         chEvtWaitAny(EVENT_MASK(0));
 
@@ -55,9 +55,9 @@ void setDirection(ioline_t line, bool reverse)
         palClearLine(line);
 }
 
-void startDriveThread(int channel)
+void driveInit(int channel)
 {
-    if (channel != DRIVER_LEFT && channel != DRIVER_RIGHT)
+    if (channel != DRIVE_LEFT && channel != DRIVE_RIGHT)
     {
         PRINT("[DRIVE] Invalid channel\n\r", channel);
         return;
@@ -69,6 +69,10 @@ void startDriveThread(int channel)
     driveStatus[channel]->controlVoltage = 0.0;
 
     chEvtObjectInit(&driveEvent[channel]);
+}
+
+void startDriveThread(int channel)
+{
     chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), (channel ? "drive1" : "drive0"), NORMALPRIO+1, driveThread, (void*) &driveconf[channel]);
 }
 

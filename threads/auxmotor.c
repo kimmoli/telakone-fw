@@ -23,7 +23,7 @@ static THD_FUNCTION(auxmotorThread, arg)
 
     chEvtRegister(&auxMotorEvent, &elAuxMotor, 0);
 
-    while (true)
+    while (!chThdShouldTerminateX())
     {
         chEvtWaitAny(EVENT_MASK(0));
 
@@ -34,6 +34,8 @@ static THD_FUNCTION(auxmotorThread, arg)
         else if (flags & AUXMOTOR_EVENT_SET)
             auxmotorControl((int8_t)(flags & 0xff));
     }
+
+    chThdExit(MSG_OK);
 }
 
 void startAuxmotorThread(void)

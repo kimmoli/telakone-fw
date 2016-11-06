@@ -36,7 +36,7 @@ static THD_FUNCTION(wifiThread, arg)
 
     chEvtRegister(&wifiEvent, &elWifi, 0);
 
-    while (true)
+    while (!chThdShouldTerminateX())
     {
         chEvtWaitAny(EVENT_MASK(0));
 
@@ -145,6 +145,8 @@ static THD_FUNCTION(wifiThread, arg)
                   (wifistatus->connected ? "" : "not "));
         }
     }
+
+    chThdExit(MSG_OK);
 }
 
 /*
