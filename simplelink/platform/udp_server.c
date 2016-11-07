@@ -59,6 +59,7 @@ static THD_FUNCTION(udpServer, arg)
     while (!chThdShouldTerminateX())
     {
         res = sl_RecvFrom(sockID, rxBuf, MSGBUFSIZE, 0, (SlSockAddr_t *)&addr, (SlSocklen_t*)&addrSize );
+        chThdSleepMilliseconds(1);
 
         if (res == SL_EAGAIN)
             continue;
@@ -72,18 +73,15 @@ static THD_FUNCTION(udpServer, arg)
         }
         else
         {
-            /* tell messaging thread, we have event for it */
-            chEvtBroadcastFlags(&messagingEvent, MESSAGING_EVENT_SEND | (MIN(res, 0x3FF)));
+            messagingMessage_t m = {0};
+            m.messagingEvent = MESSAGING_EVENT_SEND;
+            m.source.channel = MESSAGING_UDP;
+            m.source.ipAddress = sl_Htonl(addr.sin_addr.s_addr);
+            m.source.port = config->port;
+            memcpy(&m.message, rxBuf, sizeof(tk_message_t));
 
-            messagingReplyInfo_t replyInfo = {0};
-            replyInfo.channel = MESSAGING_UDP;
-            replyInfo.ipAddress = sl_Htonl(addr.sin_addr.s_addr);;
-            replyInfo.port = config->port;
-
-            memcpy(messagingReceiveBuffer, rxBuf, res);
-            messagingReplyInfo = &replyInfo;
-            /* messaging thread will wait for semaphore signal after it got an event */
-            chBSemSignal(&messagingReceiceSem);
+            if (sendMessage(&m) != MSG_OK)
+                DEBUG("error\n\r");
         }
     }
 

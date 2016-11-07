@@ -3,12 +3,14 @@
 #include "wifi_spawn.h"
 #include "helpers.h"
 
-static wifiSpawn_t wifiSpawnerBuff[10];
+#define WIFISPAWNERBUFFERSIZE 10
+
+static mailbox_t wifiSpawnerMBox;
+static msg_t wifiSpawnerBuff[WIFISPAWNERBUFFERSIZE];
+static wifiSpawn_t wifiSpawns[WIFISPAWNERBUFFERSIZE];
+static MEMORYPOOL_DECL(wifiSpawnerMBoxPool, sizeof(wifiSpawns), NULL);
 
 static THD_WORKING_AREA(wifiSpawnerThreadWA, 4096);
-
-MEMORYPOOL_DECL(wifiSpawnerMpool, sizeof(wifiSpawn_t), NULL);
-MAILBOX_DECL(wifiSpawnerMbox, wifiSpawnerBuff, sizeof(wifiSpawnerBuff));
 
 static inline bool isInterrupt(void)
 {
@@ -23,29 +25,27 @@ static THD_FUNCTION(wifiSpawnerThread, arg)
 
     chRegSetThreadName("spawner");
 
-    uint16_t i;
-    for (i=0 ; i < sizeof(wifiSpawnerBuff); i++)
-    {
-        chPoolFree(&wifiSpawnerMpool, &wifiSpawnerBuff[i]);
-    }
-
     while (true)
     {
         /* Wait function pointer as message or something, and run it in this context */
-        res = chMBFetch(&wifiSpawnerMbox, &wsst, TIME_INFINITE);
+        res = chMBFetch(&wifiSpawnerMBox, &wsst, TIME_INFINITE);
         if (res == MSG_OK)
         {
             wifiSpawn_t *wp = (wifiSpawn_t *)wsst;
 
             wp->pEntry(wp->pValue, wp->flags);
 
-            chPoolFree(&wifiSpawnerMpool, (void*) wsst);
+            chPoolFree(&wifiSpawnerMBoxPool, (void*) wsst);
         }
     }
 }
 
 void startWifiSpawnerThread(void)
 {
+    chPoolObjectInit(&wifiSpawnerMBoxPool, sizeof(wifiSpawn_t), NULL);
+    chPoolLoadArray(&wifiSpawnerMBoxPool, wifiSpawns, WIFISPAWNERBUFFERSIZE);
+    chMBObjectInit(&wifiSpawnerMBox, wifiSpawnerBuff, WIFISPAWNERBUFFERSIZE);
+
     (void)chThdCreateStatic(wifiSpawnerThreadWA, sizeof(wifiSpawnerThreadWA), HIGHPRIO, wifiSpawnerThread, NULL);
 }
 
@@ -60,14 +60,15 @@ msg_t wifiSpawnI(void *pEntry, void *pValue, uint32_t flags)
     {
         chSysLockFromISR();
 
-        m = (msg_t) chPoolAllocI(&wifiSpawnerMpool);
+        m = (msg_t) chPoolAllocI(&wifiSpawnerMBoxPool);
 
         if ((void *) m != NULL)
         {
             ((wifiSpawn_t *) m)->pEntry = pEntry;
             ((wifiSpawn_t *) m)->pValue = pValue;
             ((wifiSpawn_t *) m)->flags = flags;
-            chMBPostI(&wifiSpawnerMbox, m);
+
+            chMBPostI(&wifiSpawnerMBox, m);
         }
         else
         {
@@ -78,14 +79,15 @@ msg_t wifiSpawnI(void *pEntry, void *pValue, uint32_t flags)
     }
     else
     {
-        m = (msg_t) chPoolAlloc(&wifiSpawnerMpool);
+        m = (msg_t) chPoolAlloc(&wifiSpawnerMBoxPool);
 
         if ((void *) m != NULL)
         {
             ((wifiSpawn_t *) m)->pEntry = pEntry;
             ((wifiSpawn_t *) m)->pValue = pValue;
             ((wifiSpawn_t *) m)->flags = flags;
-            chMBPost(&wifiSpawnerMbox, m, TIME_IMMEDIATE);
+
+            chMBPost(&wifiSpawnerMBox, m, TIME_IMMEDIATE);
         }
         else
         {

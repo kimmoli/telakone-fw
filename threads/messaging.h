@@ -22,10 +22,6 @@
 #define MESSAGING_UDP     0x02
 #define MESSAGING_AUXLINK 0x03
 
-extern event_source_t messagingEvent;
-extern binary_semaphore_t messagingReceiceSem;
-extern char *messagingReceiveBuffer;
-
 typedef struct
 {
     uint16_t header;
@@ -41,10 +37,16 @@ typedef struct
     uint8_t node;
     uint32_t ipAddress;
     uint16_t port;
-} messagingReplyInfo_t;
+} tk_source_t;
 
-extern messagingReplyInfo_t *messagingReplyInfo;
+typedef struct
+{
+    uint16_t messagingEvent;
+    tk_source_t source;
+    tk_message_t message;
+} messagingMessage_t;
 
 extern void startMessagingThread(void);
+extern msg_t sendMessage(messagingMessage_t *newMsg);
 
 #endif
