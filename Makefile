@@ -231,7 +231,7 @@ UINCDIR =
 ULIBDIR =
 
 # List all user libraries here
-ULIBS = ../../gcc-arm-none-eabi-5_4-2016q2/arm-none-eabi/lib/librdimon.a
+ULIBS = ../gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/lib/librdimon.a
 
 #
 # End of user defines
