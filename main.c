@@ -13,7 +13,6 @@
 #include "eicu.h"
 #include "i2c.h"
 #include "spi.h"
-#include "auxlink.h"
 #include "exti.h"
 #include "wdog.h"
 #include "env.h"
@@ -21,7 +20,7 @@
 
 #include "blinker.h"
 #include "joystick.h"
-#include "auxdevice.h"
+#include "auxlink.h"
 #include "auxmotor.h"
 #include "drive.h"
 #include "messaging.h"
@@ -37,7 +36,7 @@ int main(void)
     chSysInit();
     wdogTKInit(WDG_TIMEOUT_NORMAL);
 
-    sdStart(&SD3, NULL);  /* Serial console in USART3, 38400 */
+    sdStart(&SD3, NULL);  /* Serial console in USART3, 115200 */
 
     consoleStream = (BaseSequentialStream *) &SD3;
 
@@ -66,7 +65,7 @@ int main(void)
     extiTKInit();
     driveInit(DRIVE_LEFT);
     driveInit(DRIVE_RIGHT);
-    // auxlinkTKInit(0x01);
+    auxLinkInit(0x00);
 
     wdogTKKick();
 #ifndef TK_USE_WDOG
@@ -80,7 +79,7 @@ int main(void)
     startI2cThread();
     startMessagingThread(); /* Parses messages from network */
     startBlinkerThread(); /* Controls the external warning lamps on OUT1 */
-    // startAuxDeviceThread(); /* Auxiliary device handling */
+    startAuxLinkThread(); /* Auxiliary device link */
     startAuxmotorThread(); /* Auxiliary motor control */
     startDriveThread(DRIVE_LEFT); /* Left motor drive */
     startDriveThread(DRIVE_RIGHT); /* Right motor drive */

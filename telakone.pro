@@ -16,8 +16,6 @@ SOURCES += \
     shell/cmd_auxmotor.c \
     i2c.c \
     spi.c \
-    auxlink.c \
-    threads/auxdevice.c \
     shell/cmd_ping.c \
     shell/cmd_diic.c \
     shell/cmd_piic.c \
@@ -62,7 +60,8 @@ SOURCES += \
     simplelink/platform/tftp.c \
     shell/cmd_tftp.c \
     shell/cmd_filesystem.c \
-    analog_data.c
+    analog_data.c \
+    threads/auxlink.c
 
 HEADERS += \
     adc.h \
@@ -80,8 +79,6 @@ HEADERS += \
     eicu.h \
     i2c.h \
     spi.h \
-    auxlink.h \
-    threads/auxdevice.h \
     threads/auxmotor.h \
     exti.h \
     simplelink/include/device.h \
@@ -124,7 +121,8 @@ HEADERS += \
     simplelink/platform/wifi_gettime.h \
     simplelink/platform/filesystem.h \
     simplelink/platform/tftp.h \
-    analog_data.h
+    analog_data.h \
+    threads/auxlink.h
 
 OTHER_FILES += \
     Makefile \

@@ -1,16 +1,24 @@
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
-#include "auxdevice.h"
 #include "auxlink.h"
 #include "helpers.h"
 
-static THD_FUNCTION(auxDeviceThread, arg)
+uint8_t myAuxlinkAddress;
+
+static SerialConfig auxlinkConfig =
+{
+    /* speed */ 9600,
+    /* CR1 */ 0,
+    /* CR2 */ 0,
+    /* CR3 */ 0
+};
+
+static THD_FUNCTION(auxLinkThread, arg)
 {
     (void)arg;
     uint8_t rxBuf[AUXLINK_MAX_MSG_SIZE];
     int count = 0;
-    int i;
 
     while (!chThdShouldTerminateX())
     {
@@ -21,17 +29,7 @@ static THD_FUNCTION(auxDeviceThread, arg)
 
             if (charbuf == Q_TIMEOUT)
             {
-                if (count > 7 && rxBuf[0] == 'T' && rxBuf[1] == 'K')
-                {
-                    PRINT("RX:");
-                    for (i=0 ; i<count; i++)
-                        PRINT(" %02x", rxBuf[i]);
-                    if (auxlinkChecksum(count-1, rxBuf) == rxBuf[count-i])
-                        PRINT(" CHKSUM OK\n\r");
-                    else
-                        PRINT(" CHKSUM ERROR\n\r");
-                }
-
+                dump((char *)rxBuf, count);
                 count = 0;
             }
             else
@@ -50,7 +48,26 @@ static THD_FUNCTION(auxDeviceThread, arg)
     chThdExit(MSG_OK);
 }
 
-void startAuxDeviceThread(void)
+void startAuxLinkThread(void)
 {
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), "auxdevice", NORMALPRIO+1, auxDeviceThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), "auxlink", NORMALPRIO+1, auxLinkThread, NULL);
+}
+
+void auxLinkInit(uint8_t address)
+{
+    myAuxlinkAddress = address;
+
+    sdStart(&SD2, &auxlinkConfig);
+}
+
+void auxLinkTransmit(int count, uint8_t * buf)
+{
+    int i;
+
+    palSetLine(LINE_ACCLINKTXE);
+
+    for (i=0 ; i<count ; i++)
+        chnPutTimeout(&SD2, *(buf+i), MS2ST(10));
+
+    palClearLine(LINE_ACCLINKTXE);
 }
