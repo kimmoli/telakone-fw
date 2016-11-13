@@ -27,20 +27,25 @@ static THD_FUNCTION(auxLinkThread, arg)
         {
             charbuf = chnGetTimeout(&SD2, MS2ST(100));
 
-            if (charbuf == Q_TIMEOUT)
-            {
-                dump((char *)rxBuf, count);
-                count = 0;
-            }
-            else
+            if (charbuf != Q_TIMEOUT)
             {
                 rxBuf[count++] = charbuf;
 
                 if (count >= AUXLINK_MAX_MSG_SIZE)
+                {
+                    DEBUG("Overflow\n\r");
                     count = 0;
+                }
             }
         }
         while (charbuf != Q_TIMEOUT);
+
+        if (count > 0)
+        {
+            DEBUG("Received %d bytes\n\r", count);
+            dump((char *)rxBuf, count);
+            count = 0;
+        }
 
         chThdSleepMilliseconds(50);
     }
@@ -50,7 +55,7 @@ static THD_FUNCTION(auxLinkThread, arg)
 
 void startAuxLinkThread(void)
 {
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), "auxlink", NORMALPRIO+1, auxLinkThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(512), "auxlink", NORMALPRIO+1, auxLinkThread, NULL);
 }
 
 void auxLinkInit(uint8_t address)
