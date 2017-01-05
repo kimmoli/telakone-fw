@@ -25,7 +25,7 @@ void cmd_piic(BaseSequentialStream *chp, int argc, char *argv[])
 
     if (ret != MSG_OK)
     {
-        chprintf(chp, "[%02x] Error\n\r");
+        chprintf(chp, "[%02x] Error %d\n\r", addr, ret);
         return;
     }
 
