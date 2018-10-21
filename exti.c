@@ -13,30 +13,38 @@ static void button1handler(void *arg)
 {
     (void) arg;
 
+    chSysLockFromISR();
+
     if (palReadLine(LINE_BUTTON1) == PAL_LOW)
     {
         button1count++;
-        chEvtBroadcastFlags(&buttonEvent, BUTTON1DOWN);
+        chEvtBroadcastFlagsI(&buttonEvent, BUTTON1DOWN);
     }
     else /* PAL_HIGH */
     {
-        chEvtBroadcastFlags(&buttonEvent, BUTTON1UP);
+        chEvtBroadcastFlagsI(&buttonEvent, BUTTON1UP);
     }
+
+    chSysUnlockFromISR();
 }
 
 static void button2handler(void *arg)
 {
     (void) arg;
 
+    chSysLockFromISR();
+
     if (palReadLine(LINE_BUTTON2) == PAL_LOW)
     {
         button2count++;
-        chEvtBroadcastFlags(&buttonEvent, BUTTON2DOWN);
+        chEvtBroadcastFlagsI(&buttonEvent, BUTTON2DOWN);
     }
     else
     {
-        chEvtBroadcastFlags(&buttonEvent, BUTTON2UP);
+        chEvtBroadcastFlagsI(&buttonEvent, BUTTON2UP);
     }
+
+    chSysUnlockFromISR();
 }
 
 void CC3100_Interrupt(bool enable)
