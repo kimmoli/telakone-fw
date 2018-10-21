@@ -3,11 +3,9 @@
 
 ## ChibiOS
 
-Needs following repositories:
-* https://github.com/kimmoli/ChibiOS in ../ChibiOS
-* https://github.com/kimmoli/ChibiOS-Contrib in ../ChibiOS-Contrib
-
-or change location in Makefile
+Uses following repositories as submodules:
+* https://github.com/kimmoli/ChibiOS
+* https://github.com/kimmoli/ChibiOS-Contrib
 
 ## Shell
 
