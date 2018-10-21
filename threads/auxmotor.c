@@ -19,20 +19,45 @@ static THD_FUNCTION(auxmotorThread, arg)
 {
     (void)arg;
     event_listener_t elAuxMotor;
+    event_listener_t elButton;
     eventflags_t  flags;
 
-    chEvtRegister(&auxMotorEvent, &elAuxMotor, 0);
+    chEvtRegisterMask(&auxMotorEvent, &elAuxMotor, 0x100);
+    chEvtRegisterMask(&buttonEvent, &elButton, 0x200);
 
     while (!chThdShouldTerminateX())
     {
-        chEvtWaitAny(EVENT_MASK(0));
+        if (chEvtWaitAnyTimeout(0x100, MS2ST(50)) != 0)
+        {
+            flags = chEvtGetAndClearFlags(&elAuxMotor);
 
-        flags = chEvtGetAndClearFlags(&elAuxMotor);
+            if (flags & AUXMOTOR_EVENT_STOP)
+            {
+                auxmotorControl(0);
+            }
+            else if (flags & AUXMOTOR_EVENT_SET)
+            {
+                auxmotorControl((int8_t)(flags & 0xff));
+            }
+        }
 
-        if (flags & AUXMOTOR_EVENT_STOP)
-            auxmotorControl(0);
-        else if (flags & AUXMOTOR_EVENT_SET)
-            auxmotorControl((int8_t)(flags & 0xff));
+        if (chEvtWaitAnyTimeout(0x0200, MS2ST(50)) != 0)
+        {
+            flags = chEvtGetAndClearFlags(&elButton);
+
+            if (flags & BUTTON1UP || flags & BUTTON2UP)
+            {
+                auxmotorControl(0);
+            }
+            else if (flags & BUTTON1DOWN)
+            {
+                auxmotorControl(100);
+            }
+            else if (flags & BUTTON2DOWN)
+            {
+                auxmotorControl(-100);
+            }
+        }
     }
 
     chThdExit(MSG_OK);
@@ -41,7 +66,7 @@ static THD_FUNCTION(auxmotorThread, arg)
 void startAuxmotorThread(void)
 {
     chEvtObjectInit(&auxMotorEvent);
-    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(128), "auxmotor", NORMALPRIO+1, auxmotorThread, NULL);
+    chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(512), "auxmotor", NORMALPRIO+1, auxmotorThread, NULL);
 }
 
 void linearaccelcb(void *arg)

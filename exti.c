@@ -1,15 +1,35 @@
 #include "hal.h"
 #include "exti.h"
+#include "helpers.h"
 
 int button1count;
 int button2count;
 
 extern void CC3100_IRQ_Callback(void *arg);
 static void button1handler(void *arg);
-static void button1handler(void *arg);
+static void button2handler(void *arg);
+static void button1dcb(void *arg);
+static void button2dcb(void *arg);
 event_source_t buttonEvent;
 
+static virtual_timer_t button1debounce_vt;
+static virtual_timer_t button2debounce_vt;
+
 static void button1handler(void *arg)
+{
+    (void) arg;
+
+    chSysLockFromISR();
+
+    if (!chVTIsArmedI(&button1debounce_vt))
+    {
+        chVTSetI(&button1debounce_vt, MS2ST(100), button1dcb, NULL);
+    }
+
+    chSysUnlockFromISR();
+}
+
+static void button1dcb(void *arg)
 {
     (void) arg;
 
@@ -29,6 +49,20 @@ static void button1handler(void *arg)
 }
 
 static void button2handler(void *arg)
+{
+    (void) arg;
+
+    chSysLockFromISR();
+
+    if (!chVTIsArmedI(&button2debounce_vt))
+    {
+        chVTSetI(&button2debounce_vt, MS2ST(100), button2dcb, NULL);
+    }
+
+    chSysUnlockFromISR();
+}
+
+static void button2dcb(void *arg)
 {
     (void) arg;
 
@@ -65,6 +99,8 @@ void extiTKInit(void)
     button2count = 0;
 
     chEvtObjectInit(&buttonEvent);
+    chVTObjectInit(&button1debounce_vt);
+    chVTObjectInit(&button2debounce_vt);
 
     CC3100_Interrupt(true);
 
