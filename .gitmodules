@@ -1,6 +1,6 @@
 [submodule "ChibiOS"]
 	path = ChibiOS
-	url = git@huurre.eke.local:nx/ChibiOS.git
+	url = https://github.com/kimmoli/ChibiOS.git
 [submodule "ChibiOS-Contrib"]
 	path = ChibiOS-Contrib
-	url = git@huurre.eke.local:nx/ChibiOS-Contrib.git
+	url = https://github.com/kimmoli/ChibiOS-Contrib.git
