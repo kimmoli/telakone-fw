@@ -8,7 +8,7 @@
 static mailbox_t wifiSpawnerMBox;
 static msg_t wifiSpawnerBuff[WIFISPAWNERBUFFERSIZE];
 static wifiSpawn_t wifiSpawns[WIFISPAWNERBUFFERSIZE];
-static MEMORYPOOL_DECL(wifiSpawnerMBoxPool, sizeof(wifiSpawns), NULL);
+static MEMORYPOOL_DECL(wifiSpawnerMBoxPool, sizeof(wifiSpawns), PORT_NATURAL_ALIGN, NULL);
 
 static THD_WORKING_AREA(wifiSpawnerThreadWA, 4096);
 
@@ -28,7 +28,7 @@ static THD_FUNCTION(wifiSpawnerThread, arg)
     while (true)
     {
         /* Wait function pointer as message or something, and run it in this context */
-        res = chMBFetch(&wifiSpawnerMBox, &wsst, TIME_INFINITE);
+        res = chMBFetchTimeout(&wifiSpawnerMBox, &wsst, TIME_INFINITE);
         if (res == MSG_OK)
         {
             wifiSpawn_t *wp = (wifiSpawn_t *)wsst;
@@ -87,7 +87,7 @@ msg_t wifiSpawnI(void *pEntry, void *pValue, uint32_t flags)
             ((wifiSpawn_t *) m)->pValue = pValue;
             ((wifiSpawn_t *) m)->flags = flags;
 
-            chMBPost(&wifiSpawnerMBox, m, TIME_IMMEDIATE);
+            chMBPostTimeout(&wifiSpawnerMBox, m, TIME_IMMEDIATE);
         }
         else
         {

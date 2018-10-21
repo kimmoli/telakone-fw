@@ -1,3 +1,11 @@
 .dep/
 build/
-telakone.pro.user
+*.pro
+*.pro.*
+.project
+.cproject
+.metadata/
+.settings/
+
+
+

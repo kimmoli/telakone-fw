@@ -17,7 +17,7 @@
 static mailbox_t messagingMBox;
 static msg_t messagingBuff[MESSAGEBUFFERSIZE];
 static messagingMessage_t messages[MESSAGEBUFFERSIZE];
-static GUARDEDMEMORYPOOL_DECL(messagingMBoxPool, sizeof(messages));
+static GUARDEDMEMORYPOOL_DECL(messagingMBoxPool, sizeof(messages), PORT_NATURAL_ALIGN);
 
 static THD_WORKING_AREA(messagingThreadWA, 4096);
 
@@ -33,7 +33,7 @@ static THD_FUNCTION(messagingThread, arg)
 
     while (true)
     {
-        res = chMBFetch(&messagingMBox, &mmst, TIME_INFINITE);
+        res = chMBFetchTimeout(&messagingMBox, &mmst, TIME_INFINITE);
         if (res == MSG_OK)
         {
             messagingMessage_t *mmp = (messagingMessage_t *)mmst;
@@ -114,7 +114,7 @@ msg_t sendMessage(messagingMessage_t *newMsg)
     if ((void *) m != NULL)
     {
         memcpy((void *) m, newMsg, sizeof(messagingMessage_t));
-        res = chMBPost(&messagingMBox, (msg_t) m, TIME_IMMEDIATE);
+        res = chMBPostTimeout(&messagingMBox, (msg_t) m, TIME_IMMEDIATE);
     }
     else
     {

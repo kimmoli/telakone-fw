@@ -12,6 +12,8 @@ extern int button2count;
 
 extern event_source_t buttonEvent;
 
+extern void CC3100_Interrupt(bool enable);
+
 void extiTKInit(void);
 
 #endif

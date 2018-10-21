@@ -86,8 +86,8 @@ endif
 PROJECT = telakone
 
 # Imported source files and paths
-CHIBIOS = ../ChibiOS
-CHIBIOS_CONTRIB = ../ChibiOS-Contrib
+CHIBIOS = ./ChibiOS
+CHIBIOS_CONTRIB = ./ChibiOS-Contrib
 SIMPLELINK = ./simplelink
 
 # Startup files.

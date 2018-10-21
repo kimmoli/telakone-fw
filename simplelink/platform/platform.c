@@ -38,10 +38,11 @@
 #include "hal.h"
 #include "platform.h"
 #include "helpers.h"
+#include "exti.h"
 
 P_EVENT_HANDLER     pIrqEventHandler = 0;
 
-void CC3100_IRQ_Callback(EXTDriver *extp, expchannel_t channel);
+void CC3100_IRQ_Callback(void *arg);
 
 void CC3100_disable(void)
 {
@@ -55,20 +56,19 @@ void CC3100_enable(void)
 
 void CC3100_InterruptEnable(void)
 {
-    /* Configure EXTI Line4 (connected to PA4 pin) in interrupt mode */
-    extChannelEnable(&EXTD1, GPIOA_PA4_CCIRQ);
+    CC3100_Interrupt(true);
 }
 
 void CC3100_InterruptDisable(void)
 {
-    extChannelDisable(&EXTD1, GPIOA_PA4_CCIRQ);
+    CC3100_Interrupt(false);
 }
 
-void CC3100_IRQ_Callback(EXTDriver *extp, expchannel_t channel)
+void CC3100_IRQ_Callback(void *arg)
 {
-    (void) extp;
+    (void) arg;
 
-    if ( (channel == GPIOA_PA4_CCIRQ) && (NULL != pIrqEventHandler) )
+    if ( NULL != pIrqEventHandler )
     {
         pIrqEventHandler(0);
     }

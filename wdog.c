@@ -2,6 +2,7 @@
 #include "wdog.h"
 #include "helpers.h"
 
+#ifdef TK_USE_WDOG
 static const WDGConfig wdognormalcfg =
 {
     /*
@@ -21,6 +22,7 @@ static const WDGConfig wdoglongcfg =
     STM32_IWDG_PR_64,
     STM32_IWDG_RL(1500)
 };
+#endif
 
 void wdogTKInit(uint8_t timeout)
 {
