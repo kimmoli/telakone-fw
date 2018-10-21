@@ -558,6 +558,13 @@
  */
 #define CH_CFG_SYSTEM_HALT_HOOK(reason) {                                   \
   /* System halt code here.*/                                               \
+   const char *r = reason;                                                  \
+   while (*r != 0)                                                          \
+   {                                                                        \
+        while ((USART3->SR & USART_SR_TXE) == 0) {}                         \
+        USART3->DR = *r;                                                    \
+        r++;                                                                \
+    }                                                                       \
 }
 
 /**
