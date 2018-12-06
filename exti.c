@@ -36,13 +36,13 @@ static void button1dcb(void *arg)
 
     chSysLockFromISR();
 
-    if (palReadLine(LINE_BUTTON1) == PAL_LOW)
+    if (palReadLine(LINE_BUTTON1) == PAL_LOW && btnValues->button1state == BUTTONUP)
     {
         btnValues->button1count++;
         btnValues->button1state = BUTTONDOWN;
         chEvtBroadcastFlagsI(&buttonEvent, BUTTON1DOWN);
     }
-    else /* PAL_HIGH */
+    else if (palReadLine(LINE_BUTTON1) == PAL_HIGH && btnValues->button1state == BUTTONDOWN)
     {
         btnValues->button1state = BUTTONUP;
         chEvtBroadcastFlagsI(&buttonEvent, BUTTON1UP);
@@ -71,7 +71,7 @@ static void button2dcb(void *arg)
 
     chSysLockFromISR();
 
-    if (palReadLine(LINE_BUTTON2) == PAL_LOW)
+    if (palReadLine(LINE_BUTTON2) == PAL_LOW && btnValues->button2state == BUTTONUP)
     {
         btnValues->button2count++;
         btnValues->button2state = BUTTONDOWN;
@@ -83,7 +83,7 @@ static void button2dcb(void *arg)
         else
             pwmSetChannel(TK_PWM_OUT3, 100, 100);
     }
-    else
+    if (palReadLine(LINE_BUTTON2) == PAL_HIGH && btnValues->button2state == BUTTONDOWN)
     {
         btnValues->button2state = BUTTONUP;
         chEvtBroadcastFlagsI(&buttonEvent, BUTTON2UP);
