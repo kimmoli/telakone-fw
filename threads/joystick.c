@@ -26,6 +26,7 @@ static THD_FUNCTION(joystickThread, arg)
     int auxMotor = 0;
     int prevAuxMotor = 0;
     bool enabled = true;
+    bool blockDrive = true;
 
     chEvtRegister(&joystickEvent, &elJoystick, 0);
 
@@ -74,6 +75,7 @@ static THD_FUNCTION(joystickThread, arg)
             chEvtBroadcastFlags(&driveEvent[1], DRIVEEVENT_SET | (uint16_t)(0));
             prevLeftMotor = 0;
             prevRightMotor = 0;
+            blockDrive = true;
 
             /* aux motor is -100..+100, joystick is -500..+500 */
             auxMotor = tempJoyBF / 5;
@@ -83,9 +85,14 @@ static THD_FUNCTION(joystickThread, arg)
 
             prevAuxMotor = auxMotor;
         }
-//        else if (btnValues->button2state == BUTTONDOWN)
-//        {
-//        }
+        else if (blockDrive)
+        {
+            /* Keep driving blocked until joystick is released to middle */
+            if (tempJoyBF == 0 && tempJoyLR == 0)
+            {
+                blockDrive = false;
+            }
+        }
         else
         {
             /* stop aux motor */
