@@ -7,9 +7,6 @@
 #define BUTTON2UP   8
 
 
-extern int button1count;
-extern int button2count;
-
 extern event_source_t buttonEvent;
 
 extern void CC3100_Interrupt(bool enable);

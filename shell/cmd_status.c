@@ -12,6 +12,7 @@
 #include "exti.h"
 #include "pwm.h"
 #include "drive.h"
+#include "button.h"
 
 void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
 {
@@ -55,8 +56,8 @@ void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
                                                                               i2cValues->Z);
         chprintf(chp, "                   Pitch %.2f Roll %.2f    \n\r", i2cValues->Pitch,
                                                                          i2cValues->Roll);
-        chprintf(chp, "Buttons:           1 %s (%d) 2 %s (%d)    \n\r", (palReadLine(LINE_BUTTON1) ? "up" : "down"), button1count,
-                                                                        (palReadLine(LINE_BUTTON2) ? "up" : "down"), button2count);
+        chprintf(chp, "Buttons:           1 %s (%d) 2 %s (%d)    \n\r", (btnValues->button1state == BUTTONDOWN ? "down" : "up"), btnValues->button1count,
+                                                                        (btnValues->button2state == BUTTONDOWN ? "down" : "up"), btnValues->button2count);
         chprintf(chp, "Outputs:           1 %d%% 2 %d%% 3 %d%% 4 %d%%    \n\r", pwmGetChannel(TK_PWM_OUT1, 100),
                                                                                     pwmGetChannel(TK_PWM_OUT2, 100),
                                                                                     pwmGetChannel(TK_PWM_OUT3, 100),

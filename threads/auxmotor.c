@@ -4,6 +4,7 @@
 #include "exti.h"
 #include "pwm.h"
 #include "helpers.h"
+#include "button.h"
 
 static virtual_timer_t linearaccel_vt;
 event_source_t auxMotorEvent;
@@ -27,7 +28,7 @@ static THD_FUNCTION(auxmotorThread, arg)
 
     while (!chThdShouldTerminateX())
     {
-        if (chEvtWaitAnyTimeout(0x100, MS2ST(50)) != 0)
+        if (chEvtWaitAnyTimeout(0x100, MS2ST(25)) != 0)
         {
             flags = chEvtGetAndClearFlags(&elAuxMotor);
 
@@ -41,21 +42,14 @@ static THD_FUNCTION(auxmotorThread, arg)
             }
         }
 
-        if (chEvtWaitAnyTimeout(0x0200, MS2ST(50)) != 0)
+        /* Safety? in case of button up event, stop motor */
+        if (chEvtWaitAnyTimeout(0x0200, MS2ST(25)) != 0)
         {
             flags = chEvtGetAndClearFlags(&elButton);
 
-            if (flags & BUTTON1UP || flags & BUTTON2UP)
+            if (flags & BUTTON1UP)
             {
                 auxmotorControl(0);
-            }
-            else if (flags & BUTTON1DOWN)
-            {
-                auxmotorControl(100);
-            }
-            else if (flags & BUTTON2DOWN)
-            {
-                auxmotorControl(-100);
             }
         }
     }

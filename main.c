@@ -24,6 +24,7 @@
 #include "auxmotor.h"
 #include "drive.h"
 #include "messaging.h"
+#include "button.h"
 
 #include "wifi.h"
 
@@ -62,6 +63,7 @@ int main(void)
     adcTKStartConv();
     pwmTKInit();
     eicuTKInit();
+    buttonTKInit();
     extiTKInit();
     driveInit(DRIVE_LEFT);
     driveInit(DRIVE_RIGHT);

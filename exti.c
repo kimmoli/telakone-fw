@@ -1,9 +1,9 @@
 #include "hal.h"
 #include "exti.h"
+#include "button.h"
 #include "helpers.h"
 
-int button1count;
-int button2count;
+/* TODO MOVE BUTTON STUFF TO BUTTON.C */
 
 extern void CC3100_IRQ_Callback(void *arg);
 static void button1handler(void *arg);
@@ -37,11 +37,13 @@ static void button1dcb(void *arg)
 
     if (palReadLine(LINE_BUTTON1) == PAL_LOW)
     {
-        button1count++;
+        btnValues->button1count++;
+        btnValues->button1state = BUTTONDOWN;
         chEvtBroadcastFlagsI(&buttonEvent, BUTTON1DOWN);
     }
     else /* PAL_HIGH */
     {
+        btnValues->button1state = BUTTONUP;
         chEvtBroadcastFlagsI(&buttonEvent, BUTTON1UP);
     }
 
@@ -70,11 +72,13 @@ static void button2dcb(void *arg)
 
     if (palReadLine(LINE_BUTTON2) == PAL_LOW)
     {
-        button2count++;
+        btnValues->button2count++;
+        btnValues->button2state = BUTTONDOWN;
         chEvtBroadcastFlagsI(&buttonEvent, BUTTON2DOWN);
     }
     else
     {
+        btnValues->button2state = BUTTONUP;
         chEvtBroadcastFlagsI(&buttonEvent, BUTTON2UP);
     }
 
@@ -95,9 +99,6 @@ void CC3100_Interrupt(bool enable)
 
 void extiTKInit(void)
 {
-    button1count = 0;
-    button2count = 0;
-
     chEvtObjectInit(&buttonEvent);
     chVTObjectInit(&button1debounce_vt);
     chVTObjectInit(&button2debounce_vt);
