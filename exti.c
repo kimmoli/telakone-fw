@@ -1,6 +1,7 @@
 #include "hal.h"
 #include "exti.h"
 #include "button.h"
+#include "pwm.h"
 #include "helpers.h"
 
 /* TODO MOVE BUTTON STUFF TO BUTTON.C */
@@ -75,6 +76,12 @@ static void button2dcb(void *arg)
         btnValues->button2count++;
         btnValues->button2state = BUTTONDOWN;
         chEvtBroadcastFlagsI(&buttonEvent, BUTTON2DOWN);
+
+        /* Button 2 toggles output 3 */
+        if (pwmGetChannel(TK_PWM_OUT3, 100) > 0)
+            pwmSetChannel(TK_PWM_OUT3, 100, 0);
+        else
+            pwmSetChannel(TK_PWM_OUT3, 100, 100);
     }
     else
     {
