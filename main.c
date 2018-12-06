@@ -100,6 +100,9 @@ int main(void)
     palClearLine(LINE_D1BRAKE);
     palClearLine(LINE_D2BRAKE);
 
+    pwmSetChannel(TK_PWM_OUT1, 100, 25);
+    pwmSetChannel(TK_PWM_OUT4, 100, 25);
+
     shellInit();
 
     chThdCreateFromHeap(NULL, SHELL_WA_SIZE, "shell", NORMALPRIO + 1, shellThread, (void *)&shell_cfg_uart);
