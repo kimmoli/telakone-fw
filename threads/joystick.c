@@ -93,8 +93,8 @@ static THD_FUNCTION(joystickThread, arg)
             prevAuxMotor = 0;
 
            // Convert to differential motor control values Left and Right, -500..+500
-            leftMotor = MAX(MIN(tempJoyBF + tempJoyLR, 500), -500);
-            rightMotor = MAX(MIN(tempJoyBF - tempJoyLR, 500), -500);
+            leftMotor = MAX(MIN(tempJoyBF - tempJoyLR, 500), -500);
+            rightMotor = MAX(MIN(tempJoyBF + tempJoyLR, 500), -500) * -1;
 
             if (leftMotor != prevLeftMotor)
                 chEvtBroadcastFlags(&driveEvent[0], DRIVEEVENT_SET | (uint16_t)(leftMotor & 0xFFF));

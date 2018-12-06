@@ -1,8 +1,8 @@
 #ifndef TK_DRIVE_H
 #define TK_DRIVE_H
 
-#define DRIVE_LEFT           0
-#define DRIVE_RIGHT          1
+#define DRIVE_LEFT           1
+#define DRIVE_RIGHT          0
 #define DRIVEEVENT_SET       0x8000
 
 typedef struct
