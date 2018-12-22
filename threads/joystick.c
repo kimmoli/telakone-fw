@@ -8,6 +8,8 @@
 #include "drive.h"
 #include "button.h"
 #include "auxmotor.h"
+#include "auxlink.h"
+#include "messaging.h"
 
 event_source_t joystickEvent;
 
@@ -23,8 +25,10 @@ static THD_FUNCTION(joystickThread, arg)
     int prevRightMotor = 0;
     int tempJoyLR = 0;
     int tempJoyBF = 0;
-    int auxMotor = 0;
-    int prevAuxMotor = 0;
+    int auxMotorBF = 0;
+    int prevAuxMotorBF = 0;
+    int auxMotorLR = 0;
+    int prevAuxMotorLR = 0;
     bool enabled = true;
     bool blockDrive = true;
 
@@ -78,12 +82,28 @@ static THD_FUNCTION(joystickThread, arg)
             blockDrive = true;
 
             /* aux motor is -100..+100, joystick is -500..+500 */
-            auxMotor = tempJoyBF / 5;
+            auxMotorBF = tempJoyBF / 5;
+            auxMotorLR = tempJoyLR / 5;
 
-            if (auxMotor != prevAuxMotor)
-                chEvtBroadcastFlags(&motorconf[0].event, AUXMOTOR_EVENT_SET | (uint8_t)(auxMotor & 0xff));
+            if (auxMotorBF != prevAuxMotorBF)
+            {
+                chEvtBroadcastFlags(&motorconf[0].event, AUXMOTOR_EVENT_SET | (uint8_t)(auxMotorBF & 0xff));
+            }
 
-            prevAuxMotor = auxMotor;
+            if (auxMotorLR != prevAuxMotorLR)
+            {
+                tk_message_t message;
+                message.header = TK_MESSAGE_HEADER;
+                message.fromNode = myAuxlinkAddress;
+                message.toNode = 0x10; // Only known auxio board
+                message.sequence = 0;
+                message.destination = DEST_AUXMOTOR;
+                message.event = AUXMOTOR_EVENT_SET | (uint8_t)(auxMotorLR & 0xff);
+
+                auxLinkTransmit(sizeof(tk_message_t), (uint8_t *) &message);
+            }
+
+            prevAuxMotorBF = auxMotorBF;
         }
         else if (blockDrive)
         {
@@ -96,8 +116,26 @@ static THD_FUNCTION(joystickThread, arg)
         else
         {
             /* stop aux motor */
-            chEvtBroadcastFlags(&motorconf[0].event, AUXMOTOR_EVENT_STOP);
-            prevAuxMotor = 0;
+            if (prevAuxMotorBF != 0)
+            {
+                chEvtBroadcastFlags(&motorconf[0].event, AUXMOTOR_EVENT_STOP);
+                prevAuxMotorBF = 0;
+                auxMotorBF = 0;
+            }
+            if (prevAuxMotorLR != 0)
+            {
+                tk_message_t message;
+                message.header = TK_MESSAGE_HEADER;
+                message.fromNode = myAuxlinkAddress;
+                message.toNode = 0x10; // Only known auxio board
+                message.sequence = 0;
+                message.destination = DEST_AUXMOTOR;
+                message.event = AUXMOTOR_EVENT_STOP;
+
+                auxLinkTransmit(sizeof(tk_message_t), (uint8_t *) &message);
+                prevAuxMotorLR = 0;
+                auxMotorLR = 0;
+            }
 
            // Convert to differential motor control values Left and Right, -500..+500
             leftMotor = MAX(MIN(tempJoyBF - tempJoyLR, 500), -500);
