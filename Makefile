@@ -89,6 +89,7 @@ PROJECT = telakone
 CHIBIOS = ./ChibiOS
 CHIBIOS_CONTRIB = ./ChibiOS-Contrib
 SIMPLELINK = ./simplelink
+COMMON = ./common
 
 # Startup files.
 include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
@@ -108,6 +109,8 @@ include ${CHIBIOS_CONTRIB}/os/hal/hal.mk
 include ${CHIBIOS_CONTRIB}/os/hal/ports/STM32/STM32F4xx/platform.mk
 # TI Simplelink
 include $(SIMPLELINK)/simplelink.mk
+# Common
+include $(COMMON)/common.mk
 
 # Define linker script file here
 LDSCRIPT= $(STARTUPLD)/STM32F407xG.ld
@@ -124,15 +127,36 @@ CSRC = $(STARTUPSRC) \
        $(STREAMSSRC) \
        $(SHELLSRC) \
        $(SIMPLELINKSRC) \
-       adc.c pwm.c eicu.c i2c.c spi.c exti.c wdog.c flash.c env.c helpers.c \
+       $(COMMONSRC) \
+       adc.c \
+       pwm.c \
+       eicu.c \
+       i2c.c \
+       spi.c \
+       exti.c \
+       wdog.c \
+       flash.c \
+       env.c \
+       helpers.c \
        button.c \
-       analog_data.c button_data.c \
-       shell/cmd_status.c shell/cmd_out.c shell/cmd_auxmotor.c shell/cmd_reboot.c \
-       shell/cmd_ping.c shell/cmd_diic.c shell/cmd_piic.c shell/cmd_wifi.c shell/cmd_env.c \
-       shell/cmd_dm.c shell/cmd_blink.c shell/cmd_date.c shell/cmd_tftp.c shell/cmd_filesystem.c \
+       analog_data.c \
+       button_data.c \
+       shell/cmd_status.c \
+       shell/cmd_out.c \
+       shell/cmd_auxmotor.c \
+       shell/cmd_diic.c \
+       shell/cmd_piic.c \
+       shell/cmd_wifi.c \
+       shell/cmd_env.c \
+       shell/cmd_blink.c \
+       shell/cmd_date.c \
+       shell/cmd_tftp.c \
+       shell/cmd_filesystem.c \
        shell/shellcommands.c \
-       threads/blinker.c threads/joystick.c threads/auxlink.c threads/auxmotor.c \
-       threads/messaging.c threads/drive.c threads/threadkiller.c \
+       threads/blinker.c \
+       threads/joystick.c \
+       threads/auxmotor.c \
+       threads/drive.c \
        main.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
@@ -164,6 +188,7 @@ ASMSRC =
 ASMXSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 
 INCDIR = ./shell ./threads \
+         $(COMMONINC) \
          $(CHIBIOS)/os/license \
          $(CHIBIOS_CONTRIB)/os/various \
          $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \

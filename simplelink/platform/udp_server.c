@@ -78,7 +78,8 @@ static THD_FUNCTION(udpServer, arg)
             m.source.channel = MESSAGING_UDP;
             m.source.ipAddress = sl_Htonl(addr.sin_addr.s_addr);
             m.source.port = config->port;
-            memcpy(&m.message, rxBuf, sizeof(tk_message_t));
+            m.payloadType = PAYLOAD_EVENT;
+            memcpy(&m.payload, rxBuf, sizeof(tk_message_t));
 
             if (sendMessage(&m) != MSG_OK)
                 DEBUG("error\n\r");
