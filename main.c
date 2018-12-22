@@ -82,7 +82,7 @@ int main(void)
     startMessagingThread(); /* Parses messages from network */
     startBlinkerThread(); /* Controls the external warning lamps on OUT1 */
     startAuxLinkThread(); /* Auxiliary device link */
-    startAuxmotorThread(); /* Auxiliary motor control */
+    startAuxmotorThread(0); /* Auxiliary motor control */
     startDriveThread(DRIVE_LEFT); /* Left motor drive */
     startDriveThread(DRIVE_RIGHT); /* Right motor drive */
     startJoystickThread(); /* Processes joystick input values and drive motors */

@@ -81,7 +81,7 @@ static THD_FUNCTION(joystickThread, arg)
             auxMotor = tempJoyBF / 5;
 
             if (auxMotor != prevAuxMotor)
-                chEvtBroadcastFlags(&auxMotorEvent, AUXMOTOR_EVENT_SET | (uint8_t)(auxMotor & 0xff));
+                chEvtBroadcastFlags(&motorconf[0].event, AUXMOTOR_EVENT_SET | (uint8_t)(auxMotor & 0xff));
 
             prevAuxMotor = auxMotor;
         }
@@ -96,7 +96,7 @@ static THD_FUNCTION(joystickThread, arg)
         else
         {
             /* stop aux motor */
-            chEvtBroadcastFlags(&auxMotorEvent, AUXMOTOR_EVENT_STOP);
+            chEvtBroadcastFlags(&motorconf[0].event, AUXMOTOR_EVENT_STOP);
             prevAuxMotor = 0;
 
            // Convert to differential motor control values Left and Right, -500..+500

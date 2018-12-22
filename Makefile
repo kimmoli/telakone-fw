@@ -143,7 +143,6 @@ CSRC = $(STARTUPSRC) \
        button_data.c \
        shell/cmd_status.c \
        shell/cmd_out.c \
-       shell/cmd_auxmotor.c \
        shell/cmd_diic.c \
        shell/cmd_piic.c \
        shell/cmd_wifi.c \
@@ -155,7 +154,6 @@ CSRC = $(STARTUPSRC) \
        shell/shellcommands.c \
        threads/blinker.c \
        threads/joystick.c \
-       threads/auxmotor.c \
        threads/drive.c \
        main.c
 

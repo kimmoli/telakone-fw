@@ -24,8 +24,10 @@
 /*
  * Board identifier.
  */
-#define BOARD_KIMMOLI_TELAKONE
-#define BOARD_NAME                  "Kimmoli's telakone STM32F407ZG"
+#define BOARD_TELAKONE
+#define BOARD_NAME                  "Telakone MAIN Board STM32F407ZG"
+
+#define MOTORS 1
 
 /*
  * Use watchdog
