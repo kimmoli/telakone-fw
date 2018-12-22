@@ -128,6 +128,7 @@ CSRC = $(STARTUPSRC) \
        $(SHELLSRC) \
        $(SIMPLELINKSRC) \
        $(COMMONSRC) \
+       $(AUXMOTORSRC) \
        adc.c \
        pwm.c \
        eicu.c \
@@ -137,7 +138,6 @@ CSRC = $(STARTUPSRC) \
        wdog.c \
        flash.c \
        env.c \
-       helpers.c \
        button.c \
        analog_data.c \
        button_data.c \
