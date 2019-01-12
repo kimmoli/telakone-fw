@@ -15,6 +15,7 @@ typedef struct
 {
     float batteryVoltage;
     float controlVoltage;
+    bool reverse;
 } DriveStatus_t;
 
 extern DriveStatus_t *driveStatus[2];

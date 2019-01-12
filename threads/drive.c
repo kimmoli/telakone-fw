@@ -21,6 +21,7 @@ static THD_FUNCTION(driveThread, arg)
 
     event_listener_t elDrive;
     eventflags_t flags;
+    bool reverse = false;
 
     chEvtRegister(&driveEvent[dc->channel], &elDrive, 0);
 
@@ -37,10 +38,22 @@ static THD_FUNCTION(driveThread, arg)
             int value = (int)((int16_t)((flags & 0xFFF) << 4)) / 16;
             float fValue = (float)abs(value)/100;
 
+            if (fValue < 1.0f)
+            {
+                fValue = 1.0f;
+            }
+
             driveStatus[dc->channel]->controlVoltage = fValue;
             driveStatus[dc->channel]->batteryVoltage = driveAfeHandle(dc->channel, fValue);
 
-            setDirection(dc->reverseline, value < 0);
+            if (value < -50)
+                reverse = true;
+            else if (value > 50)
+                reverse = false;
+
+            driveStatus[dc->channel]->reverse = reverse;
+
+            setDirection(dc->reverseline, reverse);
         }
     }
 
@@ -65,8 +78,9 @@ void driveInit(int channel)
 
     driveStatus[channel] = chHeapAlloc(NULL, sizeof(DriveStatus_t));
 
-    driveStatus[channel]->batteryVoltage = 0.0;
-    driveStatus[channel]->controlVoltage = 0.0;
+    driveStatus[channel]->batteryVoltage = 0.0f;
+    driveStatus[channel]->controlVoltage = 1.0f;
+    driveStatus[channel]->reverse = false;
 
     chEvtObjectInit(&driveEvent[channel]);
 }

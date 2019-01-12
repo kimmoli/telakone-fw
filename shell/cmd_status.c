@@ -48,6 +48,8 @@ void cmd_status(BaseSequentialStream *chp, int argc, char *argv[])
                                                                 adcValues->joystickBackForward);
         chprintf(chp, "Motor drive:       L %.2f V R %.2f V    \n\r", driveStatus[DRIVE_LEFT]->controlVoltage,
                                                               driveStatus[DRIVE_RIGHT]->controlVoltage);
+        chprintf(chp, "                   L %s R %s\n\r", driveStatus[DRIVE_LEFT]->reverse ? "REV" : "FWD",
+                                                          driveStatus[DRIVE_RIGHT]->reverse ? "REV" : "FWD");
         chprintf(chp, "Speed:             L %d R %d    \n\r", leftSpeed, rightSpeed );
         chprintf(chp, "Battery voltages:  L %.2f V R %.2f V    \n\r", driveStatus[DRIVE_LEFT]->batteryVoltage,
                                                                       driveStatus[DRIVE_RIGHT]->batteryVoltage);
