@@ -90,6 +90,7 @@ static THD_FUNCTION(joystickThread, arg)
                 chEvtBroadcastFlags(&motorconf[0].event, AUXMOTOR_EVENT_SET | (uint8_t)(auxMotorBF & 0xff));
             }
 
+#if 0
             if (auxMotorLR != prevAuxMotorLR)
             {
                 tk_message_t message;
@@ -102,7 +103,7 @@ static THD_FUNCTION(joystickThread, arg)
 
                 auxLinkTransmit(sizeof(tk_message_t), (uint8_t *) &message);
             }
-
+#endif
             prevAuxMotorBF = auxMotorBF;
         }
         else if (blockDrive)
